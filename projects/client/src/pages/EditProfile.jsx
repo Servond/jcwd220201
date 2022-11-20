@@ -1,9 +1,3 @@
-import { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { axiosInstance } from "../api";
-import { useFormik } from "formik";
-import { login } from "../redux/features/authSlice";
-import { useEffect } from "react";
 import {
   Avatar,
   Box,
@@ -17,12 +11,18 @@ import {
   Text,
   useToast,
 } from "@chakra-ui/react";
+import { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { axiosInstance } from "../api";
+import { useFormik } from "formik";
+import { login } from "../redux/features/authSlice";
+import { useEffect } from "react";
 
 const EditProfile = () => {
+  const authSelector = useSelector((state) => state.auth);
   const [editMode, setEditMode] = useState(false);
   const [users, setUsers] = useState([]);
 
-  const selectProfile = useSelector((state) => state.profile);
   const dispatch = useDispatch();
 
   const toast = useToast();
@@ -31,7 +31,7 @@ const EditProfile = () => {
     try {
       const response = await axiosInstance.get("/users", {
         params: {
-          userId: selectProfile.id,
+          userId: authSelector.id,
           _expand: "user",
         },
       });
@@ -64,28 +64,26 @@ const EditProfile = () => {
       try {
         const userData = new FormData();
 
-        if (name && name !== selectProfile.name) {
+        if (name && name !== authSelector.name) {
           userData.append("name", name);
         }
-        if (email && email !== selectProfile.email) {
-          userData.append("email", email);
-        }
+
         if (
           profile_picture &&
-          profile_picture !== selectProfile.profile_picture
+          profile_picture !== authSelector.profile_picture
         ) {
           userData.append("profile_picture", profile_picture);
         }
-        if (gender && gender !== selectProfile.gender) {
+        if (gender && gender !== authSelector.gender) {
           userData.append("gender", gender);
         }
-        if (phone && phone !== selectProfile.phone) {
+        if (phone && phone !== authSelector.phone) {
           userData.append("phone", phone);
         }
-        if (date_of_birth && date_of_birth !== selectProfile.date_of_birth) {
+        if (date_of_birth && date_of_birth !== authSelector.date_of_birth) {
           userData.append("date_of_birth", date_of_birth);
         }
-        if (password && password !== selectProfile.password) {
+        if (password && password !== authSelector.password) {
           userData.append("password", password);
         }
 
@@ -117,7 +115,6 @@ const EditProfile = () => {
 
   const dummyProfile = {
     name: "nobi",
-    email: "nobi@gmail.com",
     profile_picture:
       "https://xsgames.co/randomusers/assets/avatars/female/13.jpg",
     gender: "Wanita",
@@ -131,9 +128,10 @@ const EditProfile = () => {
         <HStack spacing="6">
           <Avatar
             size="2xl"
-            name={dummyProfile.name}
-            src={dummyProfile.profile_picture}
+            name={authSelector.name}
+            src={authSelector.profile_picture}
           />
+
           {editMode ? (
             <Stack>
               <FormControl>
@@ -141,17 +139,10 @@ const EditProfile = () => {
                 <Input
                   onChange={formChangeHandler}
                   name="name"
-                  defaultValue={dummyProfile.name}
+                  defaultValue={authSelector.name}
                 />
               </FormControl>
-              <FormControl>
-                <FormLabel>Email</FormLabel>
-                <Input
-                  onChange={formChangeHandler}
-                  name="email"
-                  defaultValue={dummyProfile.email}
-                />
-              </FormControl>
+
               <FormControl>
                 <FormLabel>Profile Picture</FormLabel>
                 <Input
@@ -171,7 +162,7 @@ const EditProfile = () => {
                 <Input
                   onChange={formChangeHandler}
                   name="gender"
-                  defaultValue={dummyProfile.gender}
+                  defaultValue={authSelector.gender}
                 />
               </FormControl>
               <FormControl>
@@ -179,7 +170,7 @@ const EditProfile = () => {
                 <Input
                   onChange={formChangeHandler}
                   name="phone"
-                  defaultValue={dummyProfile.phone}
+                  defaultValue={authSelector.phone}
                 />
               </FormControl>
               <FormControl>
@@ -187,7 +178,7 @@ const EditProfile = () => {
                 <Input
                   onChange={formChangeHandler}
                   name="date_of_birth"
-                  defaultValue={dummyProfile.date_of_birth}
+                  defaultValue={authSelector.date_of_birth}
                 />
               </FormControl>
               <FormControl>
@@ -195,18 +186,18 @@ const EditProfile = () => {
                 <Input
                   onChange={formChangeHandler}
                   name="password"
-                  defaultValue={dummyProfile.password}
+                  defaultValue={authSelector.password}
                 />
               </FormControl>
             </Stack>
           ) : (
             <Stack spacing="0.5">
               <Text fontSize="2xl" fontWeight="semibold">
-                {dummyProfile.name}
+                {authSelector.name}
               </Text>
-              <Text fontSize="lg">{dummyProfile.email}</Text>
+              <Text fontSize="lg">{authSelector.email}</Text>
               <Text fontSize="lg" fontWeight="light">
-                {dummyProfile.role}
+                {authSelector.role}
               </Text>
             </Stack>
           )}
@@ -237,8 +228,6 @@ const EditProfile = () => {
           </Button>
         )}
       </Box>
-
-      {/* <Stack>{renderPosts()}</Stack> */}
     </Container>
   );
 };
