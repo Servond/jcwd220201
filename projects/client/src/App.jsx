@@ -6,6 +6,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { Routes, Route, Link } from "react-router-dom";
 import { axiosInstance } from "./api";
 import Dashboard from "./pages/admin/Dashboard";
+import ProfilePage from "./pages/Profile";
+import EditProfile from "./pages/EditProfile";
 
 const App = () => {
   // const [message, setMessage] = useState("");
@@ -63,6 +65,8 @@ const App = () => {
   return (
     <Routes>
       <Route path="/login" element={<LoginPage />} />
+      {/* <Route path="/profile" element={<ProfilePage />} /> */}
+      <Route path="/profile" element={<EditProfile />} />
     </Routes>
   );
 };
