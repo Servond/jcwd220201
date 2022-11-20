@@ -22,7 +22,6 @@ import { useNavigate } from "react-router-dom";
 import * as Yup from "yup";
 import { axiosInstance } from "../api";
 import { login } from "../redux/features/authSlice";
-import { useEffect } from "react";
 
 const LoginPage = () => {
   const authSelector = useSelector((state) => state.auth);
