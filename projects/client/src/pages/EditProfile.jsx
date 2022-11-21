@@ -1,14 +1,18 @@
 import {
   Avatar,
+  AvatarBadge,
   Box,
   Button,
+  Center,
   Container,
   FormControl,
   FormLabel,
+  Heading,
   HStack,
   Input,
   Stack,
   Text,
+  useColorModeValue,
   useToast,
 } from "@chakra-ui/react";
 import { useState } from "react";
@@ -45,7 +49,6 @@ const EditProfile = () => {
   const formik = useFormik({
     initialValues: {
       name: "",
-      email: "",
       profile_picture: null,
       gender: "",
       phone: "",
@@ -54,7 +57,6 @@ const EditProfile = () => {
     },
     onSubmit: async ({
       name,
-      email,
       profile_picture,
       gender,
       phone,
@@ -126,22 +128,27 @@ const EditProfile = () => {
     <Container maxW="container.md" py="4" pb="10">
       <Box borderColor="gray.300" borderWidth="1px" p="6" borderRadius="8px">
         <HStack spacing="6">
-          <Avatar
-            size="2xl"
-            name={authSelector.name}
-            src={authSelector.profile_picture}
-          />
-
           {editMode ? (
-            <Stack>
-              <FormControl>
-                <FormLabel>Name</FormLabel>
-                <Input
-                  onChange={formChangeHandler}
-                  name="name"
-                  defaultValue={authSelector.name}
+            <Stack
+              spacing={4}
+              w={"full"}
+              maxW={"md"}
+              bg={"white"}
+              rounded={"xl"}
+              boxShadow={"lg"}
+              p={6}
+              my={12}
+            >
+              <Heading lineHeight={1.1} fontSize={{ base: "2xl", sm: "3xl" }}>
+                Ubah Profil Pengguna
+              </Heading>
+              <Center>
+                <Avatar
+                  size="2xl"
+                  name={authSelector.name}
+                  src={authSelector.profile_picture}
                 />
-              </FormControl>
+              </Center>
 
               <FormControl>
                 <FormLabel>Profile Picture</FormLabel>
@@ -157,6 +164,15 @@ const EditProfile = () => {
                   name="profile_picture"
                 />
               </FormControl>
+              <FormControl>
+                <FormLabel>Nama</FormLabel>
+                <Input
+                  onChange={formChangeHandler}
+                  name="name"
+                  defaultValue={authSelector.name}
+                />
+              </FormControl>
+
               <FormControl>
                 <FormLabel>Gender</FormLabel>
                 <Input
@@ -211,7 +227,7 @@ const EditProfile = () => {
               colorScheme="green"
               onClick={formik.handleSubmit}
             >
-              Save
+              Simpan
             </Button>
             <Button
               mt="8"
@@ -219,12 +235,12 @@ const EditProfile = () => {
               colorScheme="red"
               onClick={() => setEditMode(false)}
             >
-              Cancel
+              Batalkan
             </Button>
           </>
         ) : (
           <Button mt="8" width="100%" onClick={() => setEditMode(true)}>
-            Edit Profile
+            Ubah Profil
           </Button>
         )}
       </Box>
