@@ -1,6 +1,5 @@
 import {
   Avatar,
-  AvatarBadge,
   Box,
   Button,
   Center,
@@ -12,7 +11,6 @@ import {
   Input,
   Stack,
   Text,
-  useColorModeValue,
   useToast,
 } from "@chakra-ui/react";
 import { useState } from "react";
@@ -31,16 +29,19 @@ const EditProfile = () => {
 
   const toast = useToast();
 
-  const fetchUser = async () => {
+  // const fetchUser = async () => {
+  const getUser = async () => {
     try {
-      const response = await axiosInstance.get("/users", {
-        params: {
-          userId: authSelector.id,
-          _expand: "user",
-        },
-      });
+      // const response = await axiosInstance.get("/users", {
+      //   params: {
+      //     userId: authSelector.id,
+      //     _expand: "user",
+      //   },
+      // });
 
-      setUsers(response.data);
+      const response = await axiosInstance.get(`http://localhost:8000/auth`);
+
+      setUsers(response.data[0]);
     } catch (err) {
       console.log(err);
     }
@@ -89,7 +90,10 @@ const EditProfile = () => {
           userData.append("password", password);
         }
 
-        const userResponse = await axiosInstance.patch("auth/me", userData);
+        const userResponse = await axiosInstance.patch(
+          "auth/profile",
+          userData
+        );
 
         dispatch(login(userResponse.data.data));
         setEditMode(false);
@@ -112,7 +116,7 @@ const EditProfile = () => {
   };
 
   useEffect(() => {
-    fetchUser();
+    getUser();
   }, []);
 
   const dummyProfile = {
@@ -130,14 +134,16 @@ const EditProfile = () => {
         <HStack spacing="6">
           {editMode ? (
             <Stack
-              spacing={4}
+              spacing={6}
               w={"full"}
-              maxW={"md"}
+              maxW={"lg"}
               bg={"white"}
               rounded={"xl"}
               boxShadow={"lg"}
               p={6}
               my={12}
+              ml={10}
+              mr={10}
             >
               <Heading lineHeight={1.1} fontSize={{ base: "2xl", sm: "3xl" }}>
                 Ubah Profil Pengguna
@@ -151,7 +157,7 @@ const EditProfile = () => {
               </Center>
 
               <FormControl>
-                <FormLabel>Profile Picture</FormLabel>
+                <FormLabel>Foto Profil</FormLabel>
                 <Input
                   accept="image/*"
                   type="file"
@@ -174,7 +180,7 @@ const EditProfile = () => {
               </FormControl>
 
               <FormControl>
-                <FormLabel>Gender</FormLabel>
+                <FormLabel>Jenis Kelamin</FormLabel>
                 <Input
                   onChange={formChangeHandler}
                   name="gender"
@@ -182,7 +188,7 @@ const EditProfile = () => {
                 />
               </FormControl>
               <FormControl>
-                <FormLabel>Phone</FormLabel>
+                <FormLabel>Nomor Telpon</FormLabel>
                 <Input
                   onChange={formChangeHandler}
                   name="phone"
@@ -230,7 +236,7 @@ const EditProfile = () => {
               Simpan
             </Button>
             <Button
-              mt="8"
+              mt="5"
               width="100%"
               colorScheme="red"
               onClick={() => setEditMode(false)}
@@ -239,9 +245,19 @@ const EditProfile = () => {
             </Button>
           </>
         ) : (
-          <Button mt="8" width="100%" onClick={() => setEditMode(true)}>
-            Ubah Profil
-          </Button>
+          <Stack>
+            <Center>
+              <Avatar
+                size="2xl"
+                name={authSelector.name}
+                src={authSelector.profile_picture}
+              />
+            </Center>
+
+            <Button mt="8" width="100%" onClick={() => setEditMode(true)}>
+              Ubah Profil
+            </Button>
+          </Stack>
         )}
       </Box>
     </Container>

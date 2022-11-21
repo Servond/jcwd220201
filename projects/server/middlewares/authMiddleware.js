@@ -10,7 +10,7 @@ const verifyToken = (req, res, next) => {
   }
 
   try {
-    token = token.split(" ")[1];
+    token = token.split()[1];
 
     const userVerify = validToken(token);
 
