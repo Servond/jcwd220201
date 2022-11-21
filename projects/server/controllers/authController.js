@@ -53,8 +53,10 @@ const authController = {
     }
   },
 
-  editUserProfile: async (re, res) => {
+  editUserProfile: async (req, res) => {
     try {
+      console.log("masuk");
+      console.log(req, "request");
       if (req.file) {
         req.body.profile_picture_url = `http://localhost:2000/public/${req.file.filename}`;
       }
@@ -90,7 +92,7 @@ const authController = {
         data: findUserById,
       });
     } catch (err) {
-      console.log(console.error);
+      console.log(err);
     }
   },
   refreshToken: async (req, res) => {

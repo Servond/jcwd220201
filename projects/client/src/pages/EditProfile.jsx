@@ -26,8 +26,12 @@ const EditProfile = () => {
   const [users, setUsers] = useState([]);
 
   const dispatch = useDispatch();
+  const token = localStorage.getItem("auth_token");
+  console.log(token, "TOKEN");
 
   const toast = useToast();
+
+  console.log(authSelector, "ini");
 
   // const fetchUser = async () => {
   const getUser = async () => {
@@ -219,7 +223,7 @@ const EditProfile = () => {
               </Text>
               <Text fontSize="lg">{authSelector.email}</Text>
               <Text fontSize="lg" fontWeight="light">
-                {authSelector.role}
+                {authSelector.role === 3 ? "User" : ""}
               </Text>
             </Stack>
           )}

@@ -10,7 +10,7 @@ const upload = ({
       cb(null, "public");
     },
     filename: (req, file, cb) => {
-      console.log(file);
+      console.log(file, "coba");
       cb(null, `${filePrefix}-${fileName}.${file.mimetype.split("/")[1]}`);
     },
   });

@@ -2,6 +2,7 @@ const { validToken } = require("../lib/jwt");
 
 const verifyToken = (req, res, next) => {
   let token = req.headers.authorization;
+  console.log(token, "token");
 
   if (!token) {
     return res.status(401).json({
@@ -10,9 +11,11 @@ const verifyToken = (req, res, next) => {
   }
 
   try {
-    token = token.split()[1];
+    token = token.split(" ")[1];
+    console.log(token, "TOKEN2222");
 
     const userVerify = validToken(token);
+    console.log(userVerify, "userverify");
 
     if (!userVerify) {
       return res.status(401).json({
