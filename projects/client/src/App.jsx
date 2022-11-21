@@ -39,6 +39,7 @@ const App = () => {
 
   return (
     <Routes>
+      <Route path="/login" element={<LoginPage />} />
       <Route path="/profile" element={<EditProfile />} />
     </Routes>
   );
