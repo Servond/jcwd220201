@@ -22,6 +22,7 @@ app.use(
 app.use(express.json());
 
 app.use("/auth", authRoute);
+app.use("/public", express.static("public"));
 
 //#region API ROUTES
 

@@ -1,5 +1,5 @@
 const db = require("../models");
-const bcrypt = require("bcrypt");
+// const bcrypt = require("bcrypt");
 const { signToken } = require("../lib/jwt");
 const { Op } = require("sequelize");
 
@@ -13,11 +13,12 @@ const authController = {
       const findUserByEmail = await User.findOne({
         where: {
           email,
+          password,
         },
       });
       if (!findUserByEmail) {
         return res.status(400).json({
-          message: "Email not found",
+          message: "Email or Password not found",
         });
       }
 
@@ -56,7 +57,7 @@ const authController = {
   editUserProfile: async (req, res) => {
     try {
       if (req.file) {
-        req.body.profile_picture = `http://localhost:8000/${req.file.filename}`;
+        req.body.profile_picture = `http://localhost:8000/public/${req.file.filename}`;
       }
 
       const findUserByNameOrEmail = await User.findOne({
@@ -91,6 +92,9 @@ const authController = {
       });
     } catch (err) {
       console.log(err);
+      return res.status(500).json({
+        message: "Server error",
+      });
     }
   },
   refreshToken: async (req, res) => {

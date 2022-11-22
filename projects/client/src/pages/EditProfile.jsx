@@ -9,6 +9,7 @@ import {
   Heading,
   HStack,
   Input,
+  Select,
   Stack,
   Text,
   useToast,
@@ -30,16 +31,8 @@ const EditProfile = () => {
 
   const toast = useToast();
 
-  // const fetchUser = async () => {
   const getUser = async () => {
     try {
-      // const response = await axiosInstance.get("/users", {
-      //   params: {
-      //     userId: authSelector.id,
-      //     _expand: "user",
-      //   },
-      // });
-
       const response = await axiosInstance.get(`http://localhost:8000/auth`);
 
       setUsers(response.data[0]);
@@ -117,14 +110,14 @@ const EditProfile = () => {
     getUser();
   }, []);
 
-  const dummyProfile = {
-    name: "nobi",
-    profile_picture:
-      "https://xsgames.co/randomusers/assets/avatars/female/13.jpg",
-    gender: "Wanita",
-    date_of_birth: "2000-01-01",
-    phone: "08190812345",
-  };
+  // const dummyProfile = {
+  //   name: "nobi",
+  //   profile_picture:
+  //     "https://xsgames.co/randomusers/assets/avatars/female/13.jpg",
+  //   gender: "Wanita",
+  //   date_of_birth: "2000-01-01",
+  //   phone: "08190812345",
+  // };
 
   return (
     <Container maxW="container.md" py="4" pb="10">
@@ -180,11 +173,19 @@ const EditProfile = () => {
 
               <FormControl>
                 <FormLabel>Jenis Kelamin</FormLabel>
-                <Input
+                {/* <Input
                   onChange={formChangeHandler}
                   name="gender"
                   defaultValue={authSelector.gender}
-                />
+                /> */}
+                <Select
+                  onChange={formChangeHandler}
+                  defaultValue={authSelector.gender}
+                  name="gender"
+                >
+                  <option value="male">Male</option>
+                  <option value="female">Female</option>
+                </Select>
               </FormControl>
               <FormControl>
                 <FormLabel>Nomor Telpon</FormLabel>
@@ -200,6 +201,7 @@ const EditProfile = () => {
                   onChange={formChangeHandler}
                   name="date_of_birth"
                   defaultValue={authSelector.date_of_birth}
+                  type="date"
                 />
               </FormControl>
               <FormControl>
