@@ -27,11 +27,8 @@ const EditProfile = () => {
 
   const dispatch = useDispatch();
   const token = localStorage.getItem("auth_token");
-  console.log(token, "TOKEN");
 
   const toast = useToast();
-
-  console.log(authSelector, "ini");
 
   // const fetchUser = async () => {
   const getUser = async () => {
@@ -75,10 +72,7 @@ const EditProfile = () => {
           userData.append("name", name);
         }
 
-        if (
-          profile_picture &&
-          profile_picture !== authSelector.profile_picture
-        ) {
+        if (profile_picture) {
           userData.append("profile_picture", profile_picture);
         }
         if (gender && gender !== authSelector.gender) {
@@ -146,8 +140,9 @@ const EditProfile = () => {
               boxShadow={"lg"}
               p={6}
               my={12}
-              ml={10}
-              mr={10}
+              // ml={10}
+              // mr={10}
+              justifyItems={"center"}
             >
               <Heading lineHeight={1.1} fontSize={{ base: "2xl", sm: "3xl" }}>
                 Ubah Profil Pengguna
@@ -209,11 +204,7 @@ const EditProfile = () => {
               </FormControl>
               <FormControl>
                 <FormLabel>Password</FormLabel>
-                <Input
-                  onChange={formChangeHandler}
-                  name="password"
-                  defaultValue={authSelector.password}
-                />
+                <Input onChange={formChangeHandler} name="password" />
               </FormControl>
             </Stack>
           ) : (

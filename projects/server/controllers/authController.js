@@ -55,10 +55,8 @@ const authController = {
 
   editUserProfile: async (req, res) => {
     try {
-      console.log("masuk");
-      console.log(req, "request");
       if (req.file) {
-        req.body.profile_picture_url = `http://localhost:2000/public/${req.file.filename}`;
+        req.body.profile_picture = `http://localhost:8000/${req.file.filename}`;
       }
 
       const findUserByNameOrEmail = await User.findOne({
