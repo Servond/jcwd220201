@@ -22,14 +22,13 @@ app.use(
 
 app.use(express.json())
 
-app.use("/auth", authRoute)
-app.use("/public", express.static("public"))
-
 //#region API ROUTES
 //
 // ===========================
 // NOTE : Add your routes here
 
+app.use("/auth", authRoute)
+app.use("/public", express.static("public"))
 app.use("/admin", adminRoute)
 
 app.get("/api", (req, res) => {
