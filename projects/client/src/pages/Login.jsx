@@ -42,6 +42,7 @@ const LoginPage = () => {
           password,
         })
 
+
         localStorage.setItem("auth_token", response.data.token)
         dispatch(
           login({
