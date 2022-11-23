@@ -31,7 +31,6 @@ app.use("/public", express.static("public"))
 // NOTE : Add your routes here
 
 app.use("/admin", adminRoute)
-app.use("/auth", authRoute)
 
 app.get("/api", (req, res) => {
   res.send(`Hello, this is my API`)
