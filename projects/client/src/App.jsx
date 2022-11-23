@@ -10,7 +10,6 @@ import EditProfile from "./pages/EditProfile"
 const App = () => {
   const [authCheck, setAuthCheck] = useState(false)
 
-  const authSelector = useSelector((state) => state.auth)
   const dispatch = useDispatch()
 
   const keepUserLoggedIn = async () => {
