@@ -13,6 +13,9 @@ import Dashboard from "./pages/admin/Dashboard"
 import ProtectedRoute from "./components/ProtectedRoute"
 import GuestRoute from "./components/GuestRoute"
 import NotFound from "./pages/404"
+import AdminHome from "./pages/admin/home.jsx"
+import ManageWarehouseData from "./pages/admin/warehouseData.jsx"
+
 
 const App = () => {
   const [authCheck, setAuthCheck] = useState(false)
@@ -69,10 +72,14 @@ const App = () => {
           }
         />
 
+
         <Route
-          path="/dashboard"
+          path="/admin/dashboard"
           element={authSelector.role_id === 1 ? <Dashboard /> : <NotFound />}
         />
+        <Route path="/admin/dashboard" element={<AdminHome />} />
+        <Route path="/admin/warehouseData" element={<ManageWarehouseData />} />
+
       </Routes>
     </>
   )
