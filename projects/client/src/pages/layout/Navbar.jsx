@@ -247,7 +247,7 @@ const Navbar = () => {
                   <MenuItem>Transaction</MenuItem>
                   <MenuDivider />
                   <MenuItem>
-                    <Button variant="unstyled">
+                    <Button w="full" variant="unstyled" textAlign="left">
                       <LinkRouterDom onClick={btnLogout}>Logout</LinkRouterDom>
                     </Button>
                   </MenuItem>

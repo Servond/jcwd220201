@@ -10,7 +10,7 @@ import {
   Avatar,
   Text,
 } from "@chakra-ui/react"
-import { useNavigate, NavLink } from "react-router-dom"
+import { useNavigate, NavLink, Link } from "react-router-dom"
 import { useDispatch, useSelector } from "react-redux"
 import { logout } from "../../redux/features/authSlice"
 
@@ -38,9 +38,19 @@ const SidebarAdmin = () => {
           name={authSelector.profile_picture}
           src={authSelector.profile_picture}
         />
-        <Text my="auto" p="8px">
+        <Text borderRight="2px solid" my="auto" p="8px">
           {authSelector.name}
         </Text>
+
+        <Button
+          my="4"
+          p="8px"
+          fontWeight="semibold"
+          color="black"
+          variant="link"
+        >
+          <Link to="/profile">Edit Profile</Link>
+        </Button>
       </Flex>
       <Spacer />
       <Stack color="white" w="full" direction="column">
@@ -190,7 +200,7 @@ const SidebarAdmin = () => {
           _hover={{ bg: "#005e9d" }}
           onClick={btnLogout}
         >
-          Back to WIRED!
+          LOGOUT
         </Button>
       </Box>
       <Box h="4%" w="full"></Box>
