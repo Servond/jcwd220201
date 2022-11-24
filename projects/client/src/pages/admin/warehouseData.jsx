@@ -31,7 +31,7 @@ import { useFormik } from "formik"
 import * as Yup from "yup"
 import Select from "react-select"
 
-import { axiosInstances } from "../../api"
+import { axiosInstance } from "../../api"
 
 import Warehouse from "../../components/admin/warehouse.jsx"
 import PageButton from "../../components/admin/pageButton.jsx"
@@ -67,7 +67,7 @@ const ManageWarehouseData = () => {
   // Warehouses Data
   const fetchWarehouseData = async () => {
     try {
-      const warehouses = await axiosInstances.get(`/warehouses`, {
+      const warehouses = await axiosInstance.get(`/warehouses`, {
         params: {
           _limit: limit,
           _page: page,
@@ -95,7 +95,7 @@ const ManageWarehouseData = () => {
   // Province Data
   const fetchProvinceData = async () => {
     try {
-      const provinces = await axiosInstances.get(`/provinces`)
+      const provinces = await axiosInstance.get(`/provinces`)
       setProvincesData(provinces.data.data)
       // console.log(provinces.data.data)
     } catch (err) {
@@ -106,7 +106,7 @@ const ManageWarehouseData = () => {
   // City Data
   const fetchCityData = async () => {
     try {
-      const cities = await axiosInstances.get(`/cities`)
+      const cities = await axiosInstance.get(`/cities`)
 
       setCitiesData(cities.data.data)
       // console.log(cities.data.data)
@@ -157,7 +157,7 @@ const ManageWarehouseData = () => {
           city: city,
         }
 
-        await axiosInstances.post(`/warehouses`, newWarehouse)
+        await axiosInstance.post(`/warehouses`, newWarehouse)
 
         fetchWarehouseData()
 
@@ -200,7 +200,7 @@ const ManageWarehouseData = () => {
           ...values,
         }
 
-        await axiosInstances.patch(`warehouses/${values.id}`, updatedWarehouse)
+        await axiosInstance.patch(`warehouses/${values.id}`, updatedWarehouse)
 
         editModalOnClose()
         fetchWarehouseData()
@@ -249,7 +249,7 @@ const ManageWarehouseData = () => {
   // Handle Delete Button
   const handleDeleteButton = async (id) => {
     try {
-      await axiosInstances.delete(`/warehouses/${id}`)
+      await axiosInstance.delete(`/warehouses/${id}`)
 
       fetchWarehouseData()
 

@@ -70,16 +70,9 @@ const App = () => {
           }
         />
 
-        <Route 
-          path="/admin/dashboard" 
-          element={<AdminHome />} 
-        />
-        
-        <Route 
-          path="/admin/warehouseData" 
-          element={<ManageWarehouseData />} 
-        />
+        <Route path="/admin/dashboard" element={<AdminHome />} />
 
+        <Route path="/admin/warehouseData" element={<ManageWarehouseData />} />
       </Routes>
     </>
   )
