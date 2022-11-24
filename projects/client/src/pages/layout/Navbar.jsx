@@ -58,6 +58,7 @@ const Navbar = () => {
   const [authCheck, setAuthCheck] = useState(false)
   const authSelector = useSelector((state) => state.auth)
   const { isOpen, onOpen, onClose } = useDisclosure()
+
   const navigate = useNavigate()
   const dispatch = useDispatch()
 
@@ -222,6 +223,7 @@ const Navbar = () => {
                   </Button>
                 </ButtonGroup>
               )}
+
               <MenuList>
                 <LinkRouterDom to="/profile">
                   <MenuItem>Profile</MenuItem>

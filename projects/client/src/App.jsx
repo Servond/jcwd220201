@@ -17,6 +17,7 @@ import AdminHome from "./pages/admin/home.jsx"
 import ManageWarehouseData from "./pages/admin/warehouseData.jsx"
 import GeneralRoute from "./components/GeneralRoute"
 
+
 const App = () => {
   const [authCheck, setAuthCheck] = useState(false)
   const authSelector = useSelector((state) => state.auth)
@@ -72,6 +73,7 @@ const App = () => {
           }
         />
 
+
         {/* Admin Route */}
         <Route
           path="/admin/dashboard"
@@ -90,6 +92,7 @@ const App = () => {
             </ProtectedRoute>
           }
         />
+
       </Routes>
     </>
   )

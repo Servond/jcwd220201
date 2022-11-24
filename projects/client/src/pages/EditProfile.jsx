@@ -161,7 +161,6 @@ const EditProfile = () => {
                 }
               />
             </Center>
-
             <FormControl>
               <FormLabel>Foto Profil</FormLabel>
               <Button w="full" onClick={() => inputFileRef.current.click()}>
