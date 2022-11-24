@@ -222,37 +222,25 @@ const Navbar = () => {
                   </Button>
                 </ButtonGroup>
               )}
-              {authSelector.role_id === 1 || authSelector.role_id === 2 ? (
-                <MenuList>
-                  <LinkRouterDom to="/profile">
-                    <MenuItem>Profile</MenuItem>
-                  </LinkRouterDom>
-                  <LinkRouterDom to="/admin/dashboard">
-                    <MenuItem>Admin Dashboard</MenuItem>
-                  </LinkRouterDom>
-                  <MenuDivider />
-                  <MenuItem>
-                    <Button variant="unstyled">
-                      <LinkRouterDom onClick={() => btnLogout()}>
-                        Logout
-                      </LinkRouterDom>
-                    </Button>
-                  </MenuItem>
-                </MenuList>
-              ) : (
-                <MenuList>
-                  <LinkRouterDom to="/profile">
-                    <MenuItem>Profile</MenuItem>
-                  </LinkRouterDom>
-                  <MenuItem>Transaction</MenuItem>
-                  <MenuDivider />
-                  <MenuItem>
-                    <Button w="full" variant="unstyled" textAlign="left">
-                      <LinkRouterDom onClick={btnLogout}>Logout</LinkRouterDom>
-                    </Button>
-                  </MenuItem>
-                </MenuList>
-              )}
+              <MenuList>
+                <LinkRouterDom to="/profile">
+                  <MenuItem>Profile</MenuItem>
+                </LinkRouterDom>
+                <MenuItem>Transaction</MenuItem>
+                <MenuDivider />
+                <MenuItem>
+                  <Button
+                    w="full"
+                    variant="unstyled"
+                    textAlign="left"
+                    fontWeight="semibold"
+                  >
+                    <LinkRouterDom onClick={() => btnLogout()}>
+                      Logout
+                    </LinkRouterDom>
+                  </Button>
+                </MenuItem>
+              </MenuList>
             </Menu>
           </Flex>
         </Flex>
