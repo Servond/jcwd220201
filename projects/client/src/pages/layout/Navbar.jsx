@@ -58,7 +58,7 @@ const Navbar = () => {
   const [authCheck, setAuthCheck] = useState(false)
   const authSelector = useSelector((state) => state.auth)
   const { isOpen, onOpen, onClose } = useDisclosure()
-  const navigate = useNavigate
+  const navigate = useNavigate()
   const dispatch = useDispatch()
 
   const keepUserLogin = async () => {
@@ -222,17 +222,37 @@ const Navbar = () => {
                   </Button>
                 </ButtonGroup>
               )}
-
-              <MenuList>
-                <LinkRouterDom to="/profile">
-                  <MenuItem>Profile</MenuItem>
-                </LinkRouterDom>
-                <MenuItem>Transaction</MenuItem>
-                <MenuDivider />
-                <MenuItem>
-                  <LinkRouterDom onClick={btnLogout}>Logout</LinkRouterDom>
-                </MenuItem>
-              </MenuList>
+              {authSelector.role_id === 1 || authSelector.role_id === 2 ? (
+                <MenuList>
+                  <LinkRouterDom to="/profile">
+                    <MenuItem>Profile</MenuItem>
+                  </LinkRouterDom>
+                  <LinkRouterDom to="/admin/dashboard">
+                    <MenuItem>Admin Dashboard</MenuItem>
+                  </LinkRouterDom>
+                  <MenuDivider />
+                  <MenuItem>
+                    <Button variant="unstyled">
+                      <LinkRouterDom onClick={() => btnLogout()}>
+                        Logout
+                      </LinkRouterDom>
+                    </Button>
+                  </MenuItem>
+                </MenuList>
+              ) : (
+                <MenuList>
+                  <LinkRouterDom to="/profile">
+                    <MenuItem>Profile</MenuItem>
+                  </LinkRouterDom>
+                  <MenuItem>Transaction</MenuItem>
+                  <MenuDivider />
+                  <MenuItem>
+                    <Button variant="unstyled">
+                      <LinkRouterDom onClick={btnLogout}>Logout</LinkRouterDom>
+                    </Button>
+                  </MenuItem>
+                </MenuList>
+              )}
             </Menu>
           </Flex>
         </Flex>
