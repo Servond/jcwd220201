@@ -20,9 +20,6 @@ import {
   Input,
   InputGroup,
   InputRightElement,
-  NumberInput,
-  NumberInputField,
-  Spacer,
   Center,
   Popover,
   PopoverTrigger,
@@ -32,12 +29,7 @@ import {
   Image,
   Divider,
 } from "@chakra-ui/react"
-import {
-  HamburgerIcon,
-  CloseIcon,
-  Search2Icon,
-  SearchIcon,
-} from "@chakra-ui/icons"
+import { HamburgerIcon, CloseIcon, SearchIcon } from "@chakra-ui/icons"
 import { IoMdCart } from "react-icons/io"
 import { Link as LinkRouterDom, Outlet, useNavigate } from "react-router-dom"
 import { useDispatch, useSelector } from "react-redux"
@@ -118,8 +110,7 @@ const Navbar = () => {
           />
           <HStack
             spacing={8}
-            w="full"
-            w={{ base: 20, md: "full" }}
+            w={{ base: 10, md: "full" }}
             alignItems={"center"}
           >
             <Box>
@@ -130,7 +121,6 @@ const Navbar = () => {
               </LinkRouterDom>
             </Box>
             <HStack
-              // maxW={{ base: "0", md: "full" }}
               w="full"
               as={"nav"}
               spacing={4}
@@ -153,6 +143,8 @@ const Navbar = () => {
                   </Button>
                 </InputRightElement>
               </InputGroup>
+
+              {/*  Cart */}
               <Box
                 display="flex"
                 my="auto"
@@ -190,6 +182,7 @@ const Navbar = () => {
               <Divider orientation="vertical" border="1 px" />
             </Center>
           </HStack>
+          {/* Profile Popup */}
           <Flex alignItems={"center"}>
             <Menu>
               {authSelector.name ? (
