@@ -12,7 +12,6 @@ import {
   Grid,
   GridItem,
   Center,
-  Link,
   chakra,
   Stack,
   Button,
@@ -24,6 +23,7 @@ import SlideBanner from "../../components/SlideBanner"
 import Footer from "./Footer"
 import "../../styles/globals.css"
 import Features from "../../components/Features"
+import { Link } from "react-router-dom"
 
 const MainContent = () => {
   return (
@@ -128,9 +128,17 @@ const MainContent = () => {
         <Divider mt="5" border="1px solid #D5D7DD" mb="5" />
 
         {/* Product Card */}
-        <Text fontSize="24px" fontStyle="normal" mt="5" color="#213360" mb="2">
-          Produk Populer (Route to all Product)
-        </Text>
+        <Link to="/product">
+          <Text
+            fontSize="24px"
+            fontStyle="normal"
+            mt="5"
+            color="#213360"
+            mb="2"
+          >
+            Produk Populer
+          </Text>
+        </Link>
         <Flex flexDirection="row" flexWrap="wrap" gap="14">
           <Card maxW="sm">
             <CardBody>
