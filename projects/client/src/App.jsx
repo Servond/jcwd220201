@@ -9,14 +9,13 @@ import EditProfile from "./pages/EditProfile"
 import Navbar from "./pages/layout/Navbar"
 import MainContent from "./pages/layout/MainContent"
 import Footer from "./pages/layout/Footer"
-import Dashboard from "./pages/admin/Dashboard"
 import ProtectedRoute from "./components/ProtectedRoute"
 import GuestRoute from "./components/GuestRoute"
 import NotFound from "./pages/404"
 import AdminHome from "./pages/admin/home.jsx"
 import ManageWarehouseData from "./pages/admin/warehouseData.jsx"
 import GeneralRoute from "./components/GeneralRoute"
-
+import ProductList from "./pages/products/ProductList"
 
 const App = () => {
   const [authCheck, setAuthCheck] = useState(false)
@@ -56,6 +55,7 @@ const App = () => {
           <Route index element={<Footer />} />
         </Route>
         <Route path="/404" element={<NotFound />} />
+        <Route path="/product" element={<ProductList />} />
         <Route
           path="/profile"
           element={
@@ -72,7 +72,6 @@ const App = () => {
             </GuestRoute>
           }
         />
-
 
         {/* Admin Route */}
         <Route
@@ -92,7 +91,6 @@ const App = () => {
             </ProtectedRoute>
           }
         />
-
       </Routes>
     </>
   )
