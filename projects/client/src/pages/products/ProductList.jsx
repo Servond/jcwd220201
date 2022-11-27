@@ -8,6 +8,7 @@ import {
   Spacer,
   Select,
 } from "@chakra-ui/react"
+import { TiArrowLeftThick, TiArrowRightThick } from "react-icons/ti"
 import { useState } from "react"
 import Navbar from "../layout/Navbar"
 import Footer from "../layout/Footer"
@@ -21,31 +22,33 @@ import { useEffect } from "react"
 const MotionSimpleGrid = motion(SimpleGrid)
 const MotionBox = motion(Box)
 
-const ProductList = ({ ...rest }) => {
+const ProductList = () => {
   const [products, setProducts] = useState([])
+
   const [page, setPage] = useState(1)
   const [maxPage, setMaxPage] = useState(1)
   const [totalCount, setTotalCount] = useState(0)
   const [sortBy, setSortBy] = useState("product_name")
   const [sortDir, setSortDir] = useState("ASC")
   const [filter, setFilter] = useState()
-  const [search, setSearch] = useState()
+  const [searchValue, setSearchValue] = useState("")
+  const [searchInput, setSearchInput] = useState("")
 
   const fetchProducts = async () => {
-    const maxProductInPage = 3
+    const maxProductInPage = 10
 
     try {
-      // const imageRes = await axiosInstance.get("/image")
-
       const response = await axiosInstance.get("/products", {
         params: {
           _page: page,
           _limit: maxProductInPage,
           _sortBy: sortBy,
           _sortDir: sortDir,
+          product_name: searchValue,
         },
       })
 
+      setProducts(response.data.data)
       setTotalCount(response.data.dataCount)
       setMaxPage(Math.ceil(response.data.dataCount / maxProductInPage))
 
@@ -58,6 +61,12 @@ const ProductList = ({ ...rest }) => {
       console.log(err)
     }
   }
+
+  const btnSearch = () => {
+    setSearchValue(searchInput)
+    setPage(1)
+  }
+
   const nextPage = () => {
     setPage(page + 1)
   }
@@ -74,25 +83,26 @@ const ProductList = ({ ...rest }) => {
 
   useEffect(() => {
     fetchProducts()
-  }, [page, sortBy, sortDir])
+  }, [sortDir, sortBy, searchValue])
 
   const renderProducts = () => {
     return products.map((val) => (
       <Box>
         <ProductCard
           key={val.id.toString()}
-          id={val.id}
           product_name={val.product_name}
           product_picture={val.product_picture}
           price={val.price}
+          id={val.id}
         />
       </Box>
     ))
   }
+
   return (
     <>
       {/* Navbar Component */}
-      <Navbar />
+      <Navbar onBtnSearch={btnSearch} />
 
       {/* Product List */}
       <Box
@@ -103,11 +113,13 @@ const ProductList = ({ ...rest }) => {
         borderRightColor="gray.200"
         w={{ base: "full", md: 60 }}
         h="full"
+        boxShadow="lg"
         pos="fixed"
-        {...rest}
+        // {...rest}
       >
         SIDEBAR
       </Box>
+
       <Text
         ml="10em"
         fontWeight="700"
@@ -123,9 +135,15 @@ const ProductList = ({ ...rest }) => {
         <Box ml="15em">1</Box>
         <Spacer />
         <Box mr="5em">
-          <Select variant="flushed" onChange={sortProduct}>
+          <Select
+            borderBottom="1px solid"
+            variant="flushed"
+            onChange={sortProduct}
+          >
             <option value="product_name ASC">A-Z</option>
             <option value="product_name DESC">Z-A</option>
+            <option>Product Relevance</option>
+            <option>Z-A</option>
           </Select>
         </Box>
       </Flex>
