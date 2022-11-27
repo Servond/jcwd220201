@@ -1,6 +1,40 @@
 import { Box, Flex, Image, Text } from "@chakra-ui/react"
+import { useEffect } from "react"
+import { useState } from "react"
+import { axiosInstance } from "../api"
 
-const ProductCard = ({ id, product_name, price, product_picture }) => {
+const ProductCard = ({ id, product_name, price }) => {
+  const [productData, setProductData] = useState({
+    product_name: "",
+    price: 0,
+    id: "",
+  })
+  // const [productId, setProductId] = useState(0)
+  const [productImg, setProductImg] = useState([])
+
+  // const fetchProductById = async () => {
+  //   try {
+  //     const response = await axiosInstance.get(`/products/${productId}`)
+  //     setProductData(response.data.data)
+  //   } catch (err) {
+  //     console.log(err)
+  //   }
+  // }
+
+  const fetchProductImage = async () => {
+    try {
+      const response = await axiosInstance.get(`/products/image/${id}`)
+      setProductImg(response.data.data)
+    } catch (err) {
+      console.log(err)
+    }
+  }
+
+  useEffect(() => {
+    // fetchProductById()
+    fetchProductImage()
+  }, [])
+
   return (
     <>
       <Flex
@@ -23,9 +57,10 @@ const ProductCard = ({ id, product_name, price, product_picture }) => {
             roundedTop="lg"
           >
             <Image
-              src={product_picture}
-              objectFit="cover"
+              // fit=""
+              // objectFit="cover"
               alt="pict of product"
+              src={productImg.product_picture}
             />
           </Box>
           <Box p="1">
