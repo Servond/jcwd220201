@@ -15,7 +15,7 @@ const productsController = {
             [Op.like]: `%${req.query.product_name || ""}%`,
           },
         },
-        // include: [{ model: db.Category }],
+        // include: [{ model: db.ProductPicture }],
         limit: Number(_limit),
         offset: (_page - 1) * _limit,
         order: [[_sortBy, _sortDir]],
@@ -29,18 +29,17 @@ const productsController = {
     } catch (err) {
       console.log(err)
       return res.status(500).json({
-        message: "Server Error! ❌",
+        message: err.message,
       })
     }
   },
   getProductsByID: async (req, res) => {
     try {
-      const getProductsByID = await db.Product.findOne({
-        where: {
-          id: req.params.id,
-        },
-        include: [{ model: db.category }],
-      })
+      const { id } = req.params
+
+      const getProductsByID = await db.Product.findByPk(id)
+
+      // include: [{ model: db.category }],
 
       res.status(200).json({
         message: "Get Products By Id",
@@ -49,36 +48,15 @@ const productsController = {
     } catch (err) {
       console.log(err)
       return res.status(500).json({
-        message: "Server Error! ❌",
-      })
-    }
-  },
-  getAllProductsImage: async (req, res) => {
-    try {
-      const getAllProductsImage = await db.ProductPicture.findAll({
-        where: {
-          id: req.params.id,
-        },
-      })
-
-      res.status(200).json({
-        message: "Get Product Picture Data",
-        data: getAllProductsImage,
-      })
-    } catch (err) {
-      console.log(err)
-      return res.status(500).json({
-        message: "Server Error! ❌",
+        message: err.mesage,
       })
     }
   },
   getProductsImage: async (req, res) => {
     try {
-      const getProductsImage = await db.ProductPicture.findOne({
-        where: {
-          id: req.params.id,
-        },
-      })
+      const { id } = req.params
+
+      const getProductsImage = await db.ProductPicture.findByPk(id)
 
       res.status(200).json({
         message: "Get Product Picture Data",
@@ -87,7 +65,7 @@ const productsController = {
     } catch (err) {
       console.log(err)
       return res.status(500).json({
-        message: "Server Error! ❌",
+        message: err.message,
       })
     }
   },
