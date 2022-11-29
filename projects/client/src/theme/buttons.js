@@ -30,9 +30,13 @@ const Button = defineStyleConfig({
       color: "",
     },
     solid: {
-      backgroundColor: "teal",
+      backgroundColor: "rgb(49, 151, 149)",
       color: "white",
-      _hover: { backgroundColor: "red" },
+      _active: { backgroundColor: "rgb(40, 94, 97)" },
+      _hover: { backgroundColor: "rgb(44, 122, 123)" },
+      // hover: rgb(44, 122, 123)
+      // active: rgb(40, 94, 97)
+      // input border color active: rgb(, 191, 184)
     },
   },
   // The default `size` or `variant` values
