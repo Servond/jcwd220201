@@ -15,7 +15,7 @@ const Button = defineStyleConfig({
       height: "2rem",
     },
     md: {
-      fontSize: "0.75rem",
+      fontSize: "0.875rem",
       height: "2.5rem",
     },
     lg: {
@@ -26,17 +26,14 @@ const Button = defineStyleConfig({
   // Styles for the visual style variations
   variants: {
     outline: {
-      borderColor: "",
-      color: "",
+      borderColor: "rgb(0, 128, 128)",
+      color: "rgb(0, 128, 128)",
     },
     solid: {
       backgroundColor: "rgb(49, 151, 149)",
       color: "white",
       _active: { backgroundColor: "rgb(40, 94, 97)" },
       _hover: { backgroundColor: "rgb(44, 122, 123)" },
-      // hover: rgb(44, 122, 123)
-      // active: rgb(40, 94, 97)
-      // input border color active: rgb(, 191, 184)
     },
   },
   // The default `size` or `variant` values

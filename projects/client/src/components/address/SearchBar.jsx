@@ -1,7 +1,6 @@
 import {
   Button,
   Flex,
-  Image,
   Input,
   InputGroup,
   InputRightAddon,
