@@ -30,8 +30,9 @@ const Button = defineStyleConfig({
       color: "",
     },
     solid: {
-      backgroundColor: "",
-      color: "",
+      backgroundColor: "teal",
+      color: "white",
+      _hover: { backgroundColor: "red" },
     },
   },
   // The default `size` or `variant` values
