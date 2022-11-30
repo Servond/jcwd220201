@@ -10,7 +10,6 @@ const ProductCard = ({ id, product_name, price }) => {
     id: "",
     category_id: "",
   })
-  // const [productId, setProductId] = useState(0)
   const [productImg, setProductImg] = useState([])
   const [productId, setProductId] = useState(0)
 

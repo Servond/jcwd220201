@@ -1,21 +1,51 @@
 const db = require("../models")
 const { Op } = require("sequelize")
+Product = db.Product
 const productsController = {
   getAllProducts: async (req, res) => {
     try {
       const {
+        category_id = "",
+        // price = "",
         _limit = 10,
         _page = 1,
         _sortBy = "id",
         _sortDir = "ASC",
       } = req.query
-      const getAllProducts = await db.Product.findAndCountAll({
+
+      if (_sortBy === "category_id") {
+      }
+      {
+        if (!Number(category_id)) {
+          const getAllProducts1 = await Product.findAndCountAll({
+            where: {
+              product_name: {
+                [Op.like]: `%${req.query.product_name || ""}%`,
+              },
+            },
+            include: [{ model: db.Category }],
+            limit: Number(_limit),
+            offset: (_page - 1) * _limit,
+            order: [[_sortBy, _sortDir]],
+          })
+
+          return res.status(200).json({
+            message: "Get All Product",
+            data: getAllProducts1.rows,
+            dataCount: getAllProducts1.count,
+          })
+        }
+      }
+
+      const getAllProducts2 = await Product.findAndCountAll({
         where: {
           product_name: {
             [Op.like]: `%${req.query.product_name || ""}%`,
           },
+          category_id,
         },
-        // include: [{ model: db.ProductPicture }],
+
+        include: [{ model: db.Category }],
         limit: Number(_limit),
         offset: (_page - 1) * _limit,
         order: [[_sortBy, _sortDir]],
@@ -23,8 +53,8 @@ const productsController = {
 
       return res.status(200).json({
         message: "Get All Product",
-        data: getAllProducts.rows,
-        dataCount: getAllProducts.count,
+        data: getAllProducts2.rows,
+        dataCount: getAllProducts2.count,
       })
     } catch (err) {
       console.log(err)
@@ -37,9 +67,9 @@ const productsController = {
     try {
       const { id } = req.params
 
-      const getProductsByID = await db.Product.findByPk(id)
-
-      // include: [{ model: db.category }],
+      const getProductsByID = await db.Product.findByPk(id, {
+        include: [{ model: db.Category }],
+      })
 
       res.status(200).json({
         message: "Get Products By Id",
@@ -49,6 +79,20 @@ const productsController = {
       console.log(err)
       return res.status(500).json({
         message: err.mesage,
+      })
+    }
+  },
+  getProductCategory: async (req, res) => {
+    try {
+      const findProductCategory = await Category.findAll()
+      return res.status(200).json({
+        message: "Get Product Category",
+        data: findProductCategory,
+      })
+    } catch (err) {
+      console.log(err)
+      return res.status(200).json({
+        message: err.message,
       })
     }
   },

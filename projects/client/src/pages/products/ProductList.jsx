@@ -28,15 +28,11 @@ import { cardVariant, parentVariant } from "../../motion"
 import ProductCard from "../../components/product/ProductCard"
 import { axiosInstance } from "../../api"
 import { useEffect } from "react"
-import { ArrowForwardIcon, ArrowBackIcon, SearchIcon } from "@chakra-ui/icons"
-import {
-  FaAngleRight,
-  FaAngleLeft,
-  FaArrowRight,
-  FaArrowLeft,
-} from "react-icons/fa"
-import { TiArrowLeftThick, TiArrowRightThick } from "react-icons/ti"
+import { SearchIcon } from "@chakra-ui/icons"
+import { FaArrowRight, FaArrowLeft } from "react-icons/fa"
+import { BsSortAlphaUp, BsSortAlphaDownAlt } from "react-icons/bs"
 import { Link } from "react-router-dom"
+import { BiGitCompare } from "react-icons/bi"
 
 const MotionSimpleGrid = motion(SimpleGrid)
 const MotionBox = motion(Box)
@@ -50,13 +46,11 @@ const ProductList = () => {
   const [sortBy, setSortBy] = useState("product_name")
   const [sortDir, setSortDir] = useState("ASC")
   const [filterProduct, setFilterProduct] = useState("All")
-
   const [searchInput, setSearchInput] = useState("")
   const [searchValue, setSearchValue] = useState("")
 
   const fetchProducts = async () => {
-    const maxProductInPage = 5
-
+    const maxProductInPage = 10
     try {
       const response = await axiosInstance.get("/products", {
         params: {
@@ -64,7 +58,7 @@ const ProductList = () => {
           _limit: maxProductInPage,
           _sortBy: sortBy,
           _sortDir: sortDir,
-          Category: filterProduct,
+          category_id: filterProduct,
           product_name: searchValue,
         },
       })
@@ -102,13 +96,32 @@ const ProductList = () => {
     setPage(page - 1)
   }
 
+  const compare = (a, b, ascendingOrder) => {
+    if (a < b) {
+      return ascendingOrder ? -1 : 1
+    }
+    if (a > b) {
+      return ascendingOrder ? 1 : -1
+    }
+    return 0
+  }
   const sortProduct = ({ target }) => {
     const { value } = target
 
     setSortBy(value.split(" ")[0])
     setSortDir(value.split(" ")[1])
-  }
 
+    if (value === "harga maksimum") {
+      setSortBy("price")
+      setSortDir("DESC")
+    } else if (value === "harga minimum") {
+      setSortBy("price")
+      setSortDir("ASC")
+    } else if (value == "") {
+      setSortBy("")
+      setSortDir("")
+    }
+  }
   const filterCategory = ({ target }) => {
     const { value } = target
     setFilterProduct(value)
@@ -125,8 +138,7 @@ const ProductList = () => {
           key={val.id.toString()}
           product_name={val.product_name}
           product_picture={val.product_picture}
-          price={val.price}
-          category_id={val.Category.category_id}
+          price={val.price.toLocaleString()}
           id={val.id}
         />
       </Box>
@@ -195,7 +207,8 @@ const ProductList = () => {
                   >
                     <option value="product_name ASC">A-Z</option>
                     <option value="product_name DESC">Z-A</option>
-                    <option>Produk Terbaru</option>
+                    <option value="harga maksimum">Harga Tertinggi </option>
+                    <option value="harga minimum">Harga Terendah</option>
                   </Select>
                 </FormControl>
               </GridItem>
@@ -262,7 +275,7 @@ const ProductList = () => {
           ))}
         </MotionSimpleGrid>
         </Box> */}
-      <Footer />
+      {/* <Footer /> */}
     </Fragment>
   )
 }
