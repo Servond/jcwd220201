@@ -8,18 +8,20 @@ const ProductCard = ({ id, product_name, price }) => {
     product_name: "",
     price: 0,
     id: "",
+    category_id: "",
   })
   // const [productId, setProductId] = useState(0)
   const [productImg, setProductImg] = useState([])
+  const [productId, setProductId] = useState(0)
 
-  // const fetchProductById = async () => {
-  //   try {
-  //     const response = await axiosInstance.get(`/products/${productId}`)
-  //     setProductData(response.data.data)
-  //   } catch (err) {
-  //     console.log(err)
-  //   }
-  // }
+  const fetchProductById = async () => {
+    try {
+      const response = await axiosInstance.get(`/products/${id}`)
+      setProductData(response.data.data)
+    } catch (err) {
+      console.log(err)
+    }
+  }
 
   const fetchProductImage = async () => {
     try {
@@ -30,10 +32,14 @@ const ProductCard = ({ id, product_name, price }) => {
     }
   }
 
+  const productDetail = () => {
+    setProductId(id)
+  }
+
   useEffect(() => {
-    // fetchProductById()
+    fetchProductById()
     fetchProductImage()
-  }, [])
+  }, [productId])
 
   return (
     <>
@@ -47,6 +53,7 @@ const ProductCard = ({ id, product_name, price }) => {
         rounded="xl"
         shadow="lg"
         borderWidth="1px"
+        onClick={() => productDetail()}
       >
         <Box w="full" h="full">
           <Box
@@ -57,8 +64,8 @@ const ProductCard = ({ id, product_name, price }) => {
             roundedTop="lg"
           >
             <Image
-              // fit=""
-              // objectFit="cover"
+              fit="cover"
+              objectFit="cover"
               alt="pict of product"
               src={productImg.product_picture}
             />
@@ -69,6 +76,7 @@ const ProductCard = ({ id, product_name, price }) => {
             </Box>
 
             <Box>Rp{price}</Box>
+            <Box>{productData.category_id}</Box>
           </Box>
         </Box>
       </Flex>

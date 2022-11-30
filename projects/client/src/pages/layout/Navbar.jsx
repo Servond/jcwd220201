@@ -31,7 +31,12 @@ import {
 } from "@chakra-ui/react"
 import { HamburgerIcon, CloseIcon, SearchIcon } from "@chakra-ui/icons"
 import { IoMdCart } from "react-icons/io"
-import { Link as LinkRouterDom, Outlet, useNavigate } from "react-router-dom"
+import {
+  Link,
+  Link as LinkRouterDom,
+  Outlet,
+  useNavigate,
+} from "react-router-dom"
 import { useDispatch, useSelector } from "react-redux"
 import { logout, login } from "../../redux/features/authSlice"
 import { axiosInstance } from "../../api"
@@ -54,9 +59,10 @@ const NavLink = ({ children }) => (
   </LinkChakra>
 )
 
-const Navbar = () => {
-  const [authCheck, setAuthCheck] = useState(false)
+const Navbar = ({ onChange, onClick, onKeyDown }) => {
   const authSelector = useSelector((state) => state.auth)
+
+  const [authCheck, setAuthCheck] = useState(false)
   const { isOpen, onOpen, onClose } = useDisclosure()
 
   const navigate = useNavigate()
@@ -137,9 +143,12 @@ const Navbar = () => {
                   placeholder="Cari di WIRED!"
                   _placeholder={{ fontSize: "14px" }}
                   bgColor="white"
+                  onChange={onChange}
+                  onKeyDown={onKeyDown}
+                  type="text"
                 />
                 <InputRightElement>
-                  <Button variant="solid" borderRadius="8px">
+                  <Button variant="solid" borderRadius="8px" onClick={onClick}>
                     <SearchIcon />
                   </Button>
                 </InputRightElement>

@@ -4,20 +4,39 @@ import {
   Heading,
   Flex,
   Text,
+  Button,
   Divider,
   Spacer,
   Select,
+  Grid,
+  GridItem,
+  FormControl,
+  FormLabel,
+  InputGroup,
+  Input,
+  InputRightElement,
+  Alert,
+  AlertIcon,
+  AlertTitle,
+  AlertDescription,
 } from "@chakra-ui/react"
-import { TiArrowLeftThick, TiArrowRightThick } from "react-icons/ti"
-import { useState } from "react"
+import { Fragment, useState } from "react"
 import Navbar from "../layout/Navbar"
 import Footer from "../layout/Footer"
 import { motion } from "framer-motion"
 import { cardVariant, parentVariant } from "../../motion"
-import data from "../../data"
-import ProductCard from "../../components/ProductCard"
+import ProductCard from "../../components/product/ProductCard"
 import { axiosInstance } from "../../api"
 import { useEffect } from "react"
+import { ArrowForwardIcon, ArrowBackIcon, SearchIcon } from "@chakra-ui/icons"
+import {
+  FaAngleRight,
+  FaAngleLeft,
+  FaArrowRight,
+  FaArrowLeft,
+} from "react-icons/fa"
+import { TiArrowLeftThick, TiArrowRightThick } from "react-icons/ti"
+import { Link } from "react-router-dom"
 
 const MotionSimpleGrid = motion(SimpleGrid)
 const MotionBox = motion(Box)
@@ -26,16 +45,17 @@ const ProductList = () => {
   const [products, setProducts] = useState([])
 
   const [page, setPage] = useState(1)
-  const [maxPage, setMaxPage] = useState(1)
+  const [maxPage, setMaxPage] = useState(0)
   const [totalCount, setTotalCount] = useState(0)
   const [sortBy, setSortBy] = useState("product_name")
   const [sortDir, setSortDir] = useState("ASC")
-  const [filter, setFilter] = useState()
-  const [searchValue, setSearchValue] = useState("")
+  const [filterProduct, setFilterProduct] = useState("All")
+
   const [searchInput, setSearchInput] = useState("")
+  const [searchValue, setSearchValue] = useState("")
 
   const fetchProducts = async () => {
-    const maxProductInPage = 10
+    const maxProductInPage = 5
 
     try {
       const response = await axiosInstance.get("/products", {
@@ -44,6 +64,7 @@ const ProductList = () => {
           _limit: maxProductInPage,
           _sortBy: sortBy,
           _sortDir: sortDir,
+          Category: filterProduct,
           product_name: searchValue,
         },
       })
@@ -57,6 +78,7 @@ const ProductList = () => {
       } else {
         setProducts(response.data.data)
       }
+      renderProducts()
     } catch (err) {
       console.log(err)
     }
@@ -64,13 +86,19 @@ const ProductList = () => {
 
   const btnSearch = () => {
     setSearchValue(searchInput)
-    setPage(1)
+    // setPage(1)
   }
 
-  const nextPage = () => {
+  const handleEnter = (event) => {
+    if (event.key === "Enter") {
+      setSearchValue(searchInput)
+    }
+  }
+
+  const nextPageProduct = () => {
     setPage(page + 1)
   }
-  const previousPage = () => {
+  const previousPageProduct = () => {
     setPage(page - 1)
   }
 
@@ -81,9 +109,14 @@ const ProductList = () => {
     setSortDir(value.split(" ")[1])
   }
 
+  const filterCategory = ({ target }) => {
+    const { value } = target
+    setFilterProduct(value)
+  }
+
   useEffect(() => {
     fetchProducts()
-  }, [sortDir, sortBy, searchValue])
+  }, [page, sortDir, sortBy, filterProduct, searchValue])
 
   const renderProducts = () => {
     return products.map((val) => (
@@ -93,6 +126,7 @@ const ProductList = () => {
           product_name={val.product_name}
           product_picture={val.product_picture}
           price={val.price}
+          category_id={val.Category.category_id}
           id={val.id}
         />
       </Box>
@@ -100,68 +134,117 @@ const ProductList = () => {
   }
 
   return (
-    <>
+    <Fragment>
       {/* Navbar Component */}
-      <Navbar onBtnSearch={btnSearch} />
+      <Navbar
+        onClick={() => btnSearch()}
+        onChange={(e) => setSearchInput(e.target.value)}
+        onKeyDown={handleEnter}
+      />
 
       {/* Product List */}
-      <Box
-        // border="1px solid red"
-        transition="3s ease"
-        bg="white"
-        borderRight="1px"
-        borderRightColor="gray.200"
-        w={{ base: "full", md: 60 }}
-        h="full"
-        boxShadow="lg"
-        pos="fixed"
-        // {...rest}
-      >
-        SIDEBAR
-      </Box>
-
-      <Text
-        ml="10em"
-        fontWeight="700"
-        fontSize="24px"
-        lineHeight="28px"
-        // pos="absolute"
-        borderBottom="1px solid #D5D7DD"
-      >
-        Semua Product
-      </Text>
-
-      <Flex>
-        <Box ml="15em">1</Box>
-        <Spacer />
-        <Box mr="5em">
-          <Select
-            borderBottom="1px solid"
-            variant="flushed"
-            onChange={sortProduct}
+      <Box h={{ base: "0", md: "0", lg: "65vh" }}>
+        <Box ml="1em" mr="1em">
+          <Flex>
+            <Grid templateColumns="repeat(4, 1fr)" gap="32px" pb="50px">
+              <GridItem>
+                <FormControl>
+                  <FormLabel>Search</FormLabel>
+                  <InputGroup>
+                    <Input
+                      float="right"
+                      borderRadius="8px"
+                      border="1px solid #CCCCCC"
+                      placeholder="Cari di WIRED!"
+                      _placeholder={{ fontSize: "14px" }}
+                      onChange={(e) => setSearchInput(e.target.value)}
+                      type="text"
+                      onKeyDown={handleEnter}
+                      bgColor="white"
+                    />
+                    <InputRightElement>
+                      <Button
+                        variant="solid"
+                        borderRadius="8px"
+                        onClick={btnSearch}
+                      >
+                        <SearchIcon />
+                      </Button>
+                    </InputRightElement>
+                  </InputGroup>
+                </FormControl>
+              </GridItem>
+              <GridItem>
+                <FormControl>
+                  <FormLabel>Filter</FormLabel>
+                  <Select variant="flushed" onChange={filterCategory}>
+                    <option value="All">Category</option>
+                    <option value={1}>Handphone</option>
+                    <option value={2}>TV</option>
+                    <option value={3}>Home Appliances</option>
+                  </Select>
+                </FormControl>
+              </GridItem>
+              <GridItem>
+                <FormControl>
+                  <FormLabel>Sort By</FormLabel>
+                  <Select
+                    borderBottom="1px solid"
+                    variant="flushed"
+                    onChange={sortProduct}
+                  >
+                    <option value="product_name ASC">A-Z</option>
+                    <option value="product_name DESC">Z-A</option>
+                    <option>Produk Terbaru</option>
+                  </Select>
+                </FormControl>
+              </GridItem>
+            </Grid>
+          </Flex>
+          <SimpleGrid
+            mt="4"
+            minChildWidth="250px"
+            spacing="1em"
+            minH="full"
+            align="center"
           >
-            <option value="product_name ASC">A-Z</option>
-            <option value="product_name DESC">Z-A</option>
-            <option>Product Relevance</option>
-            <option>Z-A</option>
-          </Select>
+            {renderProducts()}
+          </SimpleGrid>
+
+          <Flex w="full" alignItems="center" justifyContent="center" gap="1em">
+            {page === 1 ? null : <FaArrowLeft onClick={previousPageProduct} />}
+            {!products.length ? (
+              <Alert
+                status="error"
+                variant="subtle"
+                flexDir="column"
+                alignItems="center"
+                justifyContent="center"
+                textAlign="center"
+                h="200px"
+              >
+                <AlertIcon boxSize="40px" mr="0" />
+                <AlertTitle>Oops, produk nggak ditemukan !</AlertTitle>
+                <AlertDescription>
+                  Coba kata kunci lain atau cek produk rekomendasi kami.
+                  Terimakasih <span size="lg">🤯</span>
+                </AlertDescription>
+                <Button>Ganti Kata Kunci</Button>
+              </Alert>
+            ) : null}
+            <Text fontWeight="semibold" fontSize="20px">
+              {page}
+            </Text>
+            {page >= maxPage ? null : (
+              <FaArrowRight onClick={nextPageProduct} />
+            )}
+          </Flex>
         </Box>
-      </Flex>
-      <Box border="1px solid" ml="15em" mr="1em" mt="1em">
-        <SimpleGrid
-          mt="4"
-          minChildWidth="250px"
-          spacing="1em"
-          minH="full"
-          align="center"
-        >
-          {renderProducts()}
-        </SimpleGrid>
       </Box>
 
       {/* Using Animate */}
 
-      {/* <Box>
+      {/* <Box ml="15em" mr="1em" mt="1em">
           <MotionSimpleGrid
           mt="4"
           minChildWidth="250px"
@@ -171,15 +254,16 @@ const ProductList = () => {
           initial="initial"
           animate="animate"
           align="center"
-        >
+          >
           {data.map((product, i) => (
             <MotionBox variants={cardVariant} key={i}>
-              <ProductCard product={product} />
+            <ProductCard product={product} />
             </MotionBox>
           ))}
         </MotionSimpleGrid>
         </Box> */}
-    </>
+      <Footer />
+    </Fragment>
   )
 }
 

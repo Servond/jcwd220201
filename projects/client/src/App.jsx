@@ -1,4 +1,4 @@
-import "./App.css"
+import "./styles/globals.css"
 import { useEffect, useState } from "react"
 import { login, logout } from "./redux/features/authSlice"
 import LoginPage from "./pages/Login"
@@ -19,6 +19,7 @@ import ProductList from "./pages/products/ProductList"
 
 const App = () => {
   const [authCheck, setAuthCheck] = useState(false)
+
   const authSelector = useSelector((state) => state.auth)
 
   const dispatch = useDispatch()
@@ -54,9 +55,8 @@ const App = () => {
           <Route index element={<MainContent />} />
           <Route index element={<Footer />} />
         </Route>
-        <Route path="/404" element={<NotFound />} />
         <Route path="/product" element={<ProductList />} />
-
+        <Route path="/404" element={<NotFound />} />
         <Route
           path="/profile"
           element={
