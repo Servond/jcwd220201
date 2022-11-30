@@ -6,8 +6,7 @@ module.exports = (sequelize, DataTypes) => {
       Category.hasMany(models.Product)
     }
   }
-  return sequelize.define(
-    "Category",
+  Category.init(
     {
       id: {
         autoIncrement: true,
@@ -34,4 +33,5 @@ module.exports = (sequelize, DataTypes) => {
       ],
     }
   )
+  return Category
 }
