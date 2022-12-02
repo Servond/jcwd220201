@@ -21,10 +21,22 @@ import {
   Box,
 } from "@chakra-ui/react";
 import { useFormik } from "formik";
+import { useState, useEffect } from "react";
 import * as Yup from "yup";
 
 const AddressForm = ({ isOpen, onClose }) => {
+  // Monitor user input
+  const [nameError, setNameError] = useState(false);
+  const [phoneError, setPhoneError] = useState(false);
+  const [labelError, setLabelError] = useState(false);
+  const [cityError, setCityError] = useState(false);
+  const [addressError, setAddressError] = useState(false);
+
   // Form functionality
+  const NAME_MAX_LENGTH = 50;
+  const LABEL_MAX_LENGTH = 30;
+  const PHONE_MAX_LENGTH = 13;
+
   const formik = useFormik({
     initialValues: {
       name: "",
@@ -36,14 +48,22 @@ const AddressForm = ({ isOpen, onClose }) => {
     },
     validationSchema: Yup.object({
       name: Yup.string().max(50).required("Wajib diisi"),
-      // phone: Yup.string().max(13).required("Wajib diisi"),
-      // label: Yup.string().max(30).required("Wajib diisi"),
-      // city: Yup.string().required("Wajib diisi"),
-      // address: Yup.string().max(200).required("Wajib diisi"),
-      // isDefault: Yup.boolean(),
+      phone: Yup.string().max(13).required("Wajib diisi"),
+      label: Yup.string().max(30).required("Wajib diisi"),
+      city: Yup.string().required("Wajib diisi"),
+      address: Yup.string().max(200).required("Wajib diisi"),
+      isDefault: Yup.boolean(),
     }),
     onSubmit: () => {},
   });
+
+  // Invalid input error handling
+  useEffect(() => {}, []);
+  useEffect(() => {}, []);
+  useEffect(() => {}, []);
+  useEffect(() => {}, []);
+  useEffect(() => {}, []);
+
   return (
     <Modal isOpen={isOpen} onClose={onClose} scrollBehavior="inside" size="3xl">
       <ModalOverlay />
@@ -72,7 +92,7 @@ const AddressForm = ({ isOpen, onClose }) => {
           <Heading fontSize="1.375rem" mb="1.5rem">
             Lengkapi detail alamat
           </Heading>
-          <FormControl>
+          <FormControl isInvalid={nameError}>
             <FormLabel
               fontSize="0.9375rem"
               fontWeight="700"
@@ -88,7 +108,7 @@ const AddressForm = ({ isOpen, onClose }) => {
               {...formik.getFieldProps("name")}
               focusBorderColor="rgb(49, 151, 149)"
               fontSize="0.875rem"
-              maxLength="50"
+              maxLength={NAME_MAX_LENGTH}
             />
             <FormHelperText
               color="rgba(49, 53, 59, 0.68)"
@@ -96,10 +116,10 @@ const AddressForm = ({ isOpen, onClose }) => {
               textAlign="right"
               lineHeight="1rem"
             >
-              0/50
+              {formik.values.name.length}/{NAME_MAX_LENGTH}
             </FormHelperText>
           </FormControl>
-          <FormControl mt="0.75rem">
+          <FormControl isInvalid={phoneError} mt="0.75rem">
             <FormLabel
               fontSize="0.9375rem"
               fontWeight="700"
@@ -115,9 +135,10 @@ const AddressForm = ({ isOpen, onClose }) => {
               {...formik.getFieldProps("phone")}
               focusBorderColor="rgb(49, 151, 149)"
               fontSize="0.875rem"
+              maxLength={PHONE_MAX_LENGTH}
             />
           </FormControl>
-          <FormControl mt="2.125rem">
+          <FormControl isInvalid={labelError} mt="2.125rem">
             <FormLabel
               fontSize="0.9375rem"
               fontWeight="700"
@@ -133,7 +154,7 @@ const AddressForm = ({ isOpen, onClose }) => {
               {...formik.getFieldProps("label")}
               focusBorderColor="rgb(49, 151, 149)"
               fontSize="0.875rem"
-              maxLength="50"
+              maxLength={LABEL_MAX_LENGTH}
             />
             <FormHelperText
               color="rgba(49, 53, 59, 0.68)"
@@ -141,10 +162,10 @@ const AddressForm = ({ isOpen, onClose }) => {
               textAlign="right"
               lineHeight="1rem"
             >
-              0/50
+              {formik.values.label.length}/{LABEL_MAX_LENGTH}
             </FormHelperText>
           </FormControl>
-          <FormControl mt="0.75rem" isInvalid={true}>
+          <FormControl isInvalid={cityError} mt="0.75rem">
             <FormLabel
               fontSize="0.9375rem"
               fontWeight="700"
@@ -169,7 +190,7 @@ const AddressForm = ({ isOpen, onClose }) => {
               Wajib diisi
             </FormErrorMessage>
           </FormControl>
-          <FormControl mt="2.125rem" mb="0.25rem">
+          <FormControl isInvalid={addressError} mt="2.125rem" mb="0.25rem">
             <FormLabel
               fontSize="0.9375rem"
               fontWeight="700"
