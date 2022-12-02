@@ -6,7 +6,6 @@ const productsController = {
     try {
       const {
         category_id = "",
-        // price = "",
         _limit = 10,
         _page = 1,
         _sortBy = "id",
@@ -91,7 +90,7 @@ const productsController = {
       })
     } catch (err) {
       console.log(err)
-      return res.status(200).json({
+      return res.status(500).json({
         message: err.message,
       })
     }
