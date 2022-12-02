@@ -17,6 +17,7 @@ import AdminHome from "./pages/admin/home.jsx"
 import ManageWarehouseData from "./pages/admin/warehouseData.jsx"
 import GeneralRoute from "./components/GeneralRoute"
 import ManageProduct from "./pages/admin/manageProduct.jsx"
+import Register from "./pages/Register"
 
 const App = () => {
   const [authCheck, setAuthCheck] = useState(false)
@@ -100,6 +101,9 @@ const App = () => {
             </ProtectedRoute>
           }
         />
+
+        {/* Register Route */}
+        <Route path="/register" element={<Register />} />
       </Routes>
     </>
   )
