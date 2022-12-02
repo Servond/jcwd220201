@@ -43,7 +43,7 @@ const ProductCard = ({ id, product_name, price }) => {
   return (
     <>
       <Flex
-        w="full"
+        w="250px"
         h="full"
         alignItems="center"
         justifyContent="center"
@@ -55,16 +55,9 @@ const ProductCard = ({ id, product_name, price }) => {
         onClick={() => productDetail()}
       >
         <Box w="full" h="full">
-          <Box
-            w="100%"
-            height="200px"
-            pos="relative"
-            overflow="hidden"
-            roundedTop="lg"
-          >
+          <Box height="200px" pos="relative" overflow="hidden" roundedTop="lg">
             <Image
-              fit="cover"
-              objectFit="cover"
+              objectFit="fill"
               alt="pict of product"
               src={productImg.product_picture}
             />
@@ -75,7 +68,7 @@ const ProductCard = ({ id, product_name, price }) => {
             </Box>
 
             <Box>Rp{price}</Box>
-            <Box>{productData.category_id}</Box>
+            {/* <Box>{productData.category_id}</Box> */}
           </Box>
         </Box>
       </Flex>

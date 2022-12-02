@@ -19,6 +19,10 @@ import {
   AlertIcon,
   AlertTitle,
   AlertDescription,
+  ButtonGroup,
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
 } from "@chakra-ui/react"
 import { Fragment, useState } from "react"
 import Navbar from "../layout/Navbar"
@@ -30,16 +34,13 @@ import { axiosInstance } from "../../api"
 import { useEffect } from "react"
 import { SearchIcon } from "@chakra-ui/icons"
 import { FaArrowRight, FaArrowLeft } from "react-icons/fa"
-import { BsSortAlphaUp, BsSortAlphaDownAlt } from "react-icons/bs"
-import { Link } from "react-router-dom"
-import { BiGitCompare } from "react-icons/bi"
+import { useSearchParams, useLocation } from "react-router-dom"
 
 const MotionSimpleGrid = motion(SimpleGrid)
 const MotionBox = motion(Box)
 
 const ProductList = () => {
   const [products, setProducts] = useState([])
-
   const [page, setPage] = useState(1)
   const [maxPage, setMaxPage] = useState(0)
   const [totalCount, setTotalCount] = useState(0)
@@ -48,6 +49,11 @@ const ProductList = () => {
   const [filterProduct, setFilterProduct] = useState("All")
   const [searchInput, setSearchInput] = useState("")
   const [searchValue, setSearchValue] = useState("")
+
+  const location = useLocation()
+  console.log(location)
+  const [searchParams, setSearchParams] = useSearchParams()
+  // console.log(searchParams)
 
   const fetchProducts = async () => {
     const maxProductInPage = 10
@@ -92,19 +98,11 @@ const ProductList = () => {
   const nextPageProduct = () => {
     setPage(page + 1)
   }
+
   const previousPageProduct = () => {
     setPage(page - 1)
   }
 
-  const compare = (a, b, ascendingOrder) => {
-    if (a < b) {
-      return ascendingOrder ? -1 : 1
-    }
-    if (a > b) {
-      return ascendingOrder ? 1 : -1
-    }
-    return 0
-  }
   const sortProduct = ({ target }) => {
     const { value } = target
 
@@ -122,6 +120,7 @@ const ProductList = () => {
       setSortDir("")
     }
   }
+
   const filterCategory = ({ target }) => {
     const { value } = target
     setFilterProduct(value)
@@ -146,7 +145,7 @@ const ProductList = () => {
   }
 
   return (
-    <Fragment>
+    <>
       {/* Navbar Component */}
       <Navbar
         onClick={() => btnSearch()}
@@ -157,12 +156,25 @@ const ProductList = () => {
       {/* Product List */}
       <Box h={{ base: "0", md: "0", lg: "65vh" }}>
         <Box ml="1em" mr="1em">
+          <Breadcrumb fontWeight="medium" fontSize="sm">
+            <BreadcrumbItem>
+              <BreadcrumbLink href="/">Home</BreadcrumbLink>
+            </BreadcrumbItem>
+
+            <BreadcrumbItem isCurrentPage={true}>
+              <BreadcrumbLink href="/product">Produk</BreadcrumbLink>
+            </BreadcrumbItem>
+
+            <BreadcrumbItem isCurrentPage>
+              <BreadcrumbLink href="#">Kategori</BreadcrumbLink>
+            </BreadcrumbItem>
+          </Breadcrumb>
           <Flex>
             <Grid templateColumns="repeat(4, 1fr)" gap="32px" pb="50px">
               <GridItem>
                 <FormControl>
                   <FormLabel>Search</FormLabel>
-                  <InputGroup>
+                  {/* <InputGroup>
                     <Input
                       float="right"
                       borderRadius="8px"
@@ -183,7 +195,7 @@ const ProductList = () => {
                         <SearchIcon />
                       </Button>
                     </InputRightElement>
-                  </InputGroup>
+                  </InputGroup> */}
                 </FormControl>
               </GridItem>
               <GridItem>
@@ -242,7 +254,9 @@ const ProductList = () => {
                   Coba kata kunci lain atau cek produk rekomendasi kami.
                   Terimakasih <span size="lg">🤯</span>
                 </AlertDescription>
-                <Button>Ganti Kata Kunci</Button>
+                <Button>
+                  <a href="#search">Ganti Kata Kunci</a>
+                </Button>
               </Alert>
             ) : null}
             <Text fontWeight="semibold" fontSize="20px">
@@ -276,7 +290,7 @@ const ProductList = () => {
         </MotionSimpleGrid>
         </Box> */}
       {/* <Footer /> */}
-    </Fragment>
+    </>
   )
 }
 

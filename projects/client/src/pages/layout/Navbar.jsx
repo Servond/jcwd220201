@@ -36,6 +36,8 @@ import {
   Link as LinkRouterDom,
   Outlet,
   useNavigate,
+  useLocation,
+  createSearchParams,
 } from "react-router-dom"
 import { useDispatch, useSelector } from "react-redux"
 import { logout, login } from "../../redux/features/authSlice"
@@ -63,10 +65,12 @@ const Navbar = ({ onChange, onClick, onKeyDown }) => {
   const authSelector = useSelector((state) => state.auth)
 
   const [authCheck, setAuthCheck] = useState(false)
+  const [searchValue, setSearchValue] = useState("")
   const { isOpen, onOpen, onClose } = useDisclosure()
 
   const navigate = useNavigate()
   const dispatch = useDispatch()
+  const location = useLocation()
 
   const keepUserLogin = async () => {
     try {
@@ -97,6 +101,28 @@ const Navbar = ({ onChange, onClick, onKeyDown }) => {
     dispatch(logout())
     navigate("/")
   }
+
+  const handleOnChange = (e) => {
+    if (location.pathname === "/") {
+      setSearchValue(e.target.value)
+    } else {
+      onChange(e)
+    }
+  }
+
+  const handleOnKeyDown = (e) => {
+    if (location.pathname === "/") {
+      if (e.key === "Enter") {
+        navigate({
+          pathname: "/product",
+          search: createSearchParams({ search: searchValue }).toString(),
+        })
+      }
+    } else {
+      onKeyDown(e)
+    }
+  }
+
   return (
     <>
       <Box
@@ -137,15 +163,16 @@ const Navbar = ({ onChange, onClick, onKeyDown }) => {
             >
               <InputGroup maxW="93%">
                 <Input
-                  float="right"
+                  // float="right"
                   borderRadius="8px"
                   border="1px solid #CCCCCC"
                   placeholder="Cari di WIRED!"
                   _placeholder={{ fontSize: "14px" }}
                   bgColor="white"
-                  onChange={onChange}
-                  onKeyDown={onKeyDown}
                   type="text"
+                  id="search"
+                  onChange={handleOnChange}
+                  onKeyDown={handleOnKeyDown}
                 />
                 <InputRightElement>
                   <Button variant="solid" borderRadius="8px" onClick={onClick}>
