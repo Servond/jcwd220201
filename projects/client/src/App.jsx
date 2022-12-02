@@ -16,7 +16,7 @@ import NotFound from "./pages/404"
 import AdminHome from "./pages/admin/home.jsx"
 import ManageWarehouseData from "./pages/admin/warehouseData.jsx"
 import GeneralRoute from "./components/GeneralRoute"
-
+import ManageProduct from "./pages/admin/manageProduct.jsx"
 
 const App = () => {
   const [authCheck, setAuthCheck] = useState(false)
@@ -73,7 +73,6 @@ const App = () => {
           }
         />
 
-
         {/* Admin Route */}
         <Route
           path="/admin/dashboard"
@@ -93,6 +92,14 @@ const App = () => {
           }
         />
 
+        <Route
+          path="/admin/product"
+          element={
+            <ProtectedRoute>
+              <ManageProduct />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
     </>
   )

@@ -27,7 +27,12 @@ app.use(express.json())
 // ===========================
 // NOTE : Add your routes here
 
-const { warehousesRoute, citiesRoute, provincesRoute } = require("../routes")
+const {
+  warehousesRoute,
+  citiesRoute,
+  provincesRoute,
+  categoriesRoute,
+} = require("../routes")
 
 app.use("/public", express.static("public"))
 
@@ -36,6 +41,7 @@ app.use("/cities", citiesRoute)
 app.use("/provinces", provincesRoute)
 app.use("/auth", authRoute)
 app.use("/admin", adminRoute)
+app.use("/categories", categoriesRoute)
 
 app.get("/api", (req, res) => {
   res.send(`Hello, this is my API`)
