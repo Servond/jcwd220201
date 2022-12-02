@@ -8,7 +8,31 @@ const Address = () => {
   return (
     <>
       <SearchBar />
-      <Button>Tambah Alamat Baru</Button>
+      {/* Button (Solid) */}
+      <Button
+        borderRadius="0.5rem"
+        colorScheme="teal"
+        fontWeight="bold"
+        fontSize="0.875rem"
+        height="2.5rem"
+        px="1rem"
+      >
+        Tambah Alamat Baru
+      </Button>
+      {/* Button (Outline) */}
+      <Button
+        backgroundColor="white"
+        border="1px solid"
+        borderRadius="0.5rem"
+        color="rgb(0, 128, 128)"
+        colorScheme="whiteAlpha"
+        fontWeight="bold"
+        fontSize="0.875rem"
+        height="2.5rem"
+        px="1rem"
+      >
+        Tambah Alamat Baru
+      </Button>
       <AddressCard />
       <Button onClick={onOpen}>Open Modal</Button>
       <AddressForm isOpen={isOpen} onClose={onClose} />

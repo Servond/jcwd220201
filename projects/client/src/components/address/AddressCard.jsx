@@ -119,7 +119,14 @@ const AddressCard = (props) => {
           </HStack>
         </HStack>
       </Flex>
-      <Button size="sm" px="36px">
+      <Button
+        borderRadius="0.5rem"
+        colorScheme="teal"
+        fontWeight="bold"
+        fontSize="0.75rem"
+        height="2rem"
+        px="36px"
+      >
         Pilih
       </Button>
       {/* <BsCheck2 size="1.625rem" color="rgb(49, 151, 149)" /> */}

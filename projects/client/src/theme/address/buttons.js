@@ -25,6 +25,13 @@ const Button = defineStyleConfig({
   },
   // Styles for the visual style variations
   variants: {
+    // base: {
+    //   backgroundColor: "rgb(229, 231, 233)",
+    //   color: "rgb(108, 114, 124)",
+    //   fontSize: "0.875rem",
+    //   fontWeight: "600",
+    //   px: "1rem",
+    // },
     outline: {
       borderColor: "rgb(0, 128, 128)",
       color: "rgb(0, 128, 128)",
