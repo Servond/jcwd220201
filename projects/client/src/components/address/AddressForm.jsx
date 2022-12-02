@@ -28,11 +28,11 @@ const AddressForm = ({ isOpen, onClose }) => {
   const formik = useFormik({
     initialValues: {
       name: "",
-      // phone: "",
-      // label: "",
-      // city: "",
-      // address: "",
-      // isDefault: false,
+      phone: "",
+      label: "",
+      city: "",
+      address: "",
+      isDefault: false,
     },
     validationSchema: Yup.object({
       name: Yup.string().max(50).required("Wajib diisi"),
@@ -99,7 +99,7 @@ const AddressForm = ({ isOpen, onClose }) => {
               0/50
             </FormHelperText>
           </FormControl>
-          {/* <FormControl mt="0.75rem">
+          <FormControl mt="0.75rem">
             <FormLabel
               fontSize="0.9375rem"
               fontWeight="700"
@@ -201,7 +201,7 @@ const AddressForm = ({ isOpen, onClose }) => {
               />
               <Text fontSize="0.9375rem">Jadikan alamat utama</Text>
             </HStack>
-          </FormControl> */}
+          </FormControl>
           <Text
             fontSize="0.75rem"
             lineHeight="1.125rem"
