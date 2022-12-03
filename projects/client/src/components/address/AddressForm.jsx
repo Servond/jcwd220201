@@ -21,8 +21,13 @@ import {
   Box,
 } from "@chakra-ui/react";
 import { useFormik } from "formik";
-import { useState, useEffect } from "react";
+import { useRef } from "react";
+import { useState } from "react";
 import * as Yup from "yup";
+import clearInput from "../../lib/address/clearInput";
+
+// Own library imports
+import useCheckInputError from "../../lib/address/hooks/useCheckInputError";
 
 const AddressForm = ({ isOpen, onClose }) => {
   // Monitor user input
@@ -36,6 +41,10 @@ const AddressForm = ({ isOpen, onClose }) => {
   const NAME_MAX_LENGTH = 50;
   const LABEL_MAX_LENGTH = 30;
   const PHONE_MAX_LENGTH = 13;
+  const ADDRESS_MAX_LENGTH = 200;
+
+  // Checkbox reference
+  const checkboxRef = useRef(null);
 
   const formik = useFormik({
     initialValues: {
@@ -58,14 +67,32 @@ const AddressForm = ({ isOpen, onClose }) => {
   });
 
   // Invalid input error handling
-  useEffect(() => {}, []);
-  useEffect(() => {}, []);
-  useEffect(() => {}, []);
-  useEffect(() => {}, []);
-  useEffect(() => {}, []);
+  const nameErrorTrigger = formik.touched.name && formik.errors.name;
+  const phoneErrorTrigger = formik.touched.phone && formik.errors.phone;
+  const labelErrorTrigger = formik.touched.label && formik.errors.label;
+  const cityErrorTrigger = formik.touched.city && formik.errors.city;
+  const addressErrorTrigger = formik.touched.address && formik.errors.address;
+
+  const handleInputErrors = [
+    { trigger: nameErrorTrigger, callback: setNameError },
+    { trigger: phoneErrorTrigger, callback: setPhoneError },
+    { trigger: labelErrorTrigger, callback: setLabelError },
+    { trigger: cityErrorTrigger, callback: setCityError },
+    { trigger: addressErrorTrigger, callback: setAddressError },
+  ];
+
+  useCheckInputError(handleInputErrors);
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} scrollBehavior="inside" size="3xl">
+    <Modal
+      isOpen={isOpen}
+      onClose={() => {
+        clearInput(formik.values, formik.touched, formik.setFieldValue);
+        onClose();
+      }}
+      scrollBehavior="inside"
+      size="3xl"
+    >
       <ModalOverlay />
       <ModalContent color="rgba(49, 53, 59, 0.96)">
         <ModalHeader
@@ -106,18 +133,36 @@ const AddressForm = ({ isOpen, onClose }) => {
               id="name"
               type="text"
               {...formik.getFieldProps("name")}
-              focusBorderColor="rgb(49, 151, 149)"
+              focusBorderColor={
+                nameError ? "rgb(230, 68, 68)" : "rgb(49, 151, 149)"
+              }
               fontSize="0.875rem"
               maxLength={NAME_MAX_LENGTH}
             />
-            <FormHelperText
-              color="rgba(49, 53, 59, 0.68)"
-              fontSize="0.8125rem"
-              textAlign="right"
-              lineHeight="1rem"
+            <HStack
+              mt="0.25rem"
+              justifyContent={nameError ? "space-between" : "flex-end"}
             >
-              {formik.values.name.length}/{NAME_MAX_LENGTH}
-            </FormHelperText>
+              <FormErrorMessage
+                display="inline-block"
+                fontSize="0.8125rem"
+                lineHeight="1rem"
+                mt="0"
+              >
+                Wajib diisi
+              </FormErrorMessage>
+              <FormHelperText
+                display="inline-block"
+                color={
+                  nameError ? "rgb(230, 68, 68)" : "rgba(49, 53, 59, 0.68)"
+                }
+                fontSize="0.8125rem"
+                lineHeight="1rem"
+                mt="0"
+              >
+                {formik.values.name.length}/{NAME_MAX_LENGTH}
+              </FormHelperText>
+            </HStack>
           </FormControl>
           <FormControl isInvalid={phoneError} mt="0.75rem">
             <FormLabel
@@ -131,12 +176,24 @@ const AddressForm = ({ isOpen, onClose }) => {
             </FormLabel>
             <Input
               id="phone"
-              type="text"
+              type="tel"
               {...formik.getFieldProps("phone")}
-              focusBorderColor="rgb(49, 151, 149)"
+              focusBorderColor={
+                phoneError ? "rgb(230, 68, 68)" : "rgb(49, 151, 149)"
+              }
               fontSize="0.875rem"
               maxLength={PHONE_MAX_LENGTH}
             />
+            <HStack mt="0.25rem" justifyContent="flex-start">
+              <FormErrorMessage
+                display="inline-block"
+                fontSize="0.8125rem"
+                lineHeight="1rem"
+                mt="0"
+              >
+                Wajib diisi
+              </FormErrorMessage>
+            </HStack>
           </FormControl>
           <FormControl isInvalid={labelError} mt="2.125rem">
             <FormLabel
@@ -152,18 +209,36 @@ const AddressForm = ({ isOpen, onClose }) => {
               id="label"
               type="text"
               {...formik.getFieldProps("label")}
-              focusBorderColor="rgb(49, 151, 149)"
+              focusBorderColor={
+                labelError ? "rgb(230, 68, 68)" : "rgb(49, 151, 149)"
+              }
               fontSize="0.875rem"
               maxLength={LABEL_MAX_LENGTH}
             />
-            <FormHelperText
-              color="rgba(49, 53, 59, 0.68)"
-              fontSize="0.8125rem"
-              textAlign="right"
-              lineHeight="1rem"
+            <HStack
+              mt="0.25rem"
+              justifyContent={labelError ? "space-between" : "flex-end"}
             >
-              {formik.values.label.length}/{LABEL_MAX_LENGTH}
-            </FormHelperText>
+              <FormErrorMessage
+                display="inline-block"
+                fontSize="0.8125rem"
+                lineHeight="1rem"
+                mt="0"
+              >
+                Wajib diisi
+              </FormErrorMessage>
+              <FormHelperText
+                display="inline-block"
+                color={
+                  labelError ? "rgb(230, 68, 68)" : "rgba(49, 53, 59, 0.68)"
+                }
+                fontSize="0.8125rem"
+                lineHeight="1rem"
+                mt="0"
+              >
+                {formik.values.label.length}/{LABEL_MAX_LENGTH}
+              </FormHelperText>
+            </HStack>
           </FormControl>
           <FormControl isInvalid={cityError} mt="0.75rem">
             <FormLabel
@@ -179,7 +254,9 @@ const AddressForm = ({ isOpen, onClose }) => {
               id="city"
               type="text"
               {...formik.getFieldProps("city")}
-              focusBorderColor="rgb(49, 151, 149)"
+              focusBorderColor={
+                cityError ? "rgb(230, 68, 68)" : "rgb(49, 151, 149)"
+              }
               fontSize="0.875rem"
             />
             <FormErrorMessage
@@ -203,7 +280,9 @@ const AddressForm = ({ isOpen, onClose }) => {
             <Textarea
               id="address"
               {...formik.getFieldProps("address")}
-              focusBorderColor="rgb(49, 151, 149)"
+              focusBorderColor={
+                addressError ? "rgb(230, 68, 68)" : "rgb(49, 151, 149)"
+              }
               fontSize="0.875rem"
               height="7.4375rem"
               lineHeight="1.375rem"
@@ -211,6 +290,30 @@ const AddressForm = ({ isOpen, onClose }) => {
               p="0.5rem 0.75rem"
               resize="none"
             ></Textarea>
+            <HStack
+              mt="0.25rem"
+              justifyContent={addressError ? "space-between" : "flex-end"}
+            >
+              <FormErrorMessage
+                display="inline-block"
+                fontSize="0.8125rem"
+                lineHeight="1rem"
+                mt="0"
+              >
+                Wajib diisi
+              </FormErrorMessage>
+              <FormHelperText
+                display="inline-block"
+                color={
+                  addressError ? "rgb(230, 68, 68)" : "rgba(49, 53, 59, 0.68)"
+                }
+                fontSize="0.8125rem"
+                lineHeight="1rem"
+                mt="0"
+              >
+                {formik.values.address.length}/{ADDRESS_MAX_LENGTH}
+              </FormHelperText>
+            </HStack>
           </FormControl>
           <FormControl mt="2rem">
             <HStack>
@@ -218,6 +321,7 @@ const AddressForm = ({ isOpen, onClose }) => {
                 id="isDefault"
                 {...formik.getFieldProps("isDefault")}
                 colorScheme="teal"
+                ref={checkboxRef}
                 size="lg"
               />
               <Text fontSize="0.9375rem">Jadikan alamat utama</Text>
