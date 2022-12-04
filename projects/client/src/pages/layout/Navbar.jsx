@@ -38,6 +38,7 @@ import {
   useNavigate,
   useLocation,
   createSearchParams,
+  useSearchParams,
 } from "react-router-dom"
 import { useDispatch, useSelector } from "react-redux"
 import { logout, login } from "../../redux/features/authSlice"
@@ -65,12 +66,14 @@ const Navbar = ({ onChange, onClick, onKeyDown }) => {
   const authSelector = useSelector((state) => state.auth)
 
   const [authCheck, setAuthCheck] = useState(false)
-  const [searchValue, setSearchValue] = useState("")
   const { isOpen, onOpen, onClose } = useDisclosure()
+
+  const [searchValue, setSearchValue] = useState("")
+  const [searchQuery, setSearchQuery] = useSearchParams()
 
   const navigate = useNavigate()
   const dispatch = useDispatch()
-  const location = useLocation()
+  // const location = useLocation()
 
   const keepUserLogin = async () => {
     try {
@@ -92,10 +95,6 @@ const Navbar = ({ onChange, onClick, onKeyDown }) => {
     }
   }
 
-  useEffect(() => {
-    keepUserLogin()
-  }, [])
-
   const btnLogout = () => {
     localStorage.removeItem("auth_token")
     dispatch(logout())
@@ -103,26 +102,45 @@ const Navbar = ({ onChange, onClick, onKeyDown }) => {
   }
 
   const handleOnChange = (e) => {
-    if (location.pathname === "/") {
-      setSearchValue(e.target.value)
-    } else {
-      onChange(e)
-    }
+    setSearchValue(e.target.value)
+    onChange(e)
+    // ==============================
+    // if (location.pathname === "/") {
+    //   setSearchValue(e.target.value)
+    // } else {
+    //   onChange(e)
+    // }
   }
 
   const handleOnKeyDown = (e) => {
-    if (location.pathname === "/") {
-      if (e.key === "Enter") {
-        navigate({
-          pathname: "/product",
-          search: createSearchParams({ search: searchValue }).toString(),
-        })
-      }
-    } else {
+    if (e.key === "Enter") {
+      navigate({
+        pathname: "/product",
+        search: createSearchParams({ search: searchValue }).toString(),
+      })
       onKeyDown(e)
     }
+
+    // ===================================================
+    // if (location.pathname === "/") {
+    //   if (e.key === "Enter") {
+    //     navigate({
+    //       pathname: "/product",
+    //       search: createSearchParams({ search: searchValue }).toString(),
+    //     })
+    //   }
+    // } else {
+    //   onKeyDown(e)
+    // }
   }
 
+  useEffect(() => {
+    keepUserLogin()
+  }, [])
+
+  useEffect(() => {
+    setSearchValue(searchQuery.get("search"))
+  }, [])
   return (
     <>
       <Box
@@ -173,6 +191,7 @@ const Navbar = ({ onChange, onClick, onKeyDown }) => {
                   id="search"
                   onChange={handleOnChange}
                   onKeyDown={handleOnKeyDown}
+                  value={searchValue}
                 />
                 <InputRightElement>
                   <Button variant="solid" borderRadius="8px" onClick={onClick}>

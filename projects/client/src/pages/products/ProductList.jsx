@@ -47,13 +47,11 @@ const ProductList = () => {
   const [sortBy, setSortBy] = useState("product_name")
   const [sortDir, setSortDir] = useState("ASC")
   const [filterProduct, setFilterProduct] = useState("All")
-  const [searchInput, setSearchInput] = useState("")
+
+  const [searchInput, setSearchInput] = useState()
   const [searchValue, setSearchValue] = useState("")
 
-  const location = useLocation()
-  console.log(location)
   const [searchParams, setSearchParams] = useSearchParams()
-  // console.log(searchParams)
 
   const fetchProducts = async () => {
     const maxProductInPage = 10
@@ -87,10 +85,15 @@ const ProductList = () => {
   const btnSearch = () => {
     setSearchValue(searchInput)
     // setPage(1)
+
+    // watch this
+    const queryParams = {}
+    queryParams["search"] = searchInput
+    setSearchParams(queryParams)
   }
 
-  const handleEnter = (event) => {
-    if (event.key === "Enter") {
+  const handleEnter = (e) => {
+    if (e.key === "Enter") {
       setSearchValue(searchInput)
     }
   }
@@ -119,6 +122,13 @@ const ProductList = () => {
       setSortBy("")
       setSortDir("")
     }
+
+    const queryParams = {}
+    if (searchParams.get("search")) {
+      queryParams["search"] = searchParams.get("search")
+    }
+    queryParams[value.split(" ")[0]] = value.split(" ")[1]
+    setSearchParams(queryParams)
   }
 
   const filterCategory = ({ target }) => {
@@ -127,20 +137,34 @@ const ProductList = () => {
   }
 
   useEffect(() => {
+    for (let passing of searchParams.entries()) {
+      if (passing[0] === "search") {
+        setSearchValue(passing[1])
+      }
+      if (
+        passing[0] === "product_name" ||
+        passing[0] === "harga maksimum" ||
+        passing[0] === "harga minimum"
+      ) {
+        setSortBy(passing[0])
+        setSortDir(passing[1])
+      }
+    }
+
     fetchProducts()
   }, [page, sortDir, sortBy, filterProduct, searchValue])
 
   const renderProducts = () => {
     return products.map((val) => (
-      <Box>
-        <ProductCard
-          key={val.id.toString()}
-          product_name={val.product_name}
-          product_picture={val.product_picture}
-          price={val.price.toLocaleString()}
-          id={val.id}
-        />
-      </Box>
+      // <Box>
+      <ProductCard
+        key={val.id.toString()}
+        product_name={val.product_name}
+        product_picture={val.product_picture}
+        price={val.price.toLocaleString()}
+        id={val.id}
+      />
+      // </Box>
     ))
   }
 
@@ -154,8 +178,9 @@ const ProductList = () => {
       />
 
       {/* Product List */}
-      <Box h={{ base: "0", md: "0", lg: "65vh" }}>
-        <Box ml="1em" mr="1em">
+
+      <Box h={{ base: "0", md: "0", lg: "85vh" }} border="1px solid blue">
+        <Box ml="1em" mr="1em" border="1px solid red">
           <Breadcrumb fontWeight="medium" fontSize="sm">
             <BreadcrumbItem>
               <BreadcrumbLink href="/">Home</BreadcrumbLink>
@@ -165,39 +190,12 @@ const ProductList = () => {
               <BreadcrumbLink href="/product">Produk</BreadcrumbLink>
             </BreadcrumbItem>
 
-            <BreadcrumbItem isCurrentPage>
+            <BreadcrumbItem>
               <BreadcrumbLink href="#">Kategori</BreadcrumbLink>
             </BreadcrumbItem>
           </Breadcrumb>
           <Flex>
             <Grid templateColumns="repeat(4, 1fr)" gap="32px" pb="50px">
-              <GridItem>
-                <FormControl>
-                  <FormLabel>Search</FormLabel>
-                  {/* <InputGroup>
-                    <Input
-                      float="right"
-                      borderRadius="8px"
-                      border="1px solid #CCCCCC"
-                      placeholder="Cari di WIRED!"
-                      _placeholder={{ fontSize: "14px" }}
-                      onChange={(e) => setSearchInput(e.target.value)}
-                      type="text"
-                      onKeyDown={handleEnter}
-                      bgColor="white"
-                    />
-                    <InputRightElement>
-                      <Button
-                        variant="solid"
-                        borderRadius="8px"
-                        onClick={btnSearch}
-                      >
-                        <SearchIcon />
-                      </Button>
-                    </InputRightElement>
-                  </InputGroup> */}
-                </FormControl>
-              </GridItem>
               <GridItem>
                 <FormControl>
                   <FormLabel>Filter</FormLabel>
@@ -224,18 +222,51 @@ const ProductList = () => {
                   </Select>
                 </FormControl>
               </GridItem>
+
+              {/* <FormControl>
+                <FormLabel>Search</FormLabel>
+                <InputGroup>
+                  <Input
+                    float="right"
+                    borderRadius="8px"
+                    border="1px solid #CCCCCC"
+                    placeholder="Cari di WIRED!"
+                    _placeholder={{ fontSize: "14px" }}
+                    onChange={(e) => setSearchInput(e.target.value)}
+                    type="text"
+                    onKeyDown={handleEnter}
+                    bgColor="white"
+                  />
+                  <InputRightElement>
+                    <Button
+                      variant="solid"
+                      borderRadius="8px"
+                      onClick={btnSearch}
+                    >
+                      <SearchIcon />
+                    </Button>
+                  </InputRightElement>
+                </InputGroup>
+              </FormControl> */}
             </Grid>
           </Flex>
-          <SimpleGrid
+          {/* <Flex pos="sticky" left="5" h="95vh" mt="2.5vh" boxShadow={}>
+
+              </Flex> */}
+          <Grid
+            templateColumns="repeat(5, 1fr)"
+            border="1px solid purple"
             mt="4"
             minChildWidth="250px"
-            spacing="1em"
+            // spacing="5em"
+            gap="1em"
             minH="full"
             align="center"
           >
             {renderProducts()}
-          </SimpleGrid>
+          </Grid>
 
+          {/* Next/Prev Page Product */}
           <Flex w="full" alignItems="center" justifyContent="center" gap="1em">
             {page === 1 ? null : <FaArrowLeft onClick={previousPageProduct} />}
             {!products.length ? (

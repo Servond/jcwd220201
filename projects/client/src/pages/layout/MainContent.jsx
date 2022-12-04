@@ -137,7 +137,7 @@ const MainContent = () => {
           </Box>
         </Box>
 
-        <Divider mt="5" border="1px solid #D5D7DD" mb="3" />
+        <Divider mt="5" border="1px solid #D5D7DD" mb="2" />
 
         {/* Product Card Popular */}
         <Flex fontSize="18px" fontWeight="semibold" color="#213360">
@@ -158,7 +158,7 @@ const MainContent = () => {
         <Flex
           flexDirection="row"
           flexWrap="wrap"
-          gap="14"
+          gap="10"
           background="radial-gradient(50% 50% at 50% 50%, rgba(0, 155, 144, 0.1) 0%, rgba(33, 205, 192, 0) 100%);"
         >
           <Card maxW="sm">

@@ -16,6 +16,7 @@ import AdminHome from "./pages/admin/home.jsx"
 import ManageWarehouseData from "./pages/admin/warehouseData.jsx"
 import GeneralRoute from "./components/GeneralRoute"
 import ProductList from "./pages/products/ProductList"
+import ProductDetail from "./pages/products/ProductDetail"
 
 const App = () => {
   const [authCheck, setAuthCheck] = useState(false)
@@ -56,6 +57,7 @@ const App = () => {
           <Route index element={<Footer />} />
         </Route>
         <Route path="/product" element={<ProductList />} />
+        <Route path="/productdetail/:id" element={<ProductDetail />} />
         <Route path="/404" element={<NotFound />} />
         <Route
           path="/profile"
