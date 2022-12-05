@@ -252,15 +252,17 @@ const Navbar = ({ onChange, onClick, onKeyDown }) => {
                       Masuk
                     </Button>
                   </LinkRouterDom>
-                  <Button
-                    variant="solid"
-                    size="md"
-                    color="white"
-                    _hover={{ bg: "teal.300" }}
-                    bg="teal.400"
-                  >
-                    Daftar
-                  </Button>
+                  <LinkRouterDom to="/register">
+                    <Button
+                      variant="solid"
+                      size="md"
+                      color="white"
+                      _hover={{ bg: "teal.300" }}
+                      bg="teal.400"
+                    >
+                      Daftar
+                    </Button>
+                  </LinkRouterDom>
                 </ButtonGroup>
               )}
 

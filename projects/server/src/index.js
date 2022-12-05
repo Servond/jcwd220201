@@ -1,4 +1,3 @@
-// require("dotenv/config");
 const dotenv = require("dotenv")
 const express = require("express")
 const cors = require("cors")
@@ -7,6 +6,7 @@ const db = require("../models")
 const adminRoute = require("../routes/adminRoute")
 const authRoute = require("../routes/authRoute")
 const productsRoute = require("../routes/productsRoute")
+const registerRoute = require("./routes/registerRoute")
 
 dotenv.config()
 
@@ -28,7 +28,15 @@ app.use(express.json())
 // ===========================
 // NOTE : Add your routes here
 
-const { warehousesRoute, citiesRoute, provincesRoute } = require("../routes")
+// Register middleware
+app.use("/api/register", registerRoute)
+
+const {
+  warehousesRoute,
+  citiesRoute,
+  provincesRoute,
+  categoriesRoute,
+} = require("../routes")
 
 app.use("/public", express.static("public"))
 
@@ -38,6 +46,7 @@ app.use("/provinces", provincesRoute)
 app.use("/auth", authRoute)
 app.use("/admin", adminRoute)
 app.use("/products", productsRoute)
+app.use("/categories", categoriesRoute)
 
 app.get("/api", (req, res) => {
   res.send(`Hello, this is my API`)

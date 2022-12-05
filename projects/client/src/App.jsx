@@ -17,6 +17,8 @@ import ManageWarehouseData from "./pages/admin/warehouseData.jsx"
 import GeneralRoute from "./components/GeneralRoute"
 import ProductList from "./pages/products/ProductList"
 import ProductDetail from "./pages/products/ProductDetail"
+import ManageProduct from "./pages/admin/manageProduct.jsx"
+import Register from "./pages/Register"
 
 const App = () => {
   const [authCheck, setAuthCheck] = useState(false)
@@ -98,6 +100,18 @@ const App = () => {
             </ProtectedRoute>
           }
         />
+
+        <Route
+          path="/admin/product"
+          element={
+            <ProtectedRoute>
+              <ManageProduct />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Register Route */}
+        <Route path="/register" element={<Register />} />
       </Routes>
     </>
   )

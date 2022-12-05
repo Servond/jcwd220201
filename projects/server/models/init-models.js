@@ -175,6 +175,7 @@ function initModels(sequelize) {
     Journal,
     OrderItem,
     Order,
+    Otp,
     ProductPicture,
     ProductStock,
     Product,
