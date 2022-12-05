@@ -83,12 +83,28 @@ const productsController = {
       })
     }
   },
-  getProductCategory: async (req, res) => {
+  getAllProductCategory: async (req, res) => {
     try {
-      const findProductCategory = await Category.findAll()
+      const findProductCategory = await db.Category.findAll()
       return res.status(200).json({
-        message: "Get Product Category",
+        message: "Get All Product Category",
         data: findProductCategory,
+      })
+    } catch (err) {
+      console.log(err)
+      return res.status(500).json({
+        message: err.message,
+      })
+    }
+  },
+  getProductCategoryId: async (req, res) => {
+    try {
+      const { id } = req.params
+      const findProductCategoryId = await db.Category.findByPk(id)
+
+      return res.status(200).json({
+        message: `Get Product Category ${id}`,
+        data: findProductCategoryId,
       })
     } catch (err) {
       console.log(err)

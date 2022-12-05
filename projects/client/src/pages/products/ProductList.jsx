@@ -49,6 +49,7 @@ const ProductList = () => {
   const [sortBy, setSortBy] = useState("product_name")
   const [sortDir, setSortDir] = useState("ASC")
   const [filterProduct, setFilterProduct] = useState("All")
+  // const [categoryData, setCategoryData] = useState([])
 
   const [searchInput, setSearchInput] = useState()
   const [searchValue, setSearchValue] = useState("")
@@ -84,6 +85,20 @@ const ProductList = () => {
       console.log(err)
     }
   }
+
+  // const fetchCategoryData = async () => {
+  //   try {
+  //     const categoryResponse = await axiosInstance.get("/products/category")
+  //     setCategoryData(categoryResponse.data.data)
+  //     console.log("category response", categoryResponse)
+  //   } catch (err) {
+  //     console.log(err)
+  //   }
+  // }
+  // const categoryOptions = categoryData.map((val) => {
+  //   return { value: val.category, label: val.category }
+  // })
+  // console.log("category", categoryOptions)
 
   const btnSearch = () => {
     setSearchValue(searchInput)
@@ -167,6 +182,10 @@ const ProductList = () => {
 
     fetchProducts()
   }, [page, sortDir, sortBy, filterProduct, searchValue])
+
+  // useEffect(() => {
+  //   fetchCategoryData()
+  // }, [])
 
   const renderProducts = () => {
     return products.map((val) => (
@@ -301,8 +320,9 @@ const ProductList = () => {
             justify="center"
             gap="1em"
             mt="1em"
-            borderRadius="10px"
-            shadow="lg"
+            borderRadius="none"
+            borderBottomRadius="5px solid"
+            boxShadow="md"
           >
             {page === 1 ? null : (
               <Button colorScheme="teal" onClick={previousPageProduct}>
