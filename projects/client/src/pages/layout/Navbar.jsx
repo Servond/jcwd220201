@@ -45,23 +45,6 @@ import { logout, login } from "../../redux/features/authSlice"
 import { axiosInstance } from "../../api"
 import { useEffect, useState } from "react"
 
-const Links = ["Dashboard"]
-
-const NavLink = ({ children }) => (
-  <LinkChakra
-    px={2}
-    py={1}
-    rounded={"md"}
-    _hover={{
-      textDecoration: "none",
-      bg: useColorModeValue("gray.200", "gray.700"),
-    }}
-    href={"#"}
-  >
-    {children}
-  </LinkChakra>
-)
-
 const Navbar = ({ onChange, onClick, onKeyDown }) => {
   const authSelector = useSelector((state) => state.auth)
 
@@ -183,7 +166,7 @@ const Navbar = ({ onChange, onClick, onKeyDown }) => {
                 <Input
                   // float="right"
                   borderRadius="8px"
-                  border="1px solid #CCCCCC"
+                  // border="1px solid #CCCCCC"
                   placeholder="Cari di WIRED!"
                   _placeholder={{ fontSize: "14px" }}
                   bgColor="white"
@@ -219,9 +202,9 @@ const Navbar = ({ onChange, onClick, onKeyDown }) => {
                       display="flex"
                       justifyContent="space-between"
                     >
-                      <Text>Cart</Text>
+                      <Text>Keranjang (0)</Text>
                       <LinkRouterDom to="/cart">
-                        <Text>See Cart</Text>
+                        <Text>Lihat Keranjang</Text>
                       </LinkRouterDom>
                     </PopoverHeader>
                     <PopoverBody>
@@ -233,11 +216,13 @@ const Navbar = ({ onChange, onClick, onKeyDown }) => {
                   </PopoverContent>
                 </Popover>
               </Box>
+              {/* ====================================================================================== */}
             </HStack>
             <Center>
               <Divider orientation="vertical" border="1 px" />
             </Center>
           </HStack>
+
           {/* Profile Popup */}
           <Flex alignItems={"center"}>
             <Menu>
@@ -302,20 +287,25 @@ const Navbar = ({ onChange, onClick, onKeyDown }) => {
           </Flex>
         </Flex>
 
+        {/* Mobile View */}
         {isOpen ? (
           <Box pb={4} display={{ md: "none" }}>
             <Stack as={"nav"} spacing={4}>
               <InputGroup maxW="100%">
                 <Input
+                  // id="search"
                   float="right"
                   borderRadius="8px"
                   border="1px solid #CCCCCC"
                   placeholder="Cari di WIRED!"
                   _placeholder={{ fontSize: "14px" }}
                   bgColor="white"
+                  onChange={handleOnChange}
+                  onKeyDown={handleOnKeyDown}
+                  value={searchValue}
                 />
                 <InputRightElement>
-                  <Button variant="solid" borderRadius="5">
+                  <Button variant="solid" borderRadius="5" onClick={onClick}>
                     <SearchIcon />
                   </Button>
                 </InputRightElement>

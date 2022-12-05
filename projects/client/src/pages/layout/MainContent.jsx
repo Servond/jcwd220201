@@ -24,8 +24,17 @@ import Footer from "./Footer"
 import "../../styles/globals.css"
 import Features from "../../components/Features"
 import { Link } from "react-router-dom"
+import { useState } from "react"
 
 const MainContent = () => {
+  const [products, setProducts] = useState([])
+
+  const fetchProducts = async () => {
+    try {
+    } catch (err) {
+      console.log(err)
+    }
+  }
   return (
     <>
       <Box

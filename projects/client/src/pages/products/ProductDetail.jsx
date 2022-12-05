@@ -21,6 +21,7 @@ import { Carousel } from "react-responsive-carousel"
 import { useState } from "react"
 import { useParams } from "react-router-dom"
 import "react-responsive-carousel/lib/styles/carousel.min.css"
+// import "../products/ProductDetail.css"
 import { axiosInstance } from "../../api"
 import { useEffect } from "react"
 import Navbar from "../layout/Navbar"
@@ -32,27 +33,21 @@ const ProductDetail = () => {
     description: "",
     price: 0,
     weight: 0,
-    category: "",
+    Category: "",
   })
   const params = useParams()
 
   const [productImg, setProductImg] = useState([])
-  const [productId] = useState(0)
+  const [productStock, setProductStock] = useState([])
 
-  const fetchProductDetail = async (id) => {
+  const fetchProductDetail = async () => {
     try {
       const response = await axiosInstance.get(`/products/${params.id}`)
 
       setProducts(response.data.data)
-    } catch (err) {
-      console.log(err)
-    }
-  }
-
-  const fetchProductImage = async () => {
-    try {
-      const response = await axiosInstance.get(`/products/image/${params.id}`)
-      setProductImg(response.data.data)
+      setProductImg(response.data.data.ProductPictures)
+      setProductStock(response.data.data.ProductStocks)
+      console.log("response", response)
     } catch (err) {
       console.log(err)
     }
@@ -60,8 +55,7 @@ const ProductDetail = () => {
 
   useEffect(() => {
     fetchProductDetail()
-    fetchProductImage()
-  }, [productId])
+  }, [])
 
   return (
     <>
@@ -69,52 +63,30 @@ const ProductDetail = () => {
       <Container maxW="7xl">
         <SimpleGrid
           spacing={{ base: 8, md: 10 }}
-          py={{ base: 18, md: 24 }}
           columns={{ base: 1, lg: 2 }}
+          py={{ base: 18, md: 24 }}
         >
           <Flex>
-            <Carousel>
-              <div>
-                <Image
-                  rounded="md"
-                  fit="cover"
-                  align="center"
-                  w="100%"
-                  h={{ base: "100%", sm: "400px", lg: "500px" }}
-                  src="https://images.unsplash.com/photo-1670139015746-832eaa4460c1?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHwxMHx8fGVufDB8fHx8&auto=format&fit=crop&w=500&q=60"
-                />
-              </div>
-              <div>
-                <Image
-                  rounded="md"
-                  fit="cover"
-                  align="center"
-                  w="100%"
-                  h={{ base: "100%", sm: "400px", lg: "500px" }}
-                  src="https://images.unsplash.com/photo-1670139015746-832eaa4460c1?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHwxMHx8fGVufDB8fHx8&auto=format&fit=crop&w=500&q=60"
-                />
-              </div>
-            </Carousel>
-            {/* <Carousel>
+            <Carousel swipeable={true} showStatus={false} dynamicHeight={false}>
               {productImg.map((val) => (
                 <Image
+                  // className="image-prod-detail"
+                  h={{ base: "100%", sm: "400px", lg: "500px" }}
+                  src={val.product_picture}
+                  align="center"
                   rounded="md"
                   fit="cover"
-                  align="center"
                   w="100%"
-                  h={{ base: "100%", sm: "400px", lg: "500px" }}
-                  src={val.productImg.product_picture}
-                  // "https://images.unsplash.com/photo-1670139015746-832eaa4460c1?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHwxMHx8fGVufDB8fHx8&auto=format&fit=crop&w=500&q=60"
                 />
               ))}
-            </Carousel> */}
+            </Carousel>
           </Flex>
           <Stack spacing={{ base: 6, md: 10 }}>
             <Box as="header">
               <Heading
+                fontSize={{ base: "2xl", sm: "3xl", lg: "4xl" }}
                 fontFamily="heading"
                 fontWeight="400"
-                fontSize={{ base: "2xl", sm: "3xl", lg: "4xl" }}
                 lineWeight="1.1"
               >
                 {produck.product_name}
@@ -125,9 +97,9 @@ const ProductDetail = () => {
             </Box>
 
             <Stack
+              divider={<StackDivider borderColor="gray.200" />}
               spacing={{ base: 4, sm: 6 }}
               direction="column"
-              divider={<StackDivider borderColor="gray.200" />}
             >
               <VStack>
                 <Text fontSize="lg" fontWeight="400">
@@ -164,8 +136,16 @@ const ProductDetail = () => {
                     <Text as="span" fontWeight="thin">
                       Kategori:
                     </Text>{" "}
-                    Kategori {produck?.category}
+                    {produck.Category?.category || "Kategori"}
                   </ListItem>
+                  {productStock.map((val) => (
+                    <ListItem>
+                      <Text as="span" fontWeight="thin">
+                        Stock:
+                      </Text>{" "}
+                      {val.stock}
+                    </ListItem>
+                  ))}
                 </List>
               </Box>
             </Stack>
@@ -180,12 +160,12 @@ const ProductDetail = () => {
             <Button
               _hover={{ boxShadow: "lg", transform: "translateY(5px)" }}
               textTransform="uppercase"
-              mt="8"
-              size="md"
-              w="full"
-              py="6"
               color="gray.900"
               bg="teal.500"
+              size="md"
+              w="full"
+              mt="8"
+              py="6"
               rounded="none"
             >
               Masukkan Keranjang

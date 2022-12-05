@@ -1,4 +1,4 @@
-import "./styles/globals.css"
+// import "./styles/globals.css"
 import { useEffect, useState } from "react"
 import { login, logout } from "./redux/features/authSlice"
 import { useDispatch, useSelector } from "react-redux"
@@ -57,7 +57,11 @@ const App = () => {
           <Route index element={<Footer />} />
         </Route>
         <Route path="/product" element={<ProductList />} />
-        <Route path="/productdetail/:id" element={<ProductDetail />} />
+
+        <Route
+          path="/product-detail/:id/:product_name"
+          element={<ProductDetail />}
+        />
         <Route path="/404" element={<NotFound />} />
         <Route
           path="/profile"

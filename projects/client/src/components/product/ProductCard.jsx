@@ -25,8 +25,8 @@ const ProductCard = ({ id, product_name, price }) => {
 
   const fetchProductImage = async () => {
     try {
-      const response = await axiosInstance.get(`/products/image/${id}`)
-      setProductImg(response.data.data)
+      const responseImg = await axiosInstance.get(`/products/image/${id}`)
+      setProductImg(responseImg.data.data)
     } catch (err) {
       console.log(err)
     }
@@ -44,7 +44,6 @@ const ProductCard = ({ id, product_name, price }) => {
   return (
     <>
       <Flex
-        border="1px solid black"
         // w="full"
         w={{ base: "full", lg: "15em" }}
         h="full"
@@ -53,12 +52,11 @@ const ProductCard = ({ id, product_name, price }) => {
         cursor="pointer"
         bg="white"
         rounded="xl"
-        shadow="lg"
-        borderWidth="1px"
+        shadow="2xl"
         // onClick={() => productDetail()}
       >
         <Box w="full" h="full">
-          <Link to={`/productdetail/${id}`}>
+          <Link to={`/product-detail/${id}/${product_name}`}>
             <Box
               w="100%"
               height="200px"

@@ -23,6 +23,8 @@ import {
   Breadcrumb,
   BreadcrumbItem,
   BreadcrumbLink,
+  VisuallyHidden,
+  Center,
 } from "@chakra-ui/react"
 import { Fragment, useState } from "react"
 import Navbar from "../layout/Navbar"
@@ -69,6 +71,7 @@ const ProductList = () => {
 
       setProducts(response.data.data)
       setTotalCount(response.data.dataCount)
+      console.log("result", totalCount)
       setMaxPage(Math.ceil(response.data.dataCount / maxProductInPage))
 
       if (page === 1) {
@@ -136,6 +139,17 @@ const ProductList = () => {
     setFilterProduct(value)
   }
 
+  const btnResetFilter = () => {
+    setSearchParams(false)
+    setSortBy(false)
+    setFilterProduct(false)
+    window.location.reload(false)
+  }
+
+  const btnClickPage = () => {
+    page.length(page + 1)
+  }
+
   useEffect(() => {
     for (let passing of searchParams.entries()) {
       if (passing[0] === "search") {
@@ -179,8 +193,8 @@ const ProductList = () => {
 
       {/* Product List */}
 
-      <Box h={{ base: "0", md: "0", lg: "85vh" }} border="1px solid blue">
-        <Box ml="1em" mr="1em" border="1px solid red">
+      <Box h={{ base: "0", md: "0", lg: "85vh" }}>
+        <Box ml="1em" mr="1em">
           <Breadcrumb fontWeight="medium" fontSize="sm">
             <BreadcrumbItem>
               <BreadcrumbLink href="/">Home</BreadcrumbLink>
@@ -222,6 +236,21 @@ const ProductList = () => {
                   </Select>
                 </FormControl>
               </GridItem>
+              <GridItem>
+                <FormLabel>.</FormLabel>
+
+                <Button
+                  onClick={btnResetFilter}
+                  p="3"
+                  bgColor="white"
+                  variant="solid"
+                  borderRadius="none"
+                  borderBottom="2px solid #dfe1e3"
+                  _hover={{ borderBottom: "2px solid " }}
+                >
+                  Reset Filter
+                </Button>
+              </GridItem>
 
               {/* <FormControl>
                 <FormLabel>Search</FormLabel>
@@ -254,8 +283,7 @@ const ProductList = () => {
 
               </Flex> */}
           <Grid
-            templateColumns="repeat(5, 1fr)"
-            border="1px solid purple"
+            templateColumns={{ base: "repeat(1, 1fr)", md: "repeat(5, 1fr)" }}
             mt="4"
             minChildWidth="250px"
             // spacing="5em"
@@ -267,8 +295,21 @@ const ProductList = () => {
           </Grid>
 
           {/* Next/Prev Page Product */}
-          <Flex w="full" alignItems="center" justifyContent="center" gap="1em">
-            {page === 1 ? null : <FaArrowLeft onClick={previousPageProduct} />}
+
+          <Flex
+            w="full"
+            justify="center"
+            gap="1em"
+            mt="1em"
+            borderRadius="10px"
+            shadow="lg"
+          >
+            {page === 1 ? null : (
+              <Button colorScheme="teal" onClick={previousPageProduct}>
+                <FaArrowLeft />
+              </Button>
+            )}
+
             {!products.length ? (
               <Alert
                 status="error"
@@ -290,11 +331,17 @@ const ProductList = () => {
                 </Button>
               </Alert>
             ) : null}
-            <Text fontWeight="semibold" fontSize="20px">
-              {page}
-            </Text>
+
+            {/* <Text fontWeight="semibold" fontSize="20px">
+              <Button>{page}</Button>
+            </Text> */}
+            <Button>{page - 0}</Button>
+            <Button onClick={btnClickPage}>{page + 1}</Button>
+
             {page >= maxPage ? null : (
-              <FaArrowRight onClick={nextPageProduct} />
+              <Button colorScheme="teal" onClick={nextPageProduct}>
+                <FaArrowRight />
+              </Button>
             )}
           </Flex>
         </Box>
