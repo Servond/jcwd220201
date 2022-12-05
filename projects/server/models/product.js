@@ -5,6 +5,8 @@ module.exports = function (sequelize, DataTypes) {
   class Product extends Model {
     static associate(models) {
       Product.belongsTo(models.Category)
+      Product.hasMany(models.ProductPicture)
+      Product.hasMany(models.ProductStock)
     }
   }
   Product.init(

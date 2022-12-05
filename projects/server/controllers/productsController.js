@@ -64,10 +64,12 @@ const productsController = {
   },
   getProductsByID: async (req, res) => {
     try {
-      const { id } = req.params
-
-      const getProductsByID = await db.Product.findByPk(id, {
-        include: [{ model: db.Category }],
+      const getProductsByID = await db.Product.findByPk(req.params.id, {
+        include: [
+          { model: db.Category },
+          { model: db.ProductPicture },
+          { model: db.ProductStock },
+        ],
       })
 
       res.status(200).json({
