@@ -19,15 +19,17 @@ import {
   HStack,
   Link,
   Box,
+  Autocomplete,
 } from "@chakra-ui/react";
 import { useFormik } from "formik";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { useState } from "react";
 import * as Yup from "yup";
-import clearInput from "../../lib/address/clearInput";
 
 // Own library imports
 import useCheckInputError from "../../lib/address/hooks/useCheckInputError";
+import clearInput from "../../lib/address/clearInput";
+import CitiesInput from "./CitiesInput";
 
 const AddressForm = ({ isOpen, onClose }) => {
   // Monitor user input
@@ -37,14 +39,14 @@ const AddressForm = ({ isOpen, onClose }) => {
   const [cityError, setCityError] = useState(false);
   const [addressError, setAddressError] = useState(false);
 
+  // Store cities data
+  const [cities, setCities] = useState(null);
+
   // Form functionality
   const NAME_MAX_LENGTH = 50;
   const LABEL_MAX_LENGTH = 30;
   const PHONE_MAX_LENGTH = 13;
   const ADDRESS_MAX_LENGTH = 200;
-
-  // Checkbox reference
-  const checkboxRef = useRef(null);
 
   const formik = useFormik({
     initialValues: {
@@ -65,6 +67,9 @@ const AddressForm = ({ isOpen, onClose }) => {
     }),
     onSubmit: () => {},
   });
+
+  // Checkbox reference
+  const checkboxRef = useRef(null);
 
   // Invalid input error handling
   const nameErrorTrigger = formik.touched.name && formik.errors.name;
@@ -250,15 +255,7 @@ const AddressForm = ({ isOpen, onClose }) => {
             >
               Kota
             </FormLabel>
-            <Input
-              id="city"
-              type="text"
-              {...formik.getFieldProps("city")}
-              focusBorderColor={
-                cityError ? "rgb(230, 68, 68)" : "rgb(49, 151, 149)"
-              }
-              fontSize="0.875rem"
-            />
+            <CitiesInput formik={formik} error={cityError} />
             <FormErrorMessage
               fontSize="0.8125rem"
               lineHeight="1rem"
@@ -286,6 +283,7 @@ const AddressForm = ({ isOpen, onClose }) => {
               fontSize="0.875rem"
               height="7.4375rem"
               lineHeight="1.375rem"
+              maxLength={ADDRESS_MAX_LENGTH}
               overflowWrap="break-word"
               p="0.5rem 0.75rem"
               resize="none"
