@@ -69,7 +69,7 @@ const ProductDetail = () => {
           <Flex>
             <Carousel swipeable={true} showStatus={false} dynamicHeight={false}>
               {productImg.map((val) => (
-                <Image
+                <img
                   // className="image-prod-detail"
                   h={{ base: "100%", sm: "400px", lg: "500px" }}
                   src={val.product_picture}
