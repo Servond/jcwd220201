@@ -1,7 +1,12 @@
-const Sequelize = require("sequelize");
+const { Model } = require("sequelize")
+const Sequelize = require("sequelize")
 module.exports = function (sequelize, DataTypes) {
-  return sequelize.define(
-    "User",
+  class User extends Model {
+    static associate(models) {
+      User.hasMany(models.Cart)
+    }
+  }
+  User.init(
     {
       id: {
         autoIncrement: true,
@@ -69,5 +74,6 @@ module.exports = function (sequelize, DataTypes) {
         },
       ],
     }
-  );
-};
+  )
+  return User
+}

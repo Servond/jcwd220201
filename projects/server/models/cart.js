@@ -1,40 +1,48 @@
-const Sequelize = require('sequelize');
-module.exports = function(sequelize, DataTypes) {
-  return sequelize.define('Cart', {
-    id: {
-      autoIncrement: true,
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      primaryKey: true
-    },
-    user_id: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      references: {
-        model: 'users',
-        key: 'id'
-      }
+"use strict"
+const Sequelize = require("sequelize")
+const { Model } = require("sequelize")
+module.exports = function (sequelize, DataTypes) {
+  class Cart extends Model {
+    static associate(models) {
+      Cart.hasMany(models.CartItem)
+      Cart.belongsTo(models.User)
     }
-  }, {
-    sequelize,
-    tableName: 'carts',
-    timestamps: false,
-    indexes: [
-      {
-        name: "PRIMARY",
-        unique: true,
-        using: "BTREE",
-        fields: [
-          { name: "id" },
-        ]
+  }
+  Cart.init(
+    {
+      id: {
+        autoIncrement: true,
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        primaryKey: true,
       },
-      {
-        name: "fk_user_id_idx",
-        using: "BTREE",
-        fields: [
-          { name: "user_id" },
-        ]
+      user_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+          model: "users",
+          key: "id",
+        },
       },
-    ]
-  });
-};
+    },
+    {
+      sequelize,
+      tableName: "carts",
+      timestamps: false,
+      indexes: [
+        {
+          name: "PRIMARY",
+          unique: true,
+          using: "BTREE",
+          fields: [{ name: "id" }],
+        },
+        {
+          name: "fk_user_id_idx",
+          using: "BTREE",
+          fields: [{ name: "user_id" }],
+        },
+      ],
+    }
+  )
+  return Cart
+}

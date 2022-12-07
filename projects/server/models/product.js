@@ -7,6 +7,7 @@ module.exports = function (sequelize, DataTypes) {
       Product.belongsTo(models.Category)
       Product.hasMany(models.ProductPicture)
       Product.hasMany(models.ProductStock)
+      Product.hasMany(models.CartItem)
     }
   }
   Product.init(
