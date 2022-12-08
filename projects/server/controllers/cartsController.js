@@ -3,89 +3,43 @@ const db = require("../models")
 const cartController = {
   addToCart: async (req, res) => {
     try {
-      const { product_id, quantity, price } = req.body
+      const { ProductId, CartId, quantity } = req.body
 
-      const findProductCart1 = await db.CartItem.findOne({
+      const findProductsCart = await db.CartItem.findOne({
         where: {
-          product_id: product_id,
-          quantity: quantity,
-          price: price,
+          ProductId: ProductId,
         },
-        include: [{ model: db.Cart }, { model: db.Product }],
       })
-
-      if (findProductCart1) {
+      if (findProductsCart) {
         return res.status(400).json({
-          message: "You alr add this product !",
+          message: "Already Added in Cart !",
         })
       }
 
-      const addProduct = await db.Cart.create({
-        user_id: req.user.id,
-        product_id: product_id,
+      const addProductCart = await db.CartItem.create({
+        CartId: CartId,
+        ProductId: ProductId,
+        quantity: quantity,
       })
 
-      const findProductCart2 = await db.CartItem.findByPk(addProduct.id, {
+      const findAddProductCart = await db.CartItem.findByPk(addProductCart.id, {
         include: db.Cart,
       })
 
-      return res.status(201).json({
-        message: "Product Added to Cart",
-        data: findProductCart2,
+      return res.status(200).json({
+        message: "Add Product to Cart !",
+        data: findAddProductCart,
       })
     } catch (err) {
-      console.log(err)
       return res.status(500).json({
-        message: err.message,
+        msg: err.message,
       })
     }
-
-    //   try {
-    //     const { product_id, quantity, price } = req.body
-    //     const total_price = quantity * price
-
-    //     const findProductCart1 = await db.CartItem.findOne({
-    //       where: {
-    //         product_id,
-    //       },
-    //       include: [{ model: db.Cart }, { model: db.Product }],
-    //     })
-    //     if (findProductCart1) {
-    //       await CartItem.update({
-    //         quantity,
-    //         total_price,
-    //       }),
-    //         {
-    //           where: {
-    //             id: findProductCart1.id,
-    //           },
-    //         }
-    //     }
-    //     if (!findProductCart1) {
-    //       product_id, quantity, price, total_price
-    //     }
-    //     const findProductCart2 = await db.CartItem.findOne({
-    //       where: {
-    //         product_id,
-    //       },
-    //       include: [{ model: db.Cart }, { model: db.Product }],
-    //     })
-
-    //     return res.status(200).json({
-    //       message: "Add to cart was succesfull",
-    //       data: findProductCart2,
-    //     })
-    //   } catch (err) {
-    //     console.log(err)
-    //     return res.status(500).json({
-    //       message: err.message,
-    //     })
-    //   }
   },
   showCartItems: async (req, res) => {
     try {
       const showAllProductItems = await db.CartItem.findAll({
-        include: [{ model: db.Cart }],
+        include: [{ model: db.Cart }, { model: db.Product }],
       })
 
       return res.status(200).json({
@@ -99,11 +53,11 @@ const cartController = {
       })
     }
   },
-  deleteCart: async (req, res) => {
+  deleteProductCartById: async (req, res) => {
     try {
       const { id } = req.params
 
-      await CartItem.destroy({
+      await db.CartItem.destroy({
         where: {
           id: id,
         },

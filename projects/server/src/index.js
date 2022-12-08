@@ -7,7 +7,7 @@ const adminRoute = require("../routes/adminRoute")
 const authRoute = require("../routes/authRoute")
 const productsRoute = require("../routes/productsRoute")
 const registerRoute = require("../routes/registerRoute")
-const cartRoute = require("../routes/cartRoute")
+const cartRoute = require("../routes/cartsRoute")
 
 dotenv.config()
 
