@@ -47,7 +47,7 @@ const LoginPage = () => {
         dispatch(
           login({
             id: response.data.data.id,
-            role_id: response.data.data.role_id,
+            RoleId: response.data.data.RoleId,
             name: response.data.data.name,
             email: response.data.data.email,
             phone: response.data.data.phone,
