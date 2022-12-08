@@ -6,7 +6,7 @@ const db = require("../models")
 const adminRoute = require("../routes/adminRoute")
 const authRoute = require("../routes/authRoute")
 const productsRoute = require("../routes/productsRoute")
-const registerRoute = require("./routes/registerRoute")
+const registerRoute = require("../routes/registerRoute")
 const cartRoute = require("../routes/cartRoute")
 
 dotenv.config()
