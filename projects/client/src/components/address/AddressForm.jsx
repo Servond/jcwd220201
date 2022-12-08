@@ -19,10 +19,8 @@ import {
   HStack,
   Link,
   Box,
-  Autocomplete,
 } from "@chakra-ui/react";
 import { useFormik } from "formik";
-import { useEffect, useRef } from "react";
 import { useState } from "react";
 import * as Yup from "yup";
 
@@ -39,13 +37,9 @@ const AddressForm = ({ isOpen, onClose }) => {
   const [cityError, setCityError] = useState(false);
   const [addressError, setAddressError] = useState(false);
 
-  // Store cities data
-  const [cities, setCities] = useState(null);
-
   // Form functionality
   const NAME_MAX_LENGTH = 50;
   const LABEL_MAX_LENGTH = 30;
-  const PHONE_MAX_LENGTH = 13;
   const ADDRESS_MAX_LENGTH = 200;
 
   const formik = useFormik({
@@ -59,7 +53,7 @@ const AddressForm = ({ isOpen, onClose }) => {
     },
     validationSchema: Yup.object({
       name: Yup.string().max(50).required("Wajib diisi"),
-      phone: Yup.string().max(13).required("Wajib diisi"),
+      phone: Yup.string().max(13, "harus 13 angka").required("Wajib diisi"),
       label: Yup.string().max(30).required("Wajib diisi"),
       city: Yup.string().required("Wajib diisi"),
       address: Yup.string().max(200).required("Wajib diisi"),
@@ -67,9 +61,6 @@ const AddressForm = ({ isOpen, onClose }) => {
     }),
     onSubmit: () => {},
   });
-
-  // Checkbox reference
-  const checkboxRef = useRef(null);
 
   // Invalid input error handling
   const nameErrorTrigger = formik.touched.name && formik.errors.name;
@@ -96,12 +87,12 @@ const AddressForm = ({ isOpen, onClose }) => {
         onClose();
       }}
       scrollBehavior="inside"
-      size="3xl"
+      size={["xs", "md", "2xl", "3xl"]}
     >
       <ModalOverlay />
       <ModalContent color="rgba(49, 53, 59, 0.96)">
         <ModalHeader
-          fontSize="1.625rem"
+          fontSize={["1.375rem", "1.5rem", "1.625rem", "1.625rem"]}
           fontWeight="700"
           letterSpacing="-0.2px"
           lineHeight="1.125rem"
@@ -115,18 +106,21 @@ const AddressForm = ({ isOpen, onClose }) => {
         <ModalCloseButton />
         <Divider />
         <ModalBody
-          fontSize="0.875rem"
+          fontSize={["0.75rem", "0.75rem", "0.875rem", "0.875rem"]}
           lineHeight="1rem"
           mt="1rem"
           p="1.5rem 2.5rem"
           textAlign="left"
         >
-          <Heading fontSize="1.375rem" mb="1.5rem">
+          <Heading
+            fontSize={["1.125rem", "1.25rem", "1.375rem", "1.375rem"]}
+            mb="1.5rem"
+          >
             Lengkapi detail alamat
           </Heading>
           <FormControl isInvalid={nameError}>
             <FormLabel
-              fontSize="0.9375rem"
+              fontSize={["0.8125rem", "0.8125rem", "0.9375rem", "0.9375rem"]}
               fontWeight="700"
               lineHeight="1.25rem"
               mb="0.5rem"
@@ -141,7 +135,8 @@ const AddressForm = ({ isOpen, onClose }) => {
               focusBorderColor={
                 nameError ? "rgb(230, 68, 68)" : "rgb(49, 151, 149)"
               }
-              fontSize="0.875rem"
+              fontSize={["0.75rem", "0.75rem", "0.875rem", "0.875rem"]}
+              height={["2.125rem", "2.25rem", "2.5rem", "2.5rem"]}
               maxLength={NAME_MAX_LENGTH}
             />
             <HStack
@@ -150,18 +145,18 @@ const AddressForm = ({ isOpen, onClose }) => {
             >
               <FormErrorMessage
                 display="inline-block"
-                fontSize="0.8125rem"
+                fontSize={["0.6875rem", "0.6875rem", "0.8125rem", "0.8125rem"]}
                 lineHeight="1rem"
                 mt="0"
               >
-                Wajib diisi
+                {formik.errors.name}
               </FormErrorMessage>
               <FormHelperText
                 display="inline-block"
                 color={
                   nameError ? "rgb(230, 68, 68)" : "rgba(49, 53, 59, 0.68)"
                 }
-                fontSize="0.8125rem"
+                fontSize={["0.6875rem", "0.6875rem", "0.8125rem", "0.8125rem"]}
                 lineHeight="1rem"
                 mt="0"
               >
@@ -171,7 +166,7 @@ const AddressForm = ({ isOpen, onClose }) => {
           </FormControl>
           <FormControl isInvalid={phoneError} mt="0.75rem">
             <FormLabel
-              fontSize="0.9375rem"
+              fontSize={["0.8125rem", "0.8125rem", "0.9375rem", "0.9375rem"]}
               fontWeight="700"
               lineHeight="1.25rem"
               mb="0.5rem"
@@ -186,23 +181,23 @@ const AddressForm = ({ isOpen, onClose }) => {
               focusBorderColor={
                 phoneError ? "rgb(230, 68, 68)" : "rgb(49, 151, 149)"
               }
-              fontSize="0.875rem"
-              maxLength={PHONE_MAX_LENGTH}
+              fontSize={["0.75rem", "0.75rem", "0.875rem", "0.875rem"]}
+              maxLength={13}
             />
             <HStack mt="0.25rem" justifyContent="flex-start">
               <FormErrorMessage
                 display="inline-block"
-                fontSize="0.8125rem"
+                fontSize={["0.6875rem", "0.6875rem", "0.8125rem", "0.8125rem"]}
                 lineHeight="1rem"
                 mt="0"
               >
-                Wajib diisi
+                {formik.errors.phone}
               </FormErrorMessage>
             </HStack>
           </FormControl>
           <FormControl isInvalid={labelError} mt="2.125rem">
             <FormLabel
-              fontSize="0.9375rem"
+              fontSize={["0.8125rem", "0.8125rem", "0.9375rem", "0.9375rem"]}
               fontWeight="700"
               lineHeight="1.25rem"
               mb="0.5rem"
@@ -217,7 +212,7 @@ const AddressForm = ({ isOpen, onClose }) => {
               focusBorderColor={
                 labelError ? "rgb(230, 68, 68)" : "rgb(49, 151, 149)"
               }
-              fontSize="0.875rem"
+              fontSize={["0.75rem", "0.75rem", "0.875rem", "0.875rem"]}
               maxLength={LABEL_MAX_LENGTH}
             />
             <HStack
@@ -226,18 +221,18 @@ const AddressForm = ({ isOpen, onClose }) => {
             >
               <FormErrorMessage
                 display="inline-block"
-                fontSize="0.8125rem"
+                fontSize={["0.6875rem", "0.6875rem", "0.8125rem", "0.8125rem"]}
                 lineHeight="1rem"
                 mt="0"
               >
-                Wajib diisi
+                {formik.errors.label}
               </FormErrorMessage>
               <FormHelperText
                 display="inline-block"
                 color={
                   labelError ? "rgb(230, 68, 68)" : "rgba(49, 53, 59, 0.68)"
                 }
-                fontSize="0.8125rem"
+                fontSize={["0.6875rem", "0.6875rem", "0.8125rem", "0.8125rem"]}
                 lineHeight="1rem"
                 mt="0"
               >
@@ -247,7 +242,7 @@ const AddressForm = ({ isOpen, onClose }) => {
           </FormControl>
           <FormControl isInvalid={cityError} mt="0.75rem">
             <FormLabel
-              fontSize="0.9375rem"
+              fontSize={["0.8125rem", "0.8125rem", "0.9375rem", "0.9375rem"]}
               fontWeight="700"
               lineHeight="1.25rem"
               mb="0.5rem"
@@ -257,16 +252,16 @@ const AddressForm = ({ isOpen, onClose }) => {
             </FormLabel>
             <CitiesInput formik={formik} error={cityError} />
             <FormErrorMessage
-              fontSize="0.8125rem"
+              fontSize={["0.6875rem", "0.6875rem", "0.8125rem", "0.8125rem"]}
               lineHeight="1rem"
               mt="0.25rem"
             >
-              Wajib diisi
+              {formik.errors.city}
             </FormErrorMessage>
           </FormControl>
           <FormControl isInvalid={addressError} mt="2.125rem" mb="0.25rem">
             <FormLabel
-              fontSize="0.9375rem"
+              fontSize={["0.8125rem", "0.8125rem", "0.9375rem", "0.9375rem"]}
               fontWeight="700"
               lineHeight="1.25rem"
               mb="0.5rem"
@@ -280,7 +275,7 @@ const AddressForm = ({ isOpen, onClose }) => {
               focusBorderColor={
                 addressError ? "rgb(230, 68, 68)" : "rgb(49, 151, 149)"
               }
-              fontSize="0.875rem"
+              fontSize={["0.75rem", "0.75rem", "0.875rem", "0.875rem"]}
               height="7.4375rem"
               lineHeight="1.375rem"
               maxLength={ADDRESS_MAX_LENGTH}
@@ -294,18 +289,18 @@ const AddressForm = ({ isOpen, onClose }) => {
             >
               <FormErrorMessage
                 display="inline-block"
-                fontSize="0.8125rem"
+                fontSize={["0.6875rem", "0.6875rem", "0.8125rem", "0.8125rem"]}
                 lineHeight="1rem"
                 mt="0"
               >
-                Wajib diisi
+                {formik.errors.address}
               </FormErrorMessage>
               <FormHelperText
                 display="inline-block"
                 color={
                   addressError ? "rgb(230, 68, 68)" : "rgba(49, 53, 59, 0.68)"
                 }
-                fontSize="0.8125rem"
+                fontSize={["0.6875rem", "0.6875rem", "0.8125rem", "0.8125rem"]}
                 lineHeight="1rem"
                 mt="0"
               >
@@ -319,14 +314,17 @@ const AddressForm = ({ isOpen, onClose }) => {
                 id="isDefault"
                 {...formik.getFieldProps("isDefault")}
                 colorScheme="teal"
-                ref={checkboxRef}
-                size="lg"
+                size={["md", "md", "lg", "lg"]}
               />
-              <Text fontSize="0.9375rem">Jadikan alamat utama</Text>
+              <Text
+                fontSize={["0.8125rem", "0.8125rem", "0.9375rem", "0.9375rem"]}
+              >
+                Jadikan alamat utama
+              </Text>
             </HStack>
           </FormControl>
           <Text
-            fontSize="0.75rem"
+            fontSize={["0.625rem", "0.625rem", "0.75rem", "0.75rem"]}
             lineHeight="1.125rem"
             mt="1.5rem"
             mb="0.75rem"
@@ -342,8 +340,8 @@ const AddressForm = ({ isOpen, onClose }) => {
               borderRadius="0.5rem"
               colorScheme="teal"
               fontWeight="bold"
-              fontSize="1rem"
-              height="3rem"
+              fontSize={["0.75rem", "0.875rem", "1rem", "1rem"]}
+              height={["2.5rem", "2.75rem", "3rem", "3rem"]}
               lineHeight="1.375rem"
               px="1rem"
             >

@@ -12,7 +12,6 @@ const renderFilteredCities = (
   return citySuggestions.map((city) => {
     return (
       <ListItem
-        borderRadius="0.375rem 0.375rem 0 0"
         cursor="pointer"
         key={city.city_id}
         onClick={() => {

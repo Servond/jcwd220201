@@ -12,7 +12,7 @@ const SearchBar = () => {
       borderRadius="0.5rem"
       align="stretch"
       overflow="hidden"
-      width="18.75rem"
+      width={["100%", "100%", "43.34%", "33.094%"]}
       height="2.375rem"
       direction="row"
     >
@@ -20,10 +20,9 @@ const SearchBar = () => {
         <Input
           placeholder="Cari alamat atau nama penerima"
           _placeholder={{ color: "rgb(169, 168, 172)" }}
-          width="18rem"
-          height="100%"
+          height={["85.714%", "100%"]}
           color="rgba(49, 53, 59, 0.96)"
-          fontSize="0.875rem"
+          fontSize={["0.75rem", "0.875rem"]}
           lineHeight="1.25rem"
           padding="0.5rem 0.75rem"
           _hover="none"
@@ -32,9 +31,10 @@ const SearchBar = () => {
         <InputRightAddon
           padding="0"
           _hover={{ backgroundColor: "rgb(230, 231, 232)" }}
+          height={["85.714%", "100%"]}
         >
           <Button
-            width="100%"
+            width={["100%", "54.032%"]}
             height="100%"
             padding="0"
             backgroundImage="assets/address/search-icon.svg"

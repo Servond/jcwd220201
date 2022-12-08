@@ -20,7 +20,7 @@ const AddressCard = (props) => {
         color="rgba(49, 53, 59, 0.96)"
         direction="column"
         pr="1rem"
-        width="22.875rem"
+        width="100%"
         _before={{
           content: '""',
           position: "absolute",
@@ -37,20 +37,20 @@ const AddressCard = (props) => {
           <Text fontSize="0.875rem" fontWeight="700">
             Alamat Rumah
           </Text>
-          <Flex
+          <Box
             backgroundColor="rgb(243, 244, 245)"
             borderRadius="3px"
             color="rgb(159, 166, 176)"
             fontSize="0.625rem"
             fontWeight="800"
             height="1.25rem"
-            justify="center"
             lineHeight="1rem"
             ml="0.25rem"
+            pt="1px"
             px="0.5rem"
           >
             Utama
-          </Flex>
+          </Box>
         </Flex>
         <Text
           fontSize="1rem"
@@ -75,6 +75,7 @@ const AddressCard = (props) => {
           lineHeight="1.25rem"
           maxW="21.875rem"
           whiteSpace="nowrap"
+          width={["50%", "100%", "100%", "100%"]}
           overflow="hidden"
           textOverflow="ellipsis"
         >
@@ -95,6 +96,7 @@ const AddressCard = (props) => {
             fontSize="0.8125rem"
             fontWeight="700"
             lineHeight="0.8625rem"
+            _hover={{ textDecoration: "none" }}
           >
             Ubah Alamat
           </Link>
@@ -113,6 +115,7 @@ const AddressCard = (props) => {
               fontSize="0.8125rem"
               fontWeight="700"
               lineHeight="0.8625rem"
+              _hover={{ textDecoration: "none" }}
             >
               Hapus
             </Link>
@@ -126,6 +129,7 @@ const AddressCard = (props) => {
         fontSize="0.75rem"
         height="2rem"
         px="36px"
+        width={["100%", "100%", "12.071%", "9.217%"]}
       >
         Pilih
       </Button>

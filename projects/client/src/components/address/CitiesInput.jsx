@@ -45,11 +45,13 @@ const CitiesInput = ({ formik, error }) => {
         type="text"
         {...formik.getFieldProps("city")}
         focusBorderColor={error ? "rgb(230, 68, 68)" : "rgb(49, 151, 149)"}
-        fontSize="0.875rem"
+        fontSize={["0.75rem", "0.75rem", "0.875rem", "0.875rem"]}
       ></Input>
       {displaySuggestion ? (
         <UnorderedList
-          border="1px solid rgb(226, 232, 240)"
+          border={
+            filteredCities.length ? "1px solid rgb(226, 232, 240)" : "none"
+          }
           borderRadius="0.375rem"
           maxH="8.25rem"
           listStyleType="none"
