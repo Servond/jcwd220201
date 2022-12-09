@@ -16,6 +16,8 @@ const renderFilteredCities = (
         key={city.city_id}
         onClick={() => {
           setFieldValue("city", `${city.type} ${city.city_name}`);
+          setFieldValue("province", city.province);
+          setFieldValue("postalCode", Number(city.postal_code));
           setIsSelected(true);
           setDisplaySuggestion(false);
         }}

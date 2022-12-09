@@ -28,6 +28,7 @@ import * as Yup from "yup";
 import useCheckInputError from "../../lib/address/hooks/useCheckInputError";
 import clearInput from "../../lib/address/clearInput";
 import CitiesInput from "./CitiesInput";
+import { useEffect } from "react";
 
 const AddressForm = ({ isOpen, onClose }) => {
   // Monitor user input
@@ -47,8 +48,10 @@ const AddressForm = ({ isOpen, onClose }) => {
       name: "",
       phone: "",
       label: "",
-      city: "",
       address: "",
+      city: "",
+      province: "",
+      postalCode: null,
       isDefault: false,
     },
     validationSchema: Yup.object({
