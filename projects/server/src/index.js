@@ -7,6 +7,7 @@ const adminRoute = require("../routes/adminRoute");
 const authRoute = require("../routes/authRoute");
 const productsRoute = require("../routes/productsRoute");
 const registerRoute = require("../routes/registerRoute");
+const addressRoute = require("../routes/addressRoute");
 
 dotenv.config();
 
@@ -30,6 +31,9 @@ app.use(express.json());
 
 // Register middleware
 app.use("/api/register", registerRoute);
+
+// Address middleware
+app.use("/api/address", addressRoute);
 
 const {
   warehousesRoute,
