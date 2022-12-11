@@ -16,6 +16,10 @@ import {
   Input,
   NumberInput,
   NumberInputField,
+  useNumberInput,
+  InputGroup,
+  InputRightElement,
+  InputLeftElement,
 } from "@chakra-ui/react"
 import { Carousel } from "react-responsive-carousel"
 import { useState } from "react"
@@ -25,6 +29,7 @@ import "react-responsive-carousel/lib/styles/carousel.min.css"
 import { axiosInstance } from "../../api"
 import { useEffect } from "react"
 import Navbar from "../layout/Navbar"
+import { AddIcon, MinusIcon } from "@chakra-ui/icons"
 
 const ProductDetail = () => {
   const [produck, setProducts] = useState({
@@ -39,6 +44,19 @@ const ProductDetail = () => {
 
   const [productImg, setProductImg] = useState([])
   const [productStock, setProductStock] = useState([])
+
+  const { getInputProps, getIncrementButtonProps, getDecrementButtonProps } =
+    useNumberInput({
+      step: 1,
+      defaultValue: 1,
+      min: 1,
+      // max: stock,
+    })
+
+  const inc = getIncrementButtonProps()
+  const dec = getDecrementButtonProps()
+  const input = getInputProps()
+  const qty = Number(input.value)
 
   const fetchProductDetail = async () => {
     try {
@@ -146,15 +164,39 @@ const ProductDetail = () => {
                       {val.stock}
                     </ListItem>
                   ))}
+                  <ListItem>
+                    <Text as="span" fontWeight="thin">
+                      Subtotal:
+                    </Text>{" "}
+                  </ListItem>
                 </List>
               </Box>
             </Stack>
             <HStack alignSelf="center" maxW="320px">
-              <Button>-</Button>
+              {/* <Button>-</Button>
               <NumberInput>
                 <NumberInputField />
               </NumberInput>
-              <Button>+</Button>
+              <Button>+</Button> */}
+
+              <InputGroup>
+                <InputLeftElement>
+                  <AddIcon
+                    {...inc}
+                    color={productStock <= qty ? "#c0cada" : "#0095DA"}
+                  />
+                </InputLeftElement>
+                <Input
+                  width="10em"
+                  textAlign="center"
+                  {...input}
+                  _hover={"none"}
+                  isDisabled={productStock === 0 ? true : false}
+                />
+                <InputRightElement>
+                  <MinusIcon {...dec} color={qty > 1 ? "#0095DA" : "#c0cada"} />
+                </InputRightElement>
+              </InputGroup>
             </HStack>
 
             <Button
