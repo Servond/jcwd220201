@@ -13,6 +13,7 @@ const authController = {
       const findUserByEmail = await User.findOne({
         where: {
           email,
+          password,
         },
       })
       if (!findUserByEmail) {
@@ -21,18 +22,18 @@ const authController = {
         })
       }
 
-      const passwordValid = bcrypt.compareSync(
-        password,
-        findUserByEmail.password
-      )
+      // const passwordValid = bcrypt.compareSync(
+      //   password,
+      //   findUserByEmail.password
+      // )
 
-      if (!passwordValid) {
-        return res.status(400).json({
-          message: "Password invalid",
-        })
-      }
+      // if (!passwordValid) {
+      //   return res.status(400).json({
+      //     message: "Password invalid",
+      //   })
+      // }
 
-      delete findUserByEmail.dataValues.password
+      // delete findUserByEmail.dataValues.password
 
       const token = signToken({
         id: findUserByEmail.id,
@@ -56,9 +57,13 @@ const authController = {
       if (req.file) {
         req.body.profile_picture = `http://localhost:8000/public/${req.file.filename}`
       }
+      const { password } = req.body
+
+      // edit with hashed password
+      const hashedPassword = bcrypt.hashSync(password, 5)
 
       await User.update(
-        { ...req.body },
+        { password: hashedPassword },
         {
           where: {
             id: req.user.id,
