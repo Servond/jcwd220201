@@ -37,6 +37,7 @@ import { useEffect } from "react"
 import { SearchIcon } from "@chakra-ui/icons"
 import { FaArrowRight, FaArrowLeft } from "react-icons/fa"
 import { useSearchParams, useLocation } from "react-router-dom"
+import ReactPaginate from "react-paginate"
 
 const MotionSimpleGrid = motion(SimpleGrid)
 const MotionBox = motion(Box)
@@ -65,7 +66,7 @@ const ProductList = () => {
           _limit: maxProductInPage,
           _sortBy: sortBy,
           _sortDir: sortDir,
-          category_id: filterProduct,
+          CategoryId: filterProduct,
           product_name: searchValue,
         },
       })
@@ -298,9 +299,7 @@ const ProductList = () => {
               </FormControl> */}
             </Grid>
           </Flex>
-          {/* <Flex pos="sticky" left="5" h="95vh" mt="2.5vh" boxShadow={}>
 
-              </Flex> */}
           <Grid
             templateColumns={{ base: "repeat(1, 1fr)", md: "repeat(5, 1fr)" }}
             mt="4"
@@ -352,9 +351,6 @@ const ProductList = () => {
               </Alert>
             ) : null}
 
-            {/* <Text fontWeight="semibold" fontSize="20px">
-              <Button>{page}</Button>
-            </Text> */}
             <Button>{page - 0}</Button>
             <Button onClick={btnClickPage}>{page + 1}</Button>
 
@@ -363,6 +359,23 @@ const ProductList = () => {
                 <FaArrowRight />
               </Button>
             )}
+          </Flex>
+          <Flex
+            w="full"
+            justify="center"
+            gap="1em"
+            mt="1em"
+            borderRadius="none"
+            borderBottomRadius="5px solid"
+            boxShadow="md"
+          >
+            <ReactPaginate
+              previousLabel={<FaArrowLeft />}
+              nextLabel={<FaArrowRight />}
+              pageCount={totalCount - 10}
+              marginPagesDisplayed={3}
+              // onPageChange={setPage}
+            />
           </Flex>
         </Box>
       </Box>
