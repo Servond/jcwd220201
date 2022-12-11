@@ -3,10 +3,10 @@ const { Model } = require("sequelize")
 module.exports = (sequelize, DataTypes) => {
   class User extends Model {
     static associate(models) {
-      User.hasMany(models.Cart, {
-        onUpdate: "CASCADE",
-        onDelete: "CASCADE",
-      })
+      // User.hasMany(models.Cart, {
+      //   onUpdate: "CASCADE",
+      //   onDelete: "CASCADE",
+      // })
       User.hasMany(models.Otp, {
         onUpdate: "CASCADE",
         onDelete: "CASCADE",
