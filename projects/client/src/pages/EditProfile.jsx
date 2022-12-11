@@ -15,6 +15,7 @@ import {
   Text,
   useToast,
   InputGroup,
+  FormErrorMessage,
 } from "@chakra-ui/react"
 import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons"
 import { useState, useRef } from "react"
@@ -112,7 +113,7 @@ const EditProfile = () => {
     validationSchema: Yup.object({
       password: Yup.string().required(),
       confirm_password: Yup.string()
-        .required()
+        .required("password not match")
         .oneOf([Yup.ref("password"), null], "password not match"),
     }),
     validateOnChange: false,
@@ -243,6 +244,9 @@ const EditProfile = () => {
                 name="confirm_password"
                 type="confirm_password"
               />
+              <FormErrorMessage>
+                {formik.errors.confirm_password}
+              </FormErrorMessage>
             </FormControl>
           </Stack>
         </HStack>
