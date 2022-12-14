@@ -4,7 +4,7 @@ import {
   Flex,
   Heading,
   HStack,
-  Link,
+  Link as LinkChakra,
   Stack,
   Text,
   Grid,
@@ -15,27 +15,85 @@ import {
   AlertIcon,
   AlertTitle,
   useColorModeValue,
+  useToast,
+  Checkbox,
+  Divider,
 } from "@chakra-ui/react"
+import { useState } from "react"
+import { useEffect } from "react"
 import { AiFillDelete } from "react-icons/ai"
 import { FaArrowRight } from "react-icons/fa"
+import { useDispatch, useSelector } from "react-redux"
+import { axiosInstance } from "../api"
 import CartItem from "../components/cart/CartItem"
-
-const OrderSummaryItem = (props) => {
-  const { label, value, children } = props
-  return (
-    <Flex justify="space-between" fontSize="sm">
-      <Text
-        fontWeight="medium"
-        color={useColorModeValue("gray.600", "gray.400")}
-      >
-        {label}
-      </Text>
-      {value ? <Text fontWeight="medium">{value}</Text> : children}
-    </Flex>
-  )
-}
+import { itemCart } from "../redux/features/cartSlice"
+import { Link as LinkRouterDom } from "react-router-dom"
 
 const CartPage = () => {
+  const [allProductCheck, setAllProductCheck] = useState(false)
+  const cartSelector = useSelector((state) => state.cart)
+  const dispatch = useDispatch()
+  const toast = useToast()
+
+  const fetchCartItem = async () => {
+    try {
+      const response = await axiosInstance.get("/carts/me")
+
+      dispatch(itemCart(response.data.data))
+
+      const productCheck = response.data.data.map((val) => val.is_checked)
+
+      if (!productCheck.includes(false)) {
+        setAllProductCheck(true)
+      } else {
+        setAllProductCheck(false)
+      }
+    } catch (err) {
+      console.log(err)
+    }
+  }
+
+  const checkAllProduct = async () => {
+    try {
+      const response = await axiosInstance.patch("/carts/checkAllProduct")
+
+      const productCheck = response.data.data.map((val) => val.is_checked)
+
+      if (!productCheck.includes(false)) {
+        setAllProductCheck(true)
+      } else {
+        setAllProductCheck(false)
+      }
+
+      fetchCartItem()
+    } catch (err) {
+      console.log(err)
+    }
+  }
+
+  const renderCartItem = () => {
+    return cartSelector.cart.map((val) => {
+      return (
+        <CartItem
+          key={val.id.toString()}
+          productId={val.ProductId}
+          product_name={val.Product.product_name}
+          price={val.Product.price}
+          quantity={val.quantity}
+          product_picture={val.Product.ProductPictures[0].product_picture}
+          CartId={val.id}
+          fetchCartItem={fetchCartItem}
+          isChecked={val.is_checked}
+          checkAllProduct={checkAllProduct}
+          // CategoryId={val.Category.categoryId}
+        />
+      )
+    })
+  }
+  // console.log(product_picture)
+  useEffect(() => {
+    fetchCartItem()
+  }, [])
   return (
     <>
       <Box
@@ -51,12 +109,19 @@ const CartPage = () => {
         >
           <Stack spacing={{ base: "8", md: "10" }} flex="2">
             <Heading fontSize="2xl" fontWeight="extrabold">
-              Keranjang (3 items)
+              Keranjang
             </Heading>
+            <Checkbox
+              isChecked={allProductCheck}
+              borderColor="teal"
+              size="lg"
+              onChange={() => allProductCheck()}
+            >
+              <Text>Pilih Semua</Text>
+            </Checkbox>
+            <Divider backgroundColor="#F3F4F5" border="5px" />
 
-            <Stack spacing="6">
-              <CartItem />
-            </Stack>
+            <Stack spacing="6">{renderCartItem()}</Stack>
           </Stack>
 
           <Flex direction="column" align="center" flex="1">
@@ -97,19 +162,20 @@ const CartPage = () => {
                 colorScheme="teal"
                 _hover={{ boxShadow: "lg", transform: "translateY(5px)" }}
                 size="lg"
-                fontSize="md"
+                fontSize="lg"
                 rightIcon={<FaArrowRight />}
               >
-                Checkout
+                Beli ( )
               </Button>
             </Stack>
 
             {/* ========================================================= */}
             <HStack mt="6" fontWeight="semibold">
-              <p>or</p>
-              <Link color={useColorModeValue("teal.500", "teal.200")}>
-                Continue shopping
-              </Link>
+              <p>atau</p>
+
+              <LinkChakra color={useColorModeValue("teal.500", "teal.200")}>
+                <LinkRouterDom to="/product">Lanjut Belanja</LinkRouterDom>
+              </LinkChakra>
             </HStack>
           </Flex>
         </Stack>

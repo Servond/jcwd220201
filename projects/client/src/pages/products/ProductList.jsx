@@ -195,7 +195,7 @@ const ProductList = () => {
         key={val.id.toString()}
         product_name={val.product_name}
         product_picture={val.product_picture}
-        price={val.price.toLocaleString()}
+        price={val.price}
         id={val.id}
       />
       // </Box>
@@ -360,7 +360,7 @@ const ProductList = () => {
               </Button>
             )}
           </Flex>
-          <Flex
+          {/* <Flex
             w="full"
             justify="center"
             gap="1em"
@@ -374,9 +374,9 @@ const ProductList = () => {
               nextLabel={<FaArrowRight />}
               pageCount={totalCount - 10}
               marginPagesDisplayed={3}
-              // onPageChange={setPage}
+              onPageChange={setPage}
             />
-          </Flex>
+          </Flex> */}
         </Box>
       </Box>
 

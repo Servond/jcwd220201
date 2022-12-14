@@ -3,6 +3,7 @@ import { useEffect } from "react"
 import { useState } from "react"
 import { Link } from "react-router-dom"
 import { axiosInstance } from "../../api"
+import { Rupiah } from "../../lib/currency/Rupiah"
 
 const ProductCard = ({ id, product_name, price }) => {
   const [productData, setProductData] = useState({
@@ -76,7 +77,7 @@ const ProductCard = ({ id, product_name, price }) => {
               {product_name}
             </Box>
 
-            <Box>Rp{price}</Box>
+            <Box>{Rupiah(price)}</Box>
             {/* <Box>{productData.category_id}</Box> */}
           </Box>
         </Box>
