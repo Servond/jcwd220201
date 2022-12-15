@@ -1,8 +1,12 @@
 import { axiosInstance } from "../../api";
 
 const fetchCities = async () => {
-  const cities = await axiosInstance.get("/cities");
-  return cities;
+  try {
+    const response = await axiosInstance.get("/cities");
+    return response;
+  } catch (err) {
+    return err.response;
+  }
 };
 
 export default fetchCities;

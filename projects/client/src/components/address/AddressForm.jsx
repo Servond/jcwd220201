@@ -19,33 +19,54 @@ import {
   HStack,
   Link,
   Box,
+  useToast,
 } from "@chakra-ui/react";
 import { useFormik } from "formik";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import * as Yup from "yup";
 
 // Own library imports
 import useCheckInputError from "../../lib/address/hooks/useCheckInputError";
 import clearInput from "../../lib/address/clearInput";
 import CitiesInput from "./CitiesInput";
-import { useEffect } from "react";
+import saveAddress from "../../lib/address/saveAddress";
 
-const AddressForm = ({ isOpen, onClose }) => {
+const AddressForm = ({
+  fetchAddresses,
+  isOpen,
+  onClose,
+  setAddresses,
+  setTotalPage,
+}) => {
+  // Get user id
+  const id = useSelector((state) => state.auth.id);
+
   // Monitor user input
-  const [nameError, setNameError] = useState(false);
+  const [recipientError, setRecipientError] = useState(false);
   const [phoneError, setPhoneError] = useState(false);
   const [labelError, setLabelError] = useState(false);
   const [cityError, setCityError] = useState(false);
   const [addressError, setAddressError] = useState(false);
 
+  // Alert functionality
+  const toast = useToast();
+
   // Form functionality
-  const NAME_MAX_LENGTH = 50;
+  const RECIPIENT_MAX_LENGTH = 50;
   const LABEL_MAX_LENGTH = 30;
   const ADDRESS_MAX_LENGTH = 200;
 
+  const invalidPattern = /^(?!\s*$)/;
+
+  const errorMessage = {
+    required: "Wajib diisi",
+    maxPhoneLength: "Maksimal 13 angka",
+  };
+
   const formik = useFormik({
     initialValues: {
-      name: "",
+      recipient: "",
       phone: "",
       label: "",
       address: "",
@@ -55,25 +76,62 @@ const AddressForm = ({ isOpen, onClose }) => {
       isDefault: false,
     },
     validationSchema: Yup.object({
-      name: Yup.string().max(50).required("Wajib diisi"),
-      phone: Yup.string().max(13, "harus 13 angka").required("Wajib diisi"),
-      label: Yup.string().max(30).required("Wajib diisi"),
-      city: Yup.string().required("Wajib diisi"),
-      address: Yup.string().max(200).required("Wajib diisi"),
+      recipient: Yup.string()
+        .matches(invalidPattern, errorMessage.required)
+        .max(50)
+        .required(errorMessage.required),
+      phone: Yup.string()
+        .matches(invalidPattern, errorMessage.required)
+        .max(13, errorMessage.maxPhoneLength)
+        .required(errorMessage.required),
+      label: Yup.string()
+        .matches(invalidPattern, errorMessage.required)
+        .max(30)
+        .required(errorMessage.required),
+      city: Yup.string()
+        .matches(invalidPattern, errorMessage.required)
+        .required(errorMessage.required),
+      address: Yup.string()
+        .matches(invalidPattern, errorMessage.required)
+        .max(200)
+        .required(errorMessage.required),
       isDefault: Yup.boolean(),
     }),
-    onSubmit: () => {},
+    onSubmit: async () => {
+      // Save new address
+      const address = { id, newAddress: formik.values };
+      const res = await saveAddress(address);
+
+      // Update address list
+      const response = await fetchAddresses();
+      const { addresses: newAddressList, totalPage } = response.data.data;
+      setAddresses(newAddressList);
+      setTotalPage(totalPage);
+
+      // Alert user of the result
+      toast({
+        title: res.data.message,
+        status: res.status === 201 ? "success" : "error",
+      });
+
+      // Clear user input after saving
+      clearInput(formik.values, formik.touched, formik.setFieldValue);
+
+      // Close form
+      onClose();
+    },
   });
 
   // Invalid input error handling
-  const nameErrorTrigger = formik.touched.name && formik.errors.name;
+  const recipientErrorTrigger =
+    formik.touched.recipient && formik.errors.recipient;
   const phoneErrorTrigger = formik.touched.phone && formik.errors.phone;
   const labelErrorTrigger = formik.touched.label && formik.errors.label;
   const cityErrorTrigger = formik.touched.city && formik.errors.city;
   const addressErrorTrigger = formik.touched.address && formik.errors.address;
 
   const handleInputErrors = [
-    { trigger: nameErrorTrigger, callback: setNameError },
+    { trigger: recipientErrorTrigger, callback: setRecipientError },
     { trigger: phoneErrorTrigger, callback: setPhoneError },
     { trigger: labelErrorTrigger, callback: setLabelError },
     { trigger: cityErrorTrigger, callback: setCityError },
@@ -121,7 +179,7 @@ const AddressForm = ({ isOpen, onClose }) => {
           >
             Lengkapi detail alamat
           </Heading>
-          <FormControl isInvalid={nameError}>
+          <FormControl isInvalid={recipientError}>
             <FormLabel
               fontSize={["0.8125rem", "0.8125rem", "0.9375rem", "0.9375rem"]}
               fontWeight="700"
@@ -132,19 +190,19 @@ const AddressForm = ({ isOpen, onClose }) => {
               Nama Penerima
             </FormLabel>
             <Input
-              id="name"
+              id="recipient"
               type="text"
-              {...formik.getFieldProps("name")}
+              {...formik.getFieldProps("recipient")}
               focusBorderColor={
-                nameError ? "rgb(230, 68, 68)" : "rgb(49, 151, 149)"
+                recipientError ? "rgb(230, 68, 68)" : "rgb(49, 151, 149)"
               }
               fontSize={["0.75rem", "0.75rem", "0.875rem", "0.875rem"]}
               height={["2.125rem", "2.25rem", "2.5rem", "2.5rem"]}
-              maxLength={NAME_MAX_LENGTH}
+              maxLength={RECIPIENT_MAX_LENGTH}
             />
             <HStack
               mt="0.25rem"
-              justifyContent={nameError ? "space-between" : "flex-end"}
+              justifyContent={recipientError ? "space-between" : "flex-end"}
             >
               <FormErrorMessage
                 display="inline-block"
@@ -152,18 +210,18 @@ const AddressForm = ({ isOpen, onClose }) => {
                 lineHeight="1rem"
                 mt="0"
               >
-                {formik.errors.name}
+                {formik.errors.recipient}
               </FormErrorMessage>
               <FormHelperText
                 display="inline-block"
                 color={
-                  nameError ? "rgb(230, 68, 68)" : "rgba(49, 53, 59, 0.68)"
+                  recipientError ? "rgb(230, 68, 68)" : "rgba(49, 53, 59, 0.68)"
                 }
                 fontSize={["0.6875rem", "0.6875rem", "0.8125rem", "0.8125rem"]}
                 lineHeight="1rem"
                 mt="0"
               >
-                {formik.values.name.length}/{NAME_MAX_LENGTH}
+                {formik.values.recipient.length}/{RECIPIENT_MAX_LENGTH}
               </FormHelperText>
             </HStack>
           </FormControl>
@@ -346,6 +404,7 @@ const AddressForm = ({ isOpen, onClose }) => {
               fontSize={["0.75rem", "0.875rem", "1rem", "1rem"]}
               height={["2.5rem", "2.75rem", "3rem", "3rem"]}
               lineHeight="1.375rem"
+              onClick={formik.handleSubmit}
               px="1rem"
             >
               Simpan

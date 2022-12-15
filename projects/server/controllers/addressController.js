@@ -1,11 +1,24 @@
 const { Address, sequelize } = require("../models");
+const { Op } = require("sequelize");
+const { validationResult } = require("express-validator");
 
 // Own library imports
 const getCoordinate = require("../lib/address/getCoordinate");
+const getPagination = require("../lib/address/getPagination");
+const getPagingData = require("../lib/address/getPagingData");
 
 const addressController = {
   addNewAddress: async (req, res) => {
     try {
+      // Validate user input
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({
+          errors: errors.array(),
+          message: "Data yang kamu masukkan tidak sesuai",
+        });
+      }
+
       // Get user id and new address
       const {
         id,
@@ -21,13 +34,28 @@ const addressController = {
         },
       } = req.body;
 
+      // Reset default address if user specify a new default address
+      if (isDefault === "true") {
+        await sequelize.transaction(async (t) => {
+          await Address.update(
+            { is_default: false },
+            {
+              where: {
+                [Op.and]: [{ user_id: id }, { is_default: true }],
+              },
+              transaction: t,
+            }
+          );
+        });
+      }
+
       // Get the coordinates of said address
       const pinpoint = await getCoordinate(city);
 
       // Send error response in case of invalid coordinate
       if (!pinpoint) {
         return res.status(400).json({
-          message: "Pastikan kamu masukkan nama kota yang ada di Indonesia",
+          message: "Pastikan kamu masukkan nama kota yang direkomendasikan",
         });
       }
 
@@ -35,16 +63,16 @@ const addressController = {
       await sequelize.transaction(async (t) => {
         await Address.create(
           {
-            user_id: id,
+            user_id: parseInt(id),
             recipient,
             phone,
             label,
             address,
             city,
             province,
-            postal_code: postalCode,
+            postal_code: parseInt(postalCode),
             pinpoint,
-            is_default: isDefault,
+            is_default: isDefault === "true",
           },
           { transaction: t }
         );
@@ -57,7 +85,118 @@ const addressController = {
     } catch (err) {
       console.log(err);
       return res.status(500).json({
-        message: "server error",
+        message: "Server error",
+      });
+    }
+  },
+  getAddresses: async (req, res) => {
+    try {
+      // Get user id
+      const { id } = req.user;
+
+      // Prepare for pagination
+      const search = req.query.search;
+      const searchPattern = search ? `%${search}%` : "%%";
+      const page = parseInt(req.query.page);
+      const { LIMIT, OFFSET } = getPagination(page);
+
+      // Get addresses
+      const addresses = await Address.findAndCountAll({
+        where: {
+          user_id: id,
+          [Op.or]: [
+            { address: { [Op.like]: searchPattern } },
+            { recipient: { [Op.like]: searchPattern } },
+          ],
+        },
+        limit: LIMIT,
+        offset: OFFSET,
+        order: [
+          ["is_default", "DESC"],
+          ["label", "ASC"],
+        ],
+      });
+
+      // Format result
+      const result = getPagingData(addresses, page, LIMIT);
+
+      // Send successful response
+      return res.status(200).json({
+        message: "Daftar alamat berhasil diambil",
+        data: result,
+      });
+    } catch (err) {
+      res.status(500).json({
+        message: "Server error",
+      });
+    }
+  },
+  makeDefaultAddress: async (req, res) => {
+    try {
+      // Get user id
+      const { id: user_id } = req.user;
+
+      // Get address id
+      const { addressId: id } = req.body;
+
+      // Update default address
+      await sequelize.transaction(async (t) => {
+        await Address.update(
+          { is_default: false },
+          {
+            where: {
+              [Op.and]: [{ user_id }, { is_default: true }],
+            },
+            transaction: t,
+          }
+        );
+      });
+
+      await sequelize.transaction(async (t) => {
+        await Address.update(
+          { is_default: true },
+          {
+            where: {
+              [Op.and]: [{ id }, { user_id }],
+            },
+            transaction: t,
+          }
+        );
+      });
+
+      // Send successful response
+      return res.status(200).json({
+        message: "Alamat utama ditambahkan",
+      });
+    } catch (err) {
+      return res.status(500).json({
+        message: "Server error",
+      });
+    }
+  },
+  deleteAddress: async (req, res) => {
+    try {
+      // Get user id
+      const { id: user_id } = req.user;
+      const { addressId } = req.params;
+
+      // Delete address
+      await sequelize.transaction(async (t) => {
+        await Address.destroy({
+          where: {
+            [Op.and]: [{ id: addressId }, { user_id }],
+          },
+          transaction: t,
+        });
+      });
+
+      // Send successful message
+      return res.status(200).json({
+        message: "Alamat berhasil dihapus",
+      });
+    } catch (err) {
+      return res.status(500).json({
+        message: "Server error",
       });
     }
   },

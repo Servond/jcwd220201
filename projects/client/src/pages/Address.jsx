@@ -1,56 +1,119 @@
 import { Box, Button, Flex, Stack, useDisclosure } from "@chakra-ui/react";
-import AddressCard from "../components/address/AddressCard";
+import { useState, useEffect } from "react";
+import ReactPaginate from "react-paginate";
 import AddressForm from "../components/address/AddressForm";
 import SearchBar from "../components/address/SearchBar";
 import Footer from "./layout/Footer";
 import Navbar from "./layout/Navbar";
 
+// Own library imports
+import fetchAddresses from "../lib/address/fetchAddresses";
+import renderAddresses from "../lib/address/renderAddresses";
+
 const Address = () => {
+  // Display addresses functionality
+  const [pageIndex, setPageIndex] = useState(0);
+  const [totalPage, setTotalPage] = useState(0);
+  const [defaultAddress, setDefaultAddress] = useState(null);
+  const [addresses, setAddresses] = useState(null);
+  const [loadAddress, setLoadAddress] = useState(false);
+
+  // Modal functionality
   const { isOpen, onOpen, onClose } = useDisclosure();
+
+  // Fetch user addresses
+  useEffect(() => {
+    fetchAddresses(pageIndex).then((res) => {
+      // Get response data
+      const { addresses, totalPage } = res.data.data;
+
+      // Store other addresses
+      setAddresses(addresses);
+
+      // Prepare for pagination
+      setTotalPage(totalPage);
+
+      // Load addresses
+      setLoadAddress(true);
+    });
+  }, [pageIndex, defaultAddress]);
+
   return (
     <Flex h="100%" direction="column" justifyContent="space-between">
       <Navbar />
-      <Box height="64.9531rem" mb="3.125rem">
+      <Box height={["78.41rem", "85.48rem", "75.6rem", "75.6rem"]}>
         <Flex
           direction="column"
           alignItems="center"
-          mt="4rem"
+          mt={["0.5rem", "4rem"]}
           border={["none", "1px solid rgb(219, 222, 226)"]}
           borderRadius="0.5rem"
-          p="2.25rem 1rem 1rem"
+          p={[
+            "3rem 1rem 1rem",
+            "3rem 1rem 1.96rem",
+            "3rem 1rem 2rem",
+            "3rem 2rem 2rem",
+          ]}
           w={{
             base: "17.73rem",
-            sm: "28.367rem",
-            md: "45.387rem",
-            lg: "58.625rem",
+            sm: "30.367rem",
+            md: "47.387rem",
+            lg: "60.625rem",
           }}
           mx="auto"
         >
           <Stack
             direction={["column", "column", "row"]}
             justifyContent="space-between"
-            width="100%"
-            paddingX="0.25rem"
+            spacing={["0.25rem", "0.5rem"]}
+            width={["15.2295rem", "25.7412rem", "42.7617rem", "56.125rem"]}
           >
-            <SearchBar />
+            <SearchBar
+              pageIndex={pageIndex}
+              setters={{ setAddresses, setTotalPage }}
+            />
             <Button
               borderRadius="0.5rem"
               colorScheme="teal"
               fontWeight="bold"
-              fontSize={["0.6875rem", "0.75rem"]}
+              fontSize={["0.6875rem", "0.875rem"]}
               height={["2.0352rem", "2.375rem"]}
               onClick={onOpen}
               px="1rem"
-              width={["100%", "100%", "21.884%", "16.71%"]}
+              width={["100%", "100%", "auto", "auto"]}
             >
               Tambah Alamat Baru
             </Button>
           </Stack>
 
-          <AddressCard />
+          {loadAddress
+            ? renderAddresses(
+                addresses,
+                setDefaultAddress,
+                setAddresses,
+                setTotalPage
+              )
+            : null}
 
-          <AddressForm isOpen={isOpen} onClose={onClose} />
+          <AddressForm
+            fetchAddresses={fetchAddresses}
+            isOpen={isOpen}
+            onClose={onClose}
+            setAddresses={setAddresses}
+            setTotalPage={setTotalPage}
+          />
         </Flex>
+        <ReactPaginate
+          breakLabel="..."
+          containerClassName="address-pagination-buttons"
+          nextLabel="Berikutnya"
+          onPageChange={({ selected }) => setPageIndex(selected)}
+          pageRangeDisplayed={5}
+          pageClassName="address-pagination-pages"
+          pageCount={totalPage}
+          previousLabel="Sebelumnya"
+          renderOnZeroPageCount={null}
+        />
       </Box>
       <Footer />
     </Flex>

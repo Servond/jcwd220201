@@ -1,4 +1,5 @@
 // import "./styles/globals.css"
+import "./App.css";
 import { useEffect, useState } from "react";
 import { login, logout } from "./redux/features/authSlice";
 import { useDispatch, useSelector } from "react-redux";

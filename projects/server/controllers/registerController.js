@@ -278,7 +278,7 @@ const registerController = {
           },
         }
       );
-      // Send success response
+      // Send successful response
       return res.status(201).json({
         message: "Akun berhasil didaftarkan",
       });

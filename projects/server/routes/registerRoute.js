@@ -24,7 +24,7 @@ router.post(
 router.post(
   "/",
   // Input must be an email
-  body("email").isEmail().normalizeEmail(),
+  body("email").not().isEmpty().isEmail().normalizeEmail(),
   register
 );
 
@@ -37,6 +37,7 @@ router.post("/verify", validateOtp);
 // Complete registration
 router.post(
   "/account",
+  // Input must be valid
   body("name").not().isEmpty().trim().escape().isLength({ min: 3 }),
   body("password").not().isEmpty().trim().isLength({ min: 8 }),
   completeRegistration
