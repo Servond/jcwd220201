@@ -9,6 +9,7 @@ import Navbar from "./layout/Navbar";
 // Own library imports
 import fetchAddresses from "../lib/address/fetchAddresses";
 import renderAddresses from "../lib/address/renderAddresses";
+import EditAddressForm from "../components/address/EditAddressForm";
 
 const Address = () => {
   // Display addresses functionality
@@ -17,13 +18,14 @@ const Address = () => {
   const [defaultAddress, setDefaultAddress] = useState(null);
   const [addresses, setAddresses] = useState(null);
   const [loadAddress, setLoadAddress] = useState(false);
+  const [query, setQuery] = useState(null);
 
   // Modal functionality
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   // Fetch user addresses
   useEffect(() => {
-    fetchAddresses(pageIndex).then((res) => {
+    fetchAddresses(pageIndex, query).then((res) => {
       // Get response data
       const { addresses, totalPage } = res.data.data;
 
@@ -36,7 +38,7 @@ const Address = () => {
       // Load addresses
       setLoadAddress(true);
     });
-  }, [pageIndex, defaultAddress]);
+  }, [query, pageIndex, defaultAddress]);
 
   return (
     <Flex h="100%" direction="column" justifyContent="space-between">
@@ -68,10 +70,7 @@ const Address = () => {
             spacing={["0.25rem", "0.5rem"]}
             width={["15.2295rem", "25.7412rem", "42.7617rem", "56.125rem"]}
           >
-            <SearchBar
-              pageIndex={pageIndex}
-              setters={{ setAddresses, setTotalPage }}
-            />
+            <SearchBar setQuery={setQuery} />
             <Button
               borderRadius="0.5rem"
               colorScheme="teal"
@@ -89,26 +88,30 @@ const Address = () => {
           {loadAddress
             ? renderAddresses(
                 addresses,
+                pageIndex,
                 setDefaultAddress,
                 setAddresses,
-                setTotalPage
+                setTotalPage,
+                setPageIndex
               )
             : null}
 
           <AddressForm
             fetchAddresses={fetchAddresses}
+            pageIndex={pageIndex}
             isOpen={isOpen}
             onClose={onClose}
             setAddresses={setAddresses}
             setTotalPage={setTotalPage}
+            setPageIndex={setPageIndex}
           />
         </Flex>
         <ReactPaginate
           breakLabel="..."
           containerClassName="address-pagination-buttons"
+          forcePage={pageIndex}
           nextLabel="Berikutnya"
           onPageChange={({ selected }) => {
-            console.log(selected);
             setPageIndex(selected);
           }}
           pageRangeDisplayed={5}

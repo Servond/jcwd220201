@@ -4,6 +4,7 @@ const {
   addNewAddress,
   getAddresses,
   makeDefaultAddress,
+  editAddress,
   deleteAddress,
 } = require("../controllers/addressController");
 const { verifyToken } = require("../middlewares/authMiddleware");
@@ -31,6 +32,8 @@ router.post(
 router.get("/", verifyToken, getAddresses);
 
 router.patch("/default", verifyToken, makeDefaultAddress);
+
+router.patch("/", verifyToken, editAddress);
 
 router.delete("/:addressId", verifyToken, deleteAddress);
 

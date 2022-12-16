@@ -2,6 +2,7 @@ import AddressCard from "../../components/address/AddressCard";
 
 const renderAddresses = (
   addresses,
+  pageIndex,
   setDefaultAddress,
   setAddresses,
   setTotalPage,
@@ -19,6 +20,7 @@ const renderAddresses = (
             setPageIndex,
           }}
           data={address}
+          pageIndex={pageIndex}
           variant="selected"
         />
       );
@@ -30,8 +32,10 @@ const renderAddresses = (
           setDefaultAddress,
           setAddresses,
           setTotalPage,
+          setPageIndex,
         }}
         data={address}
+        pageIndex={pageIndex}
         variant="default"
       />
     );

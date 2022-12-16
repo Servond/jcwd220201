@@ -12,9 +12,12 @@ import {
 import { GrLocation } from "react-icons/gr";
 import { BsCheck2 } from "react-icons/bs";
 import ConfirmationModal from "./ConfirmationModal";
+import EditAddressForm from "./EditAddressForm";
 
 // Own library imports
 import makeDefault from "../../lib/address/makeDefault";
+import fetchAddresses from "../../lib/address/fetchAddresses";
+import { useState } from "react";
 import { useEffect } from "react";
 
 const AddressCard = (props) => {
@@ -23,10 +26,16 @@ const AddressCard = (props) => {
   const [isSmSize] = useMediaQuery("min-width: 30rem");
 
   // Modal functionality
+  const [openEditAddress, setOpenEditAddress] = useState(false);
+  const [openConfirmationModal, setOpenConfirmationModal] = useState(false);
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   // Get user address
-  const { setDefaultAddress, setAddresses, setTotalPage } = rest.setters;
+  const { setDefaultAddress, setAddresses, setTotalPage, setPageIndex } =
+    rest.setters;
+
+  const { pageIndex } = rest;
+
   const { label, recipient, phone, address, id, is_default } = rest.data;
 
   return (
@@ -110,6 +119,11 @@ const AddressCard = (props) => {
             fontSize={["0.71rem", "0.8125rem"]}
             fontWeight="700"
             lineHeight="0.8625rem"
+            onClick={() => {
+              setOpenConfirmationModal(false);
+              setOpenEditAddress(true);
+              onOpen();
+            }}
             _hover={{ textDecoration: "none" }}
           >
             Ubah Alamat
@@ -130,7 +144,11 @@ const AddressCard = (props) => {
                 fontSize={["0.71rem", "0.8125rem"]}
                 fontWeight="700"
                 lineHeight="0.8625rem"
-                onClick={onOpen}
+                onClick={() => {
+                  setOpenEditAddress(false);
+                  setOpenConfirmationModal(true);
+                  onOpen();
+                }}
                 _hover={{ textDecoration: "none" }}
               >
                 Hapus
@@ -161,13 +179,29 @@ const AddressCard = (props) => {
         </Button>
       )}
 
-      <ConfirmationModal
-        id={id}
-        label={label}
-        isOpen={isOpen}
-        onClose={onClose}
-        setters={{ setAddresses, setTotalPage }}
-      />
+      {openEditAddress && (
+        <EditAddressForm
+          fetchAddresses={fetchAddresses}
+          pageIndex={pageIndex}
+          isOpen={isOpen}
+          onClose={onClose}
+          setAddresses={setAddresses}
+          setTotalPage={setTotalPage}
+          setPageIndex={setPageIndex}
+          addressData={rest.data}
+        />
+      )}
+
+      {openConfirmationModal && (
+        <ConfirmationModal
+          id={id}
+          label={label}
+          isOpen={isOpen}
+          onClose={onClose}
+          pageIndex={pageIndex}
+          setters={{ setAddresses, setTotalPage, setPageIndex }}
+        />
+      )}
     </Box>
   );
 };

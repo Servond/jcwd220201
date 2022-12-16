@@ -14,7 +14,6 @@ import {
   FormHelperText,
   Input,
   Textarea,
-  Checkbox,
   Text,
   HStack,
   Link,
@@ -22,17 +21,15 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import { useFormik } from "formik";
-import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useState } from "react";
 import * as Yup from "yup";
 
 // Own library imports
 import useCheckInputError from "../../lib/address/hooks/useCheckInputError";
-import clearInput from "../../lib/address/clearInput";
 import CitiesInput from "./CitiesInput";
-import saveAddress from "../../lib/address/saveAddress";
+import editAddress from "../../lib/address/editAddress";
 
-const AddressForm = ({
+const EditAddressForm = ({
   fetchAddresses,
   pageIndex,
   isOpen,
@@ -40,9 +37,20 @@ const AddressForm = ({
   setAddresses,
   setTotalPage,
   setPageIndex,
+  addressData,
 }) => {
-  // Get user id
-  const id = useSelector((state) => state.auth.id);
+  // Get user data
+  const {
+    id,
+    recipient,
+    phone,
+    label,
+    address,
+    city,
+    province,
+    postal_code,
+    is_default,
+  } = addressData;
 
   // Monitor user input
   const [recipientError, setRecipientError] = useState(false);
@@ -68,14 +76,14 @@ const AddressForm = ({
 
   const formik = useFormik({
     initialValues: {
-      recipient: "",
-      phone: "",
-      label: "",
-      address: "",
-      city: "",
-      province: "",
-      postalCode: null,
-      isDefault: false,
+      recipient,
+      phone,
+      label,
+      address,
+      city,
+      province,
+      postalCode: postal_code,
+      isDefault: is_default,
     },
     validationSchema: Yup.object({
       recipient: Yup.string()
@@ -100,9 +108,9 @@ const AddressForm = ({
       isDefault: Yup.boolean(),
     }),
     onSubmit: async () => {
-      // Save new address
+      // Edit address
       const address = { id, newAddress: formik.values };
-      const res = await saveAddress(address);
+      const res = await editAddress(address);
 
       // Update address list
       if (!pageIndex) {
@@ -119,9 +127,6 @@ const AddressForm = ({
         title: res.data.message,
         status: res.status === 201 ? "success" : "error",
       });
-
-      // Clear user input after saving
-      clearInput(formik.values, formik.touched, formik.setFieldValue);
 
       // Close form
       onClose();
@@ -149,10 +154,7 @@ const AddressForm = ({
   return (
     <Modal
       isOpen={isOpen}
-      onClose={() => {
-        clearInput(formik.values, formik.touched, formik.setFieldValue);
-        onClose();
-      }}
+      onClose={onClose}
       scrollBehavior="inside"
       size={["xs", "md", "2xl", "3xl"]}
     >
@@ -168,7 +170,7 @@ const AddressForm = ({
           p="0"
           textAlign="center"
         >
-          Tambah Alamat
+          Ubah Alamat
         </ModalHeader>
         <ModalCloseButton />
         <Divider />
@@ -179,12 +181,6 @@ const AddressForm = ({
           p="1.5rem 2.5rem"
           textAlign="left"
         >
-          <Heading
-            fontSize={["1.125rem", "1.25rem", "1.375rem", "1.375rem"]}
-            mb="1.5rem"
-          >
-            Lengkapi detail alamat
-          </Heading>
           <FormControl isInvalid={recipientError}>
             <FormLabel
               fontSize={["0.8125rem", "0.8125rem", "0.9375rem", "0.9375rem"]}
@@ -375,21 +371,6 @@ const AddressForm = ({
               </FormHelperText>
             </HStack>
           </FormControl>
-          <FormControl mt="2rem">
-            <HStack>
-              <Checkbox
-                id="isDefault"
-                {...formik.getFieldProps("isDefault")}
-                colorScheme="teal"
-                size={["md", "md", "lg", "lg"]}
-              />
-              <Text
-                fontSize={["0.8125rem", "0.8125rem", "0.9375rem", "0.9375rem"]}
-              >
-                Jadikan alamat utama
-              </Text>
-            </HStack>
-          </FormControl>
           <Text
             fontSize={["0.625rem", "0.625rem", "0.75rem", "0.75rem"]}
             lineHeight="1.125rem"
@@ -422,4 +403,4 @@ const AddressForm = ({
   );
 };
 
-export default AddressForm;
+export default EditAddressForm;

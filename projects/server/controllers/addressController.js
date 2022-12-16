@@ -99,6 +99,7 @@ const addressController = {
       const searchPattern = search ? `%${search}%` : "%%";
 
       const page = parseInt(req.query.page);
+
       const { LIMIT, OFFSET } = getPagination(page);
 
       // Get addresses
@@ -168,6 +169,70 @@ const addressController = {
       // Send successful response
       return res.status(200).json({
         message: "Alamat utama ditambahkan",
+      });
+    } catch (err) {
+      return res.status(500).json({
+        message: "Server error",
+      });
+    }
+  },
+  editAddress: async (req, res) => {
+    try {
+      // Get user id
+      const { id: user_id } = req.user;
+
+      // Get new address details
+      const {
+        id,
+        newAddress: {
+          recipient,
+          phone,
+          label,
+          address,
+          city,
+          province,
+          postalCode,
+          isDefault,
+        },
+      } = req.body;
+
+      // Get the coordinates of said address
+      const pinpoint = await getCoordinate(city);
+
+      // Send error response in case of invalid coordinate
+      if (!pinpoint) {
+        return res.status(400).json({
+          message: "Pastikan kamu masukkan nama kota yang direkomendasikan",
+        });
+      }
+
+      // Persist user address in the Addresses table
+      await sequelize.transaction(async (t) => {
+        await Address.update(
+          {
+            user_id,
+            recipient,
+            phone,
+            label,
+            address,
+            city,
+            province,
+            postal_code: postalCode,
+            pinpoint,
+            is_default: isDefault,
+          },
+          {
+            where: {
+              id,
+            },
+            transaction: t,
+          }
+        );
+      });
+
+      // Send success response
+      return res.status(201).json({
+        message: "Alamat berhasil diubah",
       });
     } catch (err) {
       return res.status(500).json({

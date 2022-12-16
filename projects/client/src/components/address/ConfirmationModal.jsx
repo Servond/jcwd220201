@@ -19,7 +19,8 @@ const ConfirmationModal = ({
   label,
   isOpen,
   onClose,
-  setters: { setAddresses, setTotalPage },
+  pageIndex,
+  setters: { setAddresses, setTotalPage, setPageIndex },
 }) => {
   // Media query
   const [isLargerThanSm] = useMediaQuery("(min-width: 20rem)");
@@ -31,20 +32,14 @@ const ConfirmationModal = ({
       onClose={() => {
         onClose();
       }}
-      size={isLargerThanMd ? "lg" : isLargerThanSm ? "md" : "sm"}
+      size={["xs", "xs", "sm", "md"]}
       isCentered
     >
       <ModalOverlay />
-      <ModalContent p="2rem 2rem 1.5rem">
+      <ModalContent p={["1rem", "1rem", "1.2rem"]}>
         <ModalHeader
           textAlign="center"
-          fontSize={
-            isLargerThanMd
-              ? "1.714rem"
-              : isLargerThanSm
-              ? "1.116rem"
-              : "0.726rem"
-          }
+          fontSize={["0.927rem", "1.092rem", "1.285rem", "1.511rem"]}
           fontWeight="700"
           mb={
             isLargerThanMd
@@ -60,22 +55,9 @@ const ConfirmationModal = ({
         <ModalBody
           color="rgb(108, 114, 124)"
           textAlign="center"
-          fontSize={
-            isLargerThanMd
-              ? "0.989rem"
-              : isLargerThanSm
-              ? "0.644rem"
-              : "0.419rem"
-          }
+          fontSize={["0.821rem", "0.874rem", "0.93rem", "0.989rem"]}
           lineHeight="1.5rem"
-          m={
-            isLargerThanMd
-              ? "0 1rem 1rem"
-              : isLargerThanSm
-              ? "0 1rem 0.577rem"
-              : "0 1rem 0.332rem"
-          }
-          p="0"
+          p={["0.375rem", "0", "0", "0.375rem"]}
         >
           Apakah Anda yakin untuk menghapus <Text as="b">"{label}"</Text>? Anda
           tidak dapat mengembalikan alamat yang sudah dihapus.
@@ -92,21 +74,11 @@ const ConfirmationModal = ({
               onClose();
             }}
             mr="0.375rem"
-            width={
-              isLargerThanMd
-                ? "10.25rem"
-                : isLargerThanSm
-                ? "6.673rem"
-                : "4.341rem"
-            }
-            height={
-              isLargerThanMd ? "3rem" : isLargerThanSm ? "2.478rem" : "2.046rem"
-            }
+            width={["5.341rem", "5.841rem", "7.673rem", "10.25rem"]}
+            height={["1.889rem", "2.046rem", "2.478rem", "2.7rem"]}
             maxW="100%"
             border="1px solid"
-            fontSize={
-              isLargerThanMd ? "1rem" : isLargerThanSm ? "0.826rem" : "0.682rem"
-            }
+            fontSize={["0.729rem", "0.81rem", "0.9rem", "1rem"]}
             fontWeight="700"
             colorScheme="white"
             color="teal"
@@ -116,20 +88,17 @@ const ConfirmationModal = ({
             Batal
           </Button>
           <Button
-            width={
-              isLargerThanMd
-                ? "10.25rem"
-                : isLargerThanSm
-                ? "6.673rem"
-                : "4.341rem"
-            }
-            height={
-              isLargerThanMd ? "3rem" : isLargerThanSm ? "2.478rem" : "2.046rem"
-            }
+            // width={
+            //   isLargerThanMd
+            //     ? "10.25rem"
+            //     : isLargerThanSm
+            //     ? "6.673rem"
+            //     : "4.341rem"
+            // }
+            width={["5.341rem", "5.841rem", "7.673rem", "10.25rem"]}
+            height={["1.889rem", "2.046rem", "2.478rem", "2.7rem"]}
             maxW="100%"
-            fontSize={
-              isLargerThanMd ? "1rem" : isLargerThanSm ? "0.826rem" : "0.682rem"
-            }
+            fontSize={["0.729rem", "0.81rem", "0.9rem", "1rem"]}
             fontWeight="700"
             colorScheme="teal"
             lineHeight="22px"
@@ -139,12 +108,17 @@ const ConfirmationModal = ({
               await deleteAddress(id);
 
               // Update address list
-              const response = await fetchAddresses();
-              console.log(response.data.data);
-              const { addresses: newAddressList, totalPage } =
-                response.data.data;
-              setAddresses(newAddressList);
-              setTotalPage(totalPage);
+              if (!pageIndex) {
+                const response = await fetchAddresses();
+                console.log(response.data.data);
+                const { addresses: newAddressList, totalPage } =
+                  response.data.data;
+                setAddresses(newAddressList);
+                setTotalPage(totalPage);
+                return;
+              }
+
+              setPageIndex(0);
             }}
           >
             Hapus

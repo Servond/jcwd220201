@@ -1,9 +1,9 @@
 import { axiosInstance } from "../../api";
 
-const fetchAddresses = async (pageIndex = 0, search) => {
+const fetchAddresses = async (pageIndex = 0, input) => {
   try {
     const page = pageIndex + 1;
-    const query = search ? search : "";
+    const query = input ? input : "";
     const encodedQuery = encodeURI(query);
 
     const response = await axiosInstance.get(

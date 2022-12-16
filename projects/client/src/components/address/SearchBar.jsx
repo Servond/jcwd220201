@@ -6,23 +6,24 @@ import {
   InputRightAddon,
 } from "@chakra-ui/react";
 import { useFormik } from "formik";
+import { useEffect } from "react";
 
 // Own library imports
-import fetchAddresses from "../../lib/address/fetchAddresses";
 
-const SearchBar = ({ pageIndex, setters: { setAddresses, setTotalPage } }) => {
+const SearchBar = ({ setQuery }) => {
   // Form functionality
   const formik = useFormik({
     initialValues: {
-      search: "",
+      query: "",
     },
-    onSubmit: async () => {
-      const response = await fetchAddresses(pageIndex, formik.values.search);
-      const { addresses: newAddressList, totalPage } = response.data.data;
-      setAddresses(newAddressList);
-      setTotalPage(totalPage);
+    onSubmit: () => {
+      setQuery(formik.values.query);
     },
   });
+
+  // useEffect(() => {
+  //   console.log(formik.values.query);
+  // }, [formik.values.query]);
 
   return (
     <Flex
@@ -35,9 +36,9 @@ const SearchBar = ({ pageIndex, setters: { setAddresses, setTotalPage } }) => {
     >
       <InputGroup borderColor="rgb(243, 244, 245)">
         <Input
-          id="search"
+          id="query"
           type="text"
-          {...formik.getFieldProps("search")}
+          {...formik.getFieldProps("query")}
           placeholder="Cari alamat atau nama penerima"
           _placeholder={{ color: "rgb(169, 168, 172)" }}
           height={["85.714%", "100%"]}
