@@ -7,19 +7,23 @@ import {
   HStack,
   Button,
   useMediaQuery,
+  useDisclosure,
 } from "@chakra-ui/react";
 import { GrLocation } from "react-icons/gr";
 import { BsCheck2 } from "react-icons/bs";
+import ConfirmationModal from "./ConfirmationModal";
 
 // Own library imports
 import makeDefault from "../../lib/address/makeDefault";
-import deleteAddress from "../../lib/address/deleteAddress";
-import fetchAddresses from "../../lib/address/fetchAddresses";
+import { useEffect } from "react";
 
 const AddressCard = (props) => {
   const { variant, ...rest } = props;
   const styles = useStyleConfig("AddressCard", { variant });
   const [isSmSize] = useMediaQuery("min-width: 30rem");
+
+  // Modal functionality
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   // Get user address
   const { setDefaultAddress, setAddresses, setTotalPage } = rest.setters;
@@ -126,17 +130,7 @@ const AddressCard = (props) => {
                 fontSize={["0.71rem", "0.8125rem"]}
                 fontWeight="700"
                 lineHeight="0.8625rem"
-                onClick={async () => {
-                  // Delete address
-                  await deleteAddress(id);
-
-                  // Update address list
-                  const response = await fetchAddresses();
-                  const { addresses: newAddressList, totalPage } =
-                    response.data.data;
-                  setAddresses(newAddressList);
-                  setTotalPage(totalPage);
-                }}
+                onClick={onOpen}
                 _hover={{ textDecoration: "none" }}
               >
                 Hapus
@@ -166,6 +160,14 @@ const AddressCard = (props) => {
           Pilih
         </Button>
       )}
+
+      <ConfirmationModal
+        id={id}
+        label={label}
+        isOpen={isOpen}
+        onClose={onClose}
+        setters={{ setAddresses, setTotalPage }}
+      />
     </Box>
   );
 };

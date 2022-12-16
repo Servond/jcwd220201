@@ -4,7 +4,8 @@ const renderAddresses = (
   addresses,
   setDefaultAddress,
   setAddresses,
-  setTotalPage
+  setTotalPage,
+  setPageIndex
 ) => {
   const addressList = addresses.map((address) => {
     if (address.is_default) {
@@ -15,6 +16,7 @@ const renderAddresses = (
             setDefaultAddress,
             setAddresses,
             setTotalPage,
+            setPageIndex,
           }}
           data={address}
           variant="selected"

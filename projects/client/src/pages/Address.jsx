@@ -107,7 +107,10 @@ const Address = () => {
           breakLabel="..."
           containerClassName="address-pagination-buttons"
           nextLabel="Berikutnya"
-          onPageChange={({ selected }) => setPageIndex(selected)}
+          onPageChange={({ selected }) => {
+            console.log(selected);
+            setPageIndex(selected);
+          }}
           pageRangeDisplayed={5}
           pageClassName="address-pagination-pages"
           pageCount={totalPage}

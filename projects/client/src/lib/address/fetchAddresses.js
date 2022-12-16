@@ -4,8 +4,10 @@ const fetchAddresses = async (pageIndex = 0, search) => {
   try {
     const page = pageIndex + 1;
     const query = search ? search : "";
+    const encodedQuery = encodeURI(query);
+
     const response = await axiosInstance.get(
-      `/api/address?page=${page}&search=${query}`
+      `/api/address?page=${page}&search=${encodedQuery}`
     );
     return response;
   } catch (err) {

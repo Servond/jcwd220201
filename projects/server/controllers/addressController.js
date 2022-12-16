@@ -94,9 +94,10 @@ const addressController = {
       // Get user id
       const { id } = req.user;
 
-      // Prepare for pagination
-      const search = req.query.search;
+      // Prepare for search and pagination feature
+      const { search } = req.query;
       const searchPattern = search ? `%${search}%` : "%%";
+
       const page = parseInt(req.query.page);
       const { LIMIT, OFFSET } = getPagination(page);
 
