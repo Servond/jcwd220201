@@ -16,11 +16,7 @@ const cartController = {
           },
         ],
       })
-      // if (findProductsCart) {
-      //   return res.status(400).json({
-      //     message: "Product Already Added in Cart !",
-      //   })
-      // }
+
       const findProductStockId = await db.Product.findByPk(ProductId, {
         include: [{ model: db.ProductPicture }, { model: db.ProductStock }],
       })
@@ -270,34 +266,146 @@ const cartController = {
       })
     }
   },
-  // addToCartByProductId: async (req, res) => {
-  //   try {
-  //     const { ProductId } = req.params
-  //     const { quantity } = req.body
-  //     const addProductCart = await db.Cart.findOne({
-  //       where: { ProductId },
-  //       include: [
-  //         {
-  //           model: db.Product,
-  //           include: [{ model: db.ProductPicture }, { model: db.ProductStock }],
-  //         },
-  //       ],
-  //     })
+  // add same product, if product already added just increment the quantity of product
+  addProductQty: async (req, res) => {
+    try {
+      const { ProductId } = req.params
+      const { quantity } = req.body
+      const addProductQty = await db.Cart.findOne({
+        where: { ProductId },
+        include: [
+          {
+            model: db.Product,
+            include: [{ model: db.ProductPicture }, { model: db.ProductStock }],
+          },
+        ],
+      })
 
-  //     const productStock = addProductCart
-  //   } catch (err) {
-  //     console.log(err)
-  //     return res.status(500).json({
-  //       message: err.message,
-  //     })
-  //   }
-  // },
-  // G1-21 ⬇️
-  deleteProductCartById: async (req, res) => {
+      const productStock = addProductQty.Product.ProductStocks.map(
+        (val) => val.stock
+      )
+      let subtotal = 0
+
+      for (let i = 0; i < productStock.length; i++) {
+        subtotal += Number(productStock[i])
+      }
+
+      const totalProductStock = subtotal
+
+      if (addProductQty.quantity + quantity > totalProductStock) {
+        return res.status(400).json({
+          message: "Product Stock is empty",
+        })
+      }
+
+      if (!quantity) {
+        await db.Cart.update(
+          { quantity: addProductQty.quantity + 1 },
+          { where: { id: addProductQty.id } }
+        )
+
+        return res.status(200).json({ message: "Product Added" })
+      }
+
+      if (quantity) {
+        await db.Cart.update(
+          { quantity: addProductQty.quantity + quantity },
+          { where: { id: addProductQty.id } }
+        )
+
+        return res.status(200).json({ message: "Product Added" })
+      }
+    } catch (err) {
+      console.log(err)
+      return res.status(500).json({
+        message: err.message,
+      })
+    }
+  },
+  totalPrice: async (req, res) => {
+    try {
+      const { id } = req.user
+
+      const getSubTotal = await db.sequelize.query(
+        `select sum(p.price * c.quantity) as totalPrice, sum(c.quantity) as totalQty from carts c
+          join products p
+          on c.ProductId = p.id
+          where is_checked = ${true} && UserId = ${id}`
+      )
+      const totalPrice = getSubTotal[0][0]
+
+      return res.status(200).json({ message: "Total Price", data: totalPrice })
+    } catch (err) {
+      console.log(err)
+      return res.status(500).json({ message: err.message })
+    }
+  },
+  decreaseQty: async (req, res) => {
     try {
       const { id } = req.params
 
-      await db.CartItem.destroy({
+      const findProduct = await db.Cart.findByPk(id)
+
+      if (findProduct.quantity <= 1) {
+        return res.status(200).json({
+          message: "Minimum 1 Quantity Product",
+        })
+      }
+
+      await db.Cart.update(
+        { quantity: findProduct.quantity - 1 },
+        { where: { id: findProduct.id } }
+      )
+
+      return res.status(200).json({ message: "Quantity Decreased" })
+    } catch (err) {
+      console.log(err)
+    }
+  },
+  addQty: async (req, res) => {
+    try {
+      const { id } = req.params
+
+      const findProduct = await db.Cart.findByPk(id, {
+        include: [
+          {
+            model: db.Product,
+            include: [{ model: db.ProductPicture }, { model: db.ProductStock }],
+          },
+        ],
+      })
+
+      const productCart = findProduct.Product.ProductStocks.map(
+        (val) => val.stock
+      )
+      let total = 0
+
+      for (let i = 0; i < productCart.length; i++) {
+        total += Number(total[i])
+      }
+
+      const subTotal = total
+
+      if (findProduct.quantity + 1 > subTotal) {
+        return res.status(400).json({ message: "Product Stock Empty" })
+      }
+
+      await db.Cart.update(
+        { quantity: findProduct.quantity + 1 },
+        { where: { id: findProduct.id } }
+      )
+
+      return res.status(200), json({ message: "Quantity Added" })
+    } catch (err) {
+      return res.status(500).json({ message: err.message })
+    }
+  },
+  // G1-21 ⬇️
+  deleteProduct: async (req, res) => {
+    try {
+      const { id } = req.params
+
+      await db.Cart.destroy({
         where: {
           id: id,
         },
@@ -312,20 +420,21 @@ const cartController = {
       })
     }
   },
-  // deleteAllProductCart: async (req,res) =>{
-  //   try {
-  //     await db.Cart.destroy({
-  //       where: {
-
-  //       }
-  //     })
-  //   } catch (err) {
-  //     console.log(err)
-  //     return res.status(500).json({
-  //       message: err.message
-  //     })
-  //   }
-  // }
+  deleteAllProduct: async (req, res) => {
+    try {
+      await db.Cart.destroy({
+        where: { UserId: req.user.id },
+      })
+      return res.status(200).json({
+        mesage: "All Product Deleted !",
+      })
+    } catch (err) {
+      console.log(err)
+      return res.status(500).json({
+        message: err.message,
+      })
+    }
+  },
 }
 
 module.exports = cartController
