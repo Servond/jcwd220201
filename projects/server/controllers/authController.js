@@ -13,7 +13,6 @@ const authController = {
       const findUserByEmail = await User.findOne({
         where: {
           email,
-          password,
         },
       })
       if (!findUserByEmail) {
@@ -22,18 +21,18 @@ const authController = {
         })
       }
 
-      // const passwordValid = bcrypt.compareSync(
-      //   password,
-      //   findUserByEmail.password
-      // )
+      const passwordValid = bcrypt.compareSync(
+        password,
+        findUserByEmail.password
+      )
 
-      // if (!passwordValid) {
-      //   return res.status(400).json({
-      //     message: "Password invalid",
-      //   })
-      // }
+      if (!passwordValid) {
+        return res.status(400).json({
+          message: "Password invalid",
+        })
+      }
 
-      // delete findUserByEmail.dataValues.password
+      delete findUserByEmail.dataValues.password
 
       const token = signToken({
         id: findUserByEmail.id,
