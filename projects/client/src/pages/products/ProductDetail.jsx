@@ -69,7 +69,6 @@ const ProductDetail = () => {
         total += Number(cartStock[i])
       }
       setProductStock(total)
-      console.log(setProductStock)
     } catch (err) {
       console.log(err)
     }
@@ -121,7 +120,7 @@ const ProductDetail = () => {
       dispatch(addProductToCart(response.data.data))
 
       toast({
-        title: "Product add to Cart",
+        title: "Product Add to Cart",
         status: "success",
       })
       fetchCartByProduct()
@@ -136,11 +135,32 @@ const ProductDetail = () => {
     }
   }
 
+  const updateAddProduct = async () => {
+    try {
+      let updateQty = {
+        quantity: qty,
+      }
+      await axiosInstance.patch(`/carts/addQty/${productId}`, updateQty)
+      toast({ title: "Product Add to Cart", status: "success" })
+
+      fetchCartByProduct()
+      fetchCart()
+    } catch (err) {
+      console.log(err)
+      const sisaProduk = productStock - cartQty
+      toast({
+        title: `Barang sudah ada di keranjang tersisa ${sisaProduk}, hanya menambah Quantity ${cartQty}`,
+        status: "error",
+        description: err.response.data.message,
+      })
+    }
+  }
+
   useEffect(() => {
     fetchCart()
     fetchCartByProduct()
     fetchProductDetail()
-  }, [qty, cartQty])
+  }, [qty, cartQty, produck])
 
   return (
     <>
@@ -264,20 +284,37 @@ const ProductDetail = () => {
             <Text as="span" fontWeight="thin">
               Subtotal: {Rupiah(produck.price * qty)}
             </Text>{" "}
-            <Button
-              _hover={{ boxShadow: "lg", transform: "translateY(5px)" }}
-              textTransform="uppercase"
-              color="gray.900"
-              bg="teal.500"
-              size="md"
-              w="full"
-              mt="8"
-              py="6"
-              rounded="none"
-              onClick={addToCart1}
-            >
-              Masukkan Keranjang
-            </Button>
+            {cartQty === null ? (
+              <Button
+                _hover={{ boxShadow: "lg", transform: "translateY(5px)" }}
+                textTransform="uppercase"
+                color="gray.900"
+                bg="teal.500"
+                size="md"
+                w="full"
+                mt="8"
+                py="6"
+                rounded="none"
+                onClick={addToCart1}
+              >
+                Masukkan Keranjang
+              </Button>
+            ) : (
+              <Button
+                _hover={{ boxShadow: "lg", transform: "translateY(5px)" }}
+                textTransform="uppercase"
+                color="gray.900"
+                bg="teal.500"
+                size="md"
+                w="full"
+                mt="8"
+                py="6"
+                rounded="none"
+                onClick={updateAddProduct}
+              >
+                Masukkan Keranjang
+              </Button>
+            )}
           </Stack>
         </SimpleGrid>
       </Container>
