@@ -115,7 +115,6 @@ const App = () => {
             </ProtectedRoute>
           }
         />
-
         <Route
           path="/admin/product"
           element={

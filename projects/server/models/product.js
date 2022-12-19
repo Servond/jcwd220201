@@ -7,10 +7,10 @@ module.exports = function (sequelize, DataTypes) {
         onUpdate: "CASCADE",
         onDelete: "CASCADE",
       })
-      // Product.hasMany(models.Cart, {
-      //   onUpdate: "CASCADE",
-      //   onDelete: "CASCADE",
-      // })
+      Product.hasMany(models.Cart, {
+        onUpdate: "CASCADE",
+        onDelete: "CASCADE",
+      })
       Product.hasMany(models.ProductPicture, {
         onUpdate: "CASCADE",
         onDelete: "CASCADE",

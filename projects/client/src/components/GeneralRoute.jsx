@@ -6,7 +6,7 @@ const GeneralRoute = ({ children }) => {
   const navigate = useNavigate()
 
   if (!authSelector.RoleId) {
-    navigate("/")
+    navigate("/login")
   }
   return children
 }

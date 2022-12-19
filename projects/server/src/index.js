@@ -29,6 +29,7 @@ app.use(express.json())
 // ===========================
 // NOTE : Add your routes here
 
+const productsAdminRoute = require("../routes/productsAdminRoute")
 // Register middleware
 app.use("/api/register", registerRoute)
 
@@ -49,6 +50,7 @@ app.use("/admin", adminRoute)
 app.use("/products", productsRoute)
 app.use("/categories", categoriesRoute)
 app.use("/carts", cartRoute)
+app.use("/product-admin", productsAdminRoute)
 
 app.get("/api", (req, res) => {
   res.send(`Hello, this is my API`)
