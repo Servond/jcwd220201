@@ -152,7 +152,12 @@ const LoginPage = () => {
             <Stack pt={6}>
               <Text align={"center"}>
                 Belum punya akun?{" "}
-                <Link to="/register" color={"teal"}>
+                <Link
+                  onClick={() => {
+                    navigate("/register")
+                  }}
+                  color={"teal"}
+                >
                   Daftar
                 </Link>
               </Text>
