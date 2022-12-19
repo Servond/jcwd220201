@@ -70,6 +70,7 @@ const ProductList = () => {
           product_name: searchValue,
         },
       })
+      console.log("res", response)
 
       setProducts(response.data.data)
       setTotalCount(response.data.dataCount)
@@ -162,9 +163,9 @@ const ProductList = () => {
     window.location.reload(false)
   }
 
-  const btnClickPage = () => {
-    page.length(page + 1)
-  }
+  // const btnClickPage = () => {
+  //   (page + 1)
+  // }
 
   useEffect(() => {
     for (let passing of searchParams.entries()) {
@@ -194,7 +195,7 @@ const ProductList = () => {
       <ProductCard
         key={val.id.toString()}
         product_name={val.product_name}
-        product_picture={val.product_picture}
+        product_picture={`http://localhost:8000/public/${val.Product?.ProductPictures?.product_picture}`}
         price={val.price}
         id={val.id}
       />
@@ -352,7 +353,7 @@ const ProductList = () => {
             ) : null}
 
             <Button>{page - 0}</Button>
-            <Button onClick={btnClickPage}>{page + 1}</Button>
+            {/* <Button onClick={btnClickPage}>{page + 1}</Button> */}
 
             {page >= maxPage ? null : (
               <Button colorScheme="teal" onClick={nextPageProduct}>

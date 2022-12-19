@@ -11,8 +11,11 @@ const ProductCard = ({ id, product_name, price }) => {
     price: 0,
     id: "",
     category_id: "",
+    product_picture: "",
   })
   const [productImg, setProductImg] = useState([])
+
+  console.log("state", productImg)
   const [productId, setProductId] = useState(0)
 
   const fetchProductById = async () => {
@@ -27,15 +30,12 @@ const ProductCard = ({ id, product_name, price }) => {
   const fetchProductImage = async () => {
     try {
       const responseImg = await axiosInstance.get(`/products/image/${id}`)
-      setProductImg(responseImg.data.data)
+      console.log("res", responseImg)
+      setProductImg([responseImg.data.data])
     } catch (err) {
       console.log(err)
     }
   }
-
-  // const productDetail = () => {
-  //   setProductId(id)
-  // }
 
   useEffect(() => {
     fetchProductById()
@@ -68,7 +68,7 @@ const ProductCard = ({ id, product_name, price }) => {
               <Image
                 objectFit="fill"
                 alt="pict of product"
-                src={productImg.product_picture}
+                src={productImg.Product?.ProductPictures?.product_picture}
               />
             </Box>
           </Link>
