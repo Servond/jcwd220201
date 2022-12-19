@@ -25,6 +25,7 @@ const Address = () => {
 
   // Fetch user addresses
   useEffect(() => {
+    console.log(query);
     fetchAddresses(pageIndex, query).then((res) => {
       // Get response data
       const { addresses, totalPage } = res.data.data;
@@ -70,7 +71,7 @@ const Address = () => {
             spacing={["0.25rem", "0.5rem"]}
             width={["15.2295rem", "25.7412rem", "42.7617rem", "56.125rem"]}
           >
-            <SearchBar setQuery={setQuery} />
+            <SearchBar setQuery={setQuery} setPageIndex={setPageIndex} />
             <Button
               borderRadius="0.5rem"
               colorScheme="teal"

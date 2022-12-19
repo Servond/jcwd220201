@@ -10,13 +10,14 @@ import { useEffect } from "react";
 
 // Own library imports
 
-const SearchBar = ({ setQuery }) => {
+const SearchBar = ({ setQuery, setPageIndex }) => {
   // Form functionality
   const formik = useFormik({
     initialValues: {
       query: "",
     },
     onSubmit: () => {
+      setPageIndex(0);
       setQuery(formik.values.query);
     },
   });

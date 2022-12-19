@@ -88,13 +88,6 @@ const ConfirmationModal = ({
             Batal
           </Button>
           <Button
-            // width={
-            //   isLargerThanMd
-            //     ? "10.25rem"
-            //     : isLargerThanSm
-            //     ? "6.673rem"
-            //     : "4.341rem"
-            // }
             width={["5.341rem", "5.841rem", "7.673rem", "10.25rem"]}
             height={["1.889rem", "2.046rem", "2.478rem", "2.7rem"]}
             maxW="100%"
