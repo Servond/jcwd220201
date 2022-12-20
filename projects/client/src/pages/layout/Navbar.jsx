@@ -31,33 +31,33 @@ import {
 } from "@chakra-ui/react";
 import { HamburgerIcon, CloseIcon, SearchIcon } from "@chakra-ui/icons";
 import { IoMdCart } from "react-icons/io";
-import { Link as LinkRouterDom, Outlet, useNavigate } from "react-router-dom";
+import {
+  Link,
+  Link as LinkRouterDom,
+  Outlet,
+  useNavigate,
+  useLocation,
+  createSearchParams,
+  useSearchParams,
+} from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { logout, login } from "../../redux/features/authSlice";
 import { axiosInstance } from "../../api";
 import { useEffect, useState } from "react";
+import { itemCart } from "../../redux/features/cartSlice";
+import { Rupiah } from "../../lib/currency/Rupiah";
 
-const Links = ["Dashboard"];
-
-const NavLink = ({ children }) => (
-  <LinkChakra
-    px={2}
-    py={1}
-    rounded={"md"}
-    _hover={{
-      textDecoration: "none",
-      bg: useColorModeValue("gray.200", "gray.700"),
-    }}
-    href={"#"}
-  >
-    {children}
-  </LinkChakra>
-);
-
-const Navbar = () => {
-  const [authCheck, setAuthCheck] = useState(false);
+const Navbar = ({ onChange, onClick, onKeyDown }) => {
+  const cartSelector = useSelector((state) => state.cart);
   const authSelector = useSelector((state) => state.auth);
+
+  const [authCheck, setAuthCheck] = useState(false);
   const { isOpen, onOpen, onClose } = useDisclosure();
+
+  const [searchValue, setSearchValue] = useState("");
+  const [searchQuery, setSearchQuery] = useSearchParams();
+  const [cartProduct, setCartProduct] = useState([]);
+  const [cartQty, setCartQty] = useState(0);
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -82,15 +82,104 @@ const Navbar = () => {
     }
   };
 
-  useEffect(() => {
-    keepUserLogin();
-  }, []);
-
   const btnLogout = () => {
     localStorage.removeItem("auth_token");
     dispatch(logout());
     navigate("/");
   };
+
+  const handleOnChange = (e) => {
+    setSearchValue(e.target.value);
+    onChange(e);
+  };
+
+  const handleOnKeyDown = (e) => {
+    if (e.key === "Enter") {
+      navigate({
+        pathname: "/product",
+        search: createSearchParams({ search: searchValue }).toString(),
+      });
+      onKeyDown(e);
+    }
+  };
+
+  const fetchUserCart = async () => {
+    try {
+      const response = await axiosInstance.get("/carts/me");
+
+      dispatch(itemCart(response.data.data));
+      setCartProduct(response.data.data);
+      const productQty = response.data.data.map((val) => val.quantity);
+
+      let total = 0;
+
+      for (let i = 0; i < productQty.length; i++) {
+        total = Number(productQty[i]);
+      }
+      setCartQty(total);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const renderCartProduct = () => {
+    return cartProduct.map((val) => {
+      return (
+        <>
+          <Box p={4} display={{ md: "flex" }}>
+            <Box>
+              <Image
+                maxW="40"
+                maxH="40"
+                borderRadius="lg"
+                width={{ md: 40 }}
+                src={val.Product.ProductPictures[0].product_picture}
+              />
+            </Box>
+            <Box mt={{ base: 4, md: 0 }} ml={{ md: 6 }}>
+              <Text
+                fontWeight="bold"
+                textTransform="uppercase"
+                fontSize="sm"
+                letterSpacing="wide"
+                color="teal.600"
+              >
+                {val.Product.product_name}
+              </Text>
+              <Link
+                mt={1}
+                display="block"
+                fontSize="lg"
+                lineHeight="normal"
+                fontWeight="semibold"
+                href="#"
+              >
+                {Rupiah(val.Product.price)}
+              </Link>
+              <Text fontWeight="bold" mt={2} color="teal.600">
+                Quantity
+              </Text>
+              <Text mt={2} color="gray.500">
+                {val.quantity}
+              </Text>
+            </Box>
+          </Box>
+        </>
+      );
+    });
+  };
+
+  useEffect(() => {
+    keepUserLogin();
+  }, []);
+
+  useEffect(() => {
+    fetchUserCart();
+  }, [cartProduct]);
+
+  useEffect(() => {
+    setSearchValue(searchQuery.get("search"));
+  }, []);
   return (
     <>
       <Box
@@ -131,15 +220,20 @@ const Navbar = () => {
             >
               <InputGroup maxW="93%">
                 <Input
-                  float="right"
+                  // float="right"
                   borderRadius="8px"
-                  border="1px solid #CCCCCC"
+                  // border="1px solid #CCCCCC"
                   placeholder="Cari di WIRED!"
                   _placeholder={{ fontSize: "14px" }}
                   bgColor="white"
+                  type="text"
+                  id="search"
+                  onChange={handleOnChange}
+                  onKeyDown={handleOnKeyDown}
+                  value={searchValue}
                 />
                 <InputRightElement>
-                  <Button variant="solid" borderRadius="8px">
+                  <Button variant="solid" borderRadius="8px" onClick={onClick}>
                     <SearchIcon />
                   </Button>
                 </InputRightElement>
@@ -156,7 +250,10 @@ const Navbar = () => {
                 <Popover trigger="hover">
                   <PopoverTrigger>
                     <LinkRouterDom>
-                      <IoMdCart fontSize="20px" />
+                      <HStack>
+                        <IoMdCart fontSize="20px" />
+                        <Text>{cartSelector.cart.length}</Text>
+                      </HStack>
                     </LinkRouterDom>
                   </PopoverTrigger>
                   <PopoverContent>
@@ -164,25 +261,28 @@ const Navbar = () => {
                       display="flex"
                       justifyContent="space-between"
                     >
-                      <Text>Cart</Text>
+                      <Text>Keranjang ({cartSelector.cart.length})</Text>
                       <LinkRouterDom to="/cart">
-                        <Text>See Cart</Text>
+                        <Text>Lihat Keranjang</Text>
                       </LinkRouterDom>
                     </PopoverHeader>
                     <PopoverBody>
-                      <Image src="https://ecs7.tokopedia.net/assets-unify/il-header-cart-empty.jpg" />
-                      <Text align="center" fontWeight="semibold">
+                      {renderCartProduct()}
+                      {/* <Image src={product_picture} /> */}
+                      {/* <Text align="center" fontWeight="semibold">
                         Keranjangmu Masih Kosong nih ?
-                      </Text>
+                      </Text> */}
                     </PopoverBody>
                   </PopoverContent>
                 </Popover>
               </Box>
+              {/* ====================================================================================== */}
             </HStack>
             <Center>
               <Divider orientation="vertical" border="1 px" />
             </Center>
           </HStack>
+
           {/* Profile Popup */}
           <Flex alignItems={"center"}>
             <Menu>
@@ -200,6 +300,7 @@ const Navbar = () => {
                       name={authSelector.profile_picture}
                       src={authSelector.profile_picture}
                     />
+                    {/* {authSelector.profile_picture} */}
                     <Text my="auto" p="8px">
                       {authSelector.name}
                     </Text>
@@ -228,9 +329,12 @@ const Navbar = () => {
 
               <MenuList>
                 <LinkRouterDom to="/profile">
-                  <MenuItem>Profile</MenuItem>
+                  <MenuItem>Profil</MenuItem>
                 </LinkRouterDom>
-                <MenuItem>Transaction</MenuItem>
+                <LinkRouterDom to="/address">
+                  <MenuItem>Alamat</MenuItem>
+                </LinkRouterDom>
+                <MenuItem>Pesanan</MenuItem>
                 <MenuDivider />
                 <MenuItem>
                   <Button
@@ -249,20 +353,25 @@ const Navbar = () => {
           </Flex>
         </Flex>
 
+        {/* Mobile View */}
         {isOpen ? (
           <Box pb={4} display={{ md: "none" }}>
             <Stack as={"nav"} spacing={4}>
               <InputGroup maxW="100%">
                 <Input
+                  // id="search"
                   float="right"
                   borderRadius="8px"
                   border="1px solid #CCCCCC"
                   placeholder="Cari di WIRED!"
                   _placeholder={{ fontSize: "14px" }}
                   bgColor="white"
+                  onChange={handleOnChange}
+                  onKeyDown={handleOnKeyDown}
+                  value={searchValue}
                 />
                 <InputRightElement>
-                  <Button variant="solid" borderRadius="5">
+                  <Button variant="solid" borderRadius="5" onClick={onClick}>
                     <SearchIcon />
                   </Button>
                 </InputRightElement>

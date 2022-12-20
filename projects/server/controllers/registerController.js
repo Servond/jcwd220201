@@ -6,8 +6,8 @@ const otpGenerator = require("otp-generator");
 const moment = require("moment");
 
 // Own library imports
-const { User, Otp, sequelize } = require("../../models");
-const emailer = require("../../lib/emailer");
+const { User, Otp, Role, sequelize } = require("../models");
+const emailer = require("../lib/emailer");
 
 const registerController = {
   duplicateCheck: async (req, res) => {
@@ -86,7 +86,7 @@ const registerController = {
       // Persist sent OTP
       const userReceivedOtp = await Otp.findOne({
         where: {
-          user_id: user.id,
+          UserId: user.id,
         },
       });
 
@@ -95,13 +95,13 @@ const registerController = {
           { otp },
           {
             where: {
-              user_id: user.id,
+              UserId: user.id,
             },
           }
         );
       } else {
         await Otp.create({
-          user_id: user.id,
+          UserId: user.id,
           otp,
         });
       }
@@ -152,12 +152,12 @@ const registerController = {
       });
 
       // Persist sent OTP
-      const result = await sequelize.transaction(async (t) => {
-        const update = await Otp.update(
+      await sequelize.transaction(async (t) => {
+        await Otp.update(
           { otp },
           {
             where: {
-              user_id: user.id,
+              UserId: user.id,
             },
             transaction: t,
           }
@@ -210,13 +210,14 @@ const registerController = {
 
       const issuedOtp = await Otp.findOne({
         where: {
-          user_id: user.id,
+          UserId: user.id,
         },
       });
 
       // Get time difference
       const currentDate = moment();
       const issuedDate = moment(issuedOtp.issued_at);
+      console.log(issuedDate);
       const timeDiff = moment
         .duration(currentDate.diff(issuedDate))
         .as("minutes");
@@ -263,16 +264,22 @@ const registerController = {
       }
       // Update user credentials
       const { name, email, password } = req.body;
+      const role = await Role.findOne({
+        where: {
+          role: "user",
+        },
+      });
+
       const hash = bcrypt.hashSync(password, 10);
       await User.update(
-        { name, password: hash, is_verified: true },
+        { RoleId: role.id, name, password: hash, is_verified: true },
         {
           where: {
             email,
           },
         }
       );
-      // Send success response
+      // Send successful response
       return res.status(201).json({
         message: "Akun berhasil didaftarkan",
       });
