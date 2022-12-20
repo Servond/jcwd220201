@@ -58,7 +58,7 @@ const productAdminController = {
         await db.ProductPicture.bulkCreate(newProductImg)
 
         const foundProductById = await db.Product.findByPk(createProduct.id, {
-          include: { all: true },
+          include: [db.ProductPicture],
         })
 
         return res.status(200).json({
@@ -76,10 +76,10 @@ const productAdminController = {
 
   getAllProduct: async (req, res) => {
     try {
-      const { _limit = 10, _page = 1, _sortDir = "DESC" } = req.query
+      const { _limit = 6, _page = 1, _sortDir = "DESC" } = req.query
 
       const findAllProducts = await db.Product.findAndCountAll({
-        include: { all: true },
+        include: [db.ProductPicture],
         limit: Number(_limit),
         offset: (_page - 1) * _limit,
         order: [["id", _sortDir]],
@@ -120,7 +120,7 @@ const productAdminController = {
     } catch (err) {
       console.log(err)
       return res.status(500).json({
-        message: "Server error",
+        message: err.message,
       })
     }
   },

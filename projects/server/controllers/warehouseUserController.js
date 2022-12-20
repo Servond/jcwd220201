@@ -15,15 +15,21 @@ const warehouseUserController = {
       const findWarehouseId = await Warehouse.findByPk(req.body.WarehouseId)
       if (!findWarehouseId) {
         throw new Error("Warehouse tidak ditemukan")
-        // }
+      }
 
-        // const findUserById = await db.User.findOne({
-        //   where: { id: findUser || "" },
-        // })
-        // if (findUserById) {
-        //   return res.status(400).json({
-        //     message: "UserId telah ada",
-        //   })
+      const findUserById = await db.WarehousesUser.findOne({
+        where: { UserId: { [Op.like]: findUser.id } },
+      })
+      if (findUserById) {
+        return res.status(400).json({
+          message: "UserId telah ada",
+        })
+      }
+
+      if (findUser.RoleId !== 2) {
+        return res.status(400).json({
+          message: "Hanya admin warehouse",
+        })
       } else {
         const newWarehouseUser = await WarehousesUser.create({
           UserId: findUser.id,
@@ -44,7 +50,7 @@ const warehouseUserController = {
   },
   getAllWareUser: async (req, res) => {
     try {
-      const { _limit = 10, _page = 1, _sortDir = "DESC" } = req.query
+      const { _limit = 6, _page = 1, _sortDir = "DESC" } = req.query
 
       const findAllWareUser = await WarehousesUser.findAndCountAll({
         limit: Number(_limit),
@@ -69,7 +75,11 @@ const warehouseUserController = {
     try {
       const { id } = req.params
 
-      await WarehousesUser.update({ ...req.body }, { where: { id: id } })
+      await db.WarehousesUser.update(req.body, {
+        where: {
+          id: id,
+        },
+      })
 
       return res.status(200).json({
         message: "Warehouse user telah update",
@@ -95,7 +105,7 @@ const warehouseUserController = {
 
       if (!wareUserById) {
         return res.status(400).json({
-          message: "Category not found",
+          message: "User Warehouse not found",
         })
       }
 

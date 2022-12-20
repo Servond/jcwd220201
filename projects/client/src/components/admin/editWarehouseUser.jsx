@@ -26,7 +26,6 @@ const EditWarehouseUser = (props) => {
     setWarehouseEdit,
     fetchWareUser,
     getUser,
-    getWarehouse,
     idEdit,
     setOpenModal,
     warehouse,
@@ -37,7 +36,6 @@ const EditWarehouseUser = (props) => {
     initialValues: {
       UserId: "",
       WarehouseId: "",
-      id: "",
     },
 
     onSubmit: async (values) => {
@@ -45,21 +43,19 @@ const EditWarehouseUser = (props) => {
         const { UserId, WarehouseId } = values
 
         let editWareUser = {
-          UserId,
-          WarehouseId,
+          UserId: userIdEdit,
+          WarehouseId: warehouseEdit,
         }
 
         const respons = await axiosInstance.patch(
           `/warehouse-user/${idEdit}`,
           editWareUser
         )
-        formik.setFieldValue(UserId, "")
-        formik.setFieldValue(WarehouseId, "")
 
         setOpenModal(false)
         fetchWareUser()
         getUser()
-        getWarehouse()
+
         toast({
           title: "WarehouseUser telah diedit",
           description: respons.data.message,
@@ -67,6 +63,10 @@ const EditWarehouseUser = (props) => {
         })
       } catch (err) {
         console.log(err)
+        toast({
+          title: "Edit User Gagal",
+          status: "error",
+        })
       }
     },
   })
@@ -96,7 +96,9 @@ const EditWarehouseUser = (props) => {
                   >
                     <option value="">Select UserId</option>
                     {userId.map((val) => (
-                      <option value={val.id}>{val.name}</option>
+                      <option value={val.id}>
+                        {val.id}. {val.name}
+                      </option>
                     ))}
                   </Select>
                 </FormLabel>
@@ -111,7 +113,9 @@ const EditWarehouseUser = (props) => {
                   >
                     <option value="">Select Warehouse Id</option>
                     {warehouse.map((val) => (
-                      <option value={val.id}>{val.warehouse_name}</option>
+                      <option value={val.id}>
+                        {val.id}. {val.warehouse_name}
+                      </option>
                     ))}
                   </Select>
                 </FormLabel>

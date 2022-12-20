@@ -27,8 +27,10 @@ import { useFormik } from "formik"
 import EditWarehouseUser from "./editWarehouseUser"
 import { RiDeleteBin2Line } from "react-icons/ri"
 import { FaRegEdit } from "react-icons/fa"
-
-import { FiArrowLeftCircle, FiArrowRightCircle } from "react-icons/fi"
+import PageButton from "../../components/admin/pageButton.jsx"
+import { useNavigate } from "react-router-dom"
+import { useSelector } from "react-redux"
+import * as Yup from "yup"
 
 const WarehouseUser = () => {
   const [users, setUsers] = useState([])
@@ -39,20 +41,36 @@ const WarehouseUser = () => {
   const [warehouseEdit, setWarehouseEdit] = useState("")
   const [idEdit, setIdEdit] = useState("")
   const [page, setPage] = useState(1)
+
+  const [limit, setLimit] = useState(5)
+  const [totalCount, setTotalCount] = useState(0)
   const toast = useToast()
+  const authSelector = useSelector((state) => state.auth)
+  const navigate = useNavigate()
   const fetchWareUser = async () => {
     try {
       const respons = await axiosInstance.get(`/warehouse-user`, {
         params: {
-          _limit: 10,
+          _limit: limit,
           _page: page,
           _sortDir: "DESC",
         },
       })
+
+      setTotalCount(respons.data.dataCount)
       setUsers(respons.data.data)
+
+      formik.handleReset()
     } catch (err) {
       console.log(err)
     }
+  }
+
+  if (authSelector.RoleId !== 1) {
+    navigate("/admin/dashboard")
+    toast({
+      title: "Admin Unauthorized",
+    })
   }
 
   const getUser = async () => {
@@ -93,10 +111,11 @@ const WarehouseUser = () => {
     }
   }
 
-  const userEdit = (UserId, WarehouseId) => {
+  const userEdit = (UserId, WarehouseId, id) => {
     setOpenModal(true)
     setUserIdEdit(UserId)
     setWarehouseEdit(WarehouseId)
+    setIdEdit(id)
   }
 
   const renderUser = () => {
@@ -112,14 +131,7 @@ const WarehouseUser = () => {
           <Td textAlign="center" border="1px solid black" w="50px">
             <Button
               alignContent={"left"}
-              onClick={() =>
-                userEdit(
-                  val.UserId,
-                  val.WarehouseId,
-
-                  val.id
-                )
-              }
+              onClick={() => userEdit(val.UserId, val.WarehouseId, val.id)}
               mx="4"
               colorScheme={"teal"}
             >
@@ -138,7 +150,7 @@ const WarehouseUser = () => {
     fetchWareUser()
     getUser()
     getWarehouse()
-  }, [])
+  }, [page])
 
   const formik = useFormik({
     initialValues: {
@@ -164,17 +176,43 @@ const WarehouseUser = () => {
         fetchWareUser()
         getUser()
         getWarehouse()
+        toast({
+          title: "User telah ditambahkan",
+          status: "success",
+        })
       } catch (err) {
         console.log(err)
+        toast({
+          title: "User Id telah ada",
+          description: "Hanya warehouse admin yang dapat ditambahkan",
+          status: "error",
+        })
       }
     },
+
+    validationSchema: Yup.object({
+      UserId: Yup.number().required(),
+      WarehouseId: Yup.number().required(),
+    }),
+    validateOnChange: false,
   })
 
-  const nextPage = () => {
-    setPage(page + 1)
-  }
-  const prevPage = () => {
-    setPage(page - 1)
+  const renderPageButton = () => {
+    const totalPage = Math.ceil(totalCount / limit)
+
+    const pageArray = new Array(totalPage).fill(null).map((val, i) => ({
+      id: i + 1,
+    }))
+
+    return pageArray.map((val) => {
+      return (
+        <PageButton
+          key={val.id.toString()}
+          id={val.id}
+          onClick={() => setPage(val.id)}
+        />
+      )
+    })
   }
 
   const formChange = ({ target }) => {
@@ -232,12 +270,7 @@ const WarehouseUser = () => {
 
             <Box w="full" h="8%"></Box>
 
-            <Button
-              disabled={formik.isSubmitting ? true : false}
-              onClick={formik.handleSubmit}
-              my="4"
-              colorScheme="teal"
-            >
+            <Button onClick={formik.handleSubmit} my="4" colorScheme="teal">
               Add Warehouse User
             </Button>
           </HStack>
@@ -273,17 +306,12 @@ const WarehouseUser = () => {
         </Container>
 
         <HStack w="full" alignSelf="flex-end" justifyContent="center">
+          {renderPageButton()}
           <Box>
-            <Button onClick={prevPage} colorScheme="linkedin" width="100%">
-              <FiArrowLeftCircle />
-            </Button>
-          </Box>
-          <Box>
-            <Button onClick={nextPage} colorScheme="linkedin" width="100%">
-              <FiArrowRightCircle />
-            </Button>
+            Page {page}/{Math.ceil(totalCount / limit)}
           </Box>
         </HStack>
+        <Box h="4%" w="full"></Box>
       </Flex>
 
       <Modal isOpen={openModal} onClose={() => setOpenModal(false)}>
