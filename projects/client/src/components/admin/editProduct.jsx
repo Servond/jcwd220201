@@ -100,7 +100,6 @@ const EditProduct = (props) => {
         console.log(err)
         toast({
           title: "Edit Gagal",
-          description: "Hanya Super Admin yang dapat melalukan perubahan",
           status: "error",
         })
       }

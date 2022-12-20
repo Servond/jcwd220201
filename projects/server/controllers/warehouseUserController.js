@@ -1,41 +1,39 @@
 const { Op } = require("sequelize")
 const db = require("../models")
+const WarehousesUser = db.WarehousesUser
+const Warehouse = db.Warehouse
+const User = db.User
 
 const warehouseUserController = {
   createUserHouse: async (req, res) => {
     try {
-      // const UserId = req.body
-
-      const findUser = await db.User.findByPk(req.UserId)
-
+      const findUser = await db.User.findByPk(req.body.UserId)
       if (!findUser) {
         throw new Error("User tidak ditemukan")
       }
-      const findWarehouse = await db.Warehouse.findByPk(req.body.WarehouseId)
 
-      if (!findWarehouse) {
+      const findWarehouseId = await Warehouse.findByPk(req.body.WarehouseId)
+      if (!findWarehouseId) {
         throw new Error("Warehouse tidak ditemukan")
-      }
+        // }
 
-      const findUserById = await db.User.findOne({
-        where: { id: { [Op.like]: UserId } },
-      })
-
-      if (findUserById) {
-        return res.status(400).json({
-          message: "UserId sudah telah ada",
+        // const findUserById = await db.User.findOne({
+        //   where: { id: findUser || "" },
+        // })
+        // if (findUserById) {
+        //   return res.status(400).json({
+        //     message: "UserId telah ada",
+        //   })
+      } else {
+        const newWarehouseUser = await WarehousesUser.create({
+          UserId: findUser.id,
+          WarehouseId: findWarehouseId.id,
+        })
+        return res.status(200).json({
+          message: "Warehouse user telah ditambahkan",
+          data: newWarehouseUser,
         })
       }
-
-      const newWarehouseUser = await db.WarehousesUser.create({
-        UserId: findUser,
-        WarehouseId: findWarehouse,
-      })
-
-      return res.status(200).json({
-        message: "Warehouse user telah ditambahkan",
-        data: newWarehouseUser,
-      })
     } catch (err) {
       console.log(err)
 
@@ -46,9 +44,9 @@ const warehouseUserController = {
   },
   getAllWareUser: async (req, res) => {
     try {
-      const { _limit = 6, _page = 1, _sortDir = "ASC" } = req.query
+      const { _limit = 10, _page = 1, _sortDir = "DESC" } = req.query
 
-      const findAllWareUser = await db.WarehousesUser.findAndCountAll({
+      const findAllWareUser = await WarehousesUser.findAndCountAll({
         limit: Number(_limit),
         offset: (_page - 1) * _limit,
         order: [["UserId", _sortDir]],
@@ -71,7 +69,7 @@ const warehouseUserController = {
     try {
       const { id } = req.params
 
-      await db.WarehousesUser.update({ ...req.body }, { where: { id: id } })
+      await WarehousesUser.update({ ...req.body }, { where: { id: id } })
 
       return res.status(200).json({
         message: "Warehouse user telah update",
@@ -89,7 +87,7 @@ const warehouseUserController = {
     try {
       const { id } = req.params
 
-      const wareUserById = await db.WarehousesUser.findOne({
+      const wareUserById = await WarehousesUser.findOne({
         where: {
           id,
         },
@@ -101,7 +99,7 @@ const warehouseUserController = {
         })
       }
 
-      await db.WarehousesUser.destroy({
+      await WarehousesUser.destroy({
         where: {
           id,
         },
@@ -115,6 +113,29 @@ const warehouseUserController = {
 
       return res.status(500).json({
         message: err.message,
+      })
+    }
+  },
+  getAllWarehouses: async (req, res) => {
+    try {
+      const { _limit = 6, _page = 1, _sortDir = "ASC" } = req.query
+
+      const findAllWarehouse = await Warehouse.findAndCountAll({
+        limit: Number(_limit),
+        offset: (_page - 1) * _limit,
+        order: [["id", _sortDir]],
+      })
+
+      return res.status(200).json({
+        message: "Get All Warehouses Data",
+        data: findAllWarehouse.rows,
+        dataCount: findAllWarehouse.count,
+      })
+    } catch (err) {
+      console.log(err)
+
+      return res.status(500).json({
+        message: "Server Error",
       })
     }
   },

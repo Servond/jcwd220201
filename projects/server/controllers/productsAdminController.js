@@ -36,7 +36,6 @@ const productAdminController = {
           price: req.body.price,
           CategoryId: findCategoryId.id,
           weight: req.body.weight,
-          CategoryId: findCategoryId.id,
         })
 
         const files = req.files

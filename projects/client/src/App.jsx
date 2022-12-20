@@ -19,6 +19,7 @@ import ProductList from "./pages/products/ProductList"
 import ProductDetail from "./pages/products/ProductDetail"
 import ManageProduct from "./pages/admin/manageProduct.jsx"
 import Register from "./pages/Register"
+import ManageUser from "./pages/admin/manageUser"
 
 const App = () => {
   const [authCheck, setAuthCheck] = useState(false)
@@ -105,6 +106,14 @@ const App = () => {
           element={
             <ProtectedRoute>
               <ManageProduct />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/user"
+          element={
+            <ProtectedRoute>
+              <ManageUser />
             </ProtectedRoute>
           }
         />
