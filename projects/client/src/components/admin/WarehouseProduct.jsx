@@ -29,14 +29,11 @@ import {
 import { useFormik } from "formik"
 import { useEffect, useRef, useState } from "react"
 import { axiosInstance } from "../../api"
-import { FiArrowLeftCircle, FiArrowRightCircle } from "react-icons/fi"
 import { BiEdit } from "react-icons/bi"
 import { RiDeleteBin5Fill } from "react-icons/ri"
 import * as Yup from "yup"
 import EditProduct from "./editProduct"
 import PageButton from "./pageButton"
-import { Link } from "react-router-dom"
-import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons"
 
 const WarehouseProduct = () => {
   const [products, setproducts] = useState([])
@@ -52,7 +49,7 @@ const WarehouseProduct = () => {
   const [images, setImages] = useState([])
   const inputFileRef = useRef()
   const [categories, setCategories] = useState([])
-  const [show, setShow] = useState(false)
+
   const [preview, setPreview] = useState([])
 
   const [page, setPage] = useState(1)
@@ -65,11 +62,13 @@ const WarehouseProduct = () => {
     try {
       const response = await axiosInstance.get(`/product-admin`, {
         params: {
-          _limit: 10,
+          _limit: limit,
           _page: page,
           _sortDir: "DESC",
         },
       })
+
+      setTotalCount(response.data.dataCount)
 
       setproducts(response.data.data)
       const temporary = response.data.data.filter((item) => item.id === idEdit)
@@ -194,11 +193,22 @@ const WarehouseProduct = () => {
     })
   }
 
-  const nextPage = () => {
-    setPage(page + 1)
-  }
-  const prevPage = () => {
-    setPage(page - 1)
+  const renderPageButton = () => {
+    const totalPage = Math.ceil(totalCount / limit)
+
+    const pageArray = new Array(totalPage).fill(null).map((val, i) => ({
+      id: i + 1,
+    }))
+
+    return pageArray.map((val) => {
+      return (
+        <PageButton
+          key={val.id.toString()}
+          id={val.id}
+          onClick={() => setPage(val.id)}
+        />
+      )
+    })
   }
 
   useEffect(() => {
@@ -489,7 +499,11 @@ const WarehouseProduct = () => {
         </Container>
 
         <HStack w="full" alignSelf="flex-end" justifyContent="center">
+          {renderPageButton()}
           <Box>
+            Page {page}/{Math.ceil(totalCount / limit)}
+          </Box>
+          {/* <Box>
             <Button onClick={prevPage} colorScheme="linkedin" width="100%">
               <FiArrowLeftCircle />
             </Button>
@@ -498,8 +512,9 @@ const WarehouseProduct = () => {
             <Button onClick={nextPage} colorScheme="linkedin" width="100%">
               <FiArrowRightCircle />
             </Button>
-          </Box>
+          </Box> */}
         </HStack>
+        <Box h="4%" w="full"></Box>
       </Flex>
 
       <Modal isOpen={openModal} onClose={() => setOpenModal(false)}>

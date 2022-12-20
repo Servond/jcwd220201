@@ -76,7 +76,7 @@ const productAdminController = {
 
   getAllProduct: async (req, res) => {
     try {
-      const { _limit = 10, _page = 1, _sortDir = "DESC" } = req.query
+      const { _limit = 6, _page = 1, _sortDir = "DESC" } = req.query
 
       const findAllProducts = await db.Product.findAndCountAll({
         include: [db.ProductPicture],
