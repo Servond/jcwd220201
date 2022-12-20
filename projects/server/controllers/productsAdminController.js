@@ -45,7 +45,6 @@ const productAdminController = {
 
         const productId = createProduct.id
 
-        console.log(productId)
         const newProductImg = img_path.map((item) => {
           return {
             product_picture: item,
@@ -54,7 +53,6 @@ const productAdminController = {
           }
         })
 
-        console.log(newProductImg)
         await db.ProductPicture.bulkCreate(newProductImg)
 
         const foundProductById = await db.Product.findByPk(createProduct.id, {
@@ -93,7 +91,7 @@ const productAdminController = {
     } catch (err) {
       console.log(err)
       return res.status(500).json({
-        message: "Server error",
+        message: err.message,
       })
     }
   },
@@ -268,7 +266,7 @@ const productAdminController = {
           id: req.params.id,
         },
       })
-      console.log(req.file)
+
       const createImg = await db.ProductPicture.create({
         product_picture: req.file.filename,
         ProductId: req.params.id,
