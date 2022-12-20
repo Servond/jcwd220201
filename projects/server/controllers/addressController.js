@@ -41,7 +41,7 @@ const addressController = {
             { is_default: false },
             {
               where: {
-                [Op.and]: [{ user_id: id }, { is_default: true }],
+                [Op.and]: [{ UserId: id }, { is_default: true }],
               },
               transaction: t,
             }
@@ -63,14 +63,14 @@ const addressController = {
       await sequelize.transaction(async (t) => {
         await Address.create(
           {
-            user_id: parseInt(id),
+            UserId: id,
             recipient,
             phone,
             label,
             address,
             city,
             province,
-            postal_code: parseInt(postalCode),
+            postal_code: postalCode,
             pinpoint,
             is_default: isDefault === "true",
           },
@@ -105,7 +105,7 @@ const addressController = {
       // Get addresses
       const addresses = await Address.findAndCountAll({
         where: {
-          user_id: id,
+          UserId: id,
           [Op.or]: [
             { address: { [Op.like]: searchPattern } },
             { recipient: { [Op.like]: searchPattern } },
@@ -136,7 +136,7 @@ const addressController = {
   makeDefaultAddress: async (req, res) => {
     try {
       // Get user id
-      const { id: user_id } = req.user;
+      const { id: UserId } = req.user;
 
       // Get address id
       const { addressId: id } = req.body;
@@ -147,7 +147,7 @@ const addressController = {
           { is_default: false },
           {
             where: {
-              [Op.and]: [{ user_id }, { is_default: true }],
+              [Op.and]: [{ UserId }, { is_default: true }],
             },
             transaction: t,
           }
@@ -159,7 +159,7 @@ const addressController = {
           { is_default: true },
           {
             where: {
-              [Op.and]: [{ id }, { user_id }],
+              [Op.and]: [{ id }, { UserId }],
             },
             transaction: t,
           }
@@ -179,7 +179,7 @@ const addressController = {
   editAddress: async (req, res) => {
     try {
       // Get user id
-      const { id: user_id } = req.user;
+      const { id: UserId } = req.user;
 
       // Get new address details
       const {
@@ -197,7 +197,7 @@ const addressController = {
       } = req.body;
 
       // Get the coordinates of said address
-      const pinpoint = await getCoordinate(city);
+      const pinpoint = await getCoordinate(postalCode);
 
       // Send error response in case of invalid coordinate
       if (!pinpoint) {
@@ -210,7 +210,7 @@ const addressController = {
       await sequelize.transaction(async (t) => {
         await Address.update(
           {
-            user_id,
+            UserId,
             recipient,
             phone,
             label,
@@ -243,14 +243,14 @@ const addressController = {
   deleteAddress: async (req, res) => {
     try {
       // Get user id
-      const { id: user_id } = req.user;
+      const { id: UserId } = req.user;
       const { addressId } = req.params;
 
       // Delete address
       await sequelize.transaction(async (t) => {
         await Address.destroy({
           where: {
-            [Op.and]: [{ id: addressId }, { user_id }],
+            [Op.and]: [{ id: addressId }, { UserId }],
           },
           transaction: t,
         });
