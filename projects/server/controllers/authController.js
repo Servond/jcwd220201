@@ -200,7 +200,7 @@ const authController = {
   //       data: findUserAdmin,
   //     })
   //   } catch (err) {
-  //     console.log(err)
+  //     .log(err)
   //     return res.status(500).json({ msg: "Server Error !" })
   //   }
   // },
