@@ -1,13 +1,13 @@
-const dotenv = require("dotenv")
-const express = require("express")
-const cors = require("cors")
-const { join } = require("path")
-const db = require("../models")
-const adminRoute = require("../routes/adminRoute")
-const authRoute = require("../routes/authRoute")
-const productsRoute = require("../routes/productsRoute")
-const registerRoute = require("../routes/registerRoute")
-const cartRoute = require("../routes/cartsRoute")
+const dotenv = require("dotenv");
+const express = require("express");
+const cors = require("cors");
+const { join } = require("path");
+const db = require("../models");
+const adminRoute = require("../routes/adminRoute");
+const authRoute = require("../routes/authRoute");
+const productsRoute = require("../routes/productsRoute");
+const registerRoute = require("../routes/registerRoute");
+const cartRoute = require("../routes/cartsRoute");
 const addressRoute = require("../routes/addressRoute");
 
 dotenv.config();
@@ -39,17 +39,17 @@ const {
 
 app.use("/public", express.static("public"));
 
-app.use("/warehouses", warehousesRoute)
-app.use("/cities", citiesRoute)
-app.use("/provinces", provincesRoute)
-app.use("/auth", authRoute)
-app.use("/admin", adminRoute)
-app.use("/products", productsRoute)
-app.use("/categories", categoriesRoute)
-app.use("/carts", cartRoute)
-app.use("/product-admin", productsAdminRoute)
+app.use("/warehouses", warehousesRoute);
+app.use("/cities", citiesRoute);
+app.use("/provinces", provincesRoute);
+app.use("/auth", authRoute);
+app.use("/admin", adminRoute);
+app.use("/products", productsRoute);
+app.use("/categories", categoriesRoute);
+app.use("/carts", cartRoute);
+app.use("/product-admin", productsAdminRoute);
 
-const productsAdminRoute = require("../routes/productsAdminRoute")
+const productsAdminRoute = require("../routes/productsAdminRoute");
 // Register middleware
 app.use("/api/register", registerRoute);
 
@@ -101,11 +101,7 @@ app.use(express.static(join(__dirname, clientPath)));
 //#endregion
 
 app.listen(PORT, async (err) => {
-<<<<<<< HEAD
-  db.sequelize.sync({ alter: true });
-=======
-  db.sequelize.sync({ force: false })
->>>>>>> c370f51d5cbe5d44fa5212a9a307596680554bfe
+  db.sequelize.sync({ force: false });
   if (err) {
     console.log(`ERROR: ${err}`);
   } else {
