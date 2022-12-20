@@ -329,9 +329,12 @@ const Navbar = ({ onChange, onClick, onKeyDown }) => {
 
               <MenuList>
                 <LinkRouterDom to="/profile">
-                  <MenuItem>Profile</MenuItem>
+                  <MenuItem>Profil</MenuItem>
                 </LinkRouterDom>
-                <MenuItem>Transaction</MenuItem>
+                <LinkRouterDom to="/address">
+                  <MenuItem>Alamat</MenuItem>
+                </LinkRouterDom>
+                <MenuItem>Pesanan</MenuItem>
                 <MenuDivider />
                 <MenuItem>
                   <Button

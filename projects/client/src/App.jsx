@@ -1,4 +1,5 @@
 // import "./styles/globals.css"
+import "./App.css"
 import { useEffect, useState } from "react"
 import { login, logout } from "./redux/features/authSlice"
 import { useDispatch, useSelector } from "react-redux"
@@ -21,6 +22,7 @@ import ManageProduct from "./pages/admin/manageProduct.jsx"
 import Register from "./pages/Register"
 import CartPage from "./pages/CartPage"
 import AdminRoute from "./components/AdminRoute"
+import Address from "./pages/Address"
 
 const App = () => {
   const [authCheck, setAuthCheck] = useState(false)
@@ -126,6 +128,9 @@ const App = () => {
 
         {/* Register Route */}
         <Route path="/register" element={<Register />} />
+
+        {/* Address Route */}
+        <Route path="/address" element={<Address />} />
       </Routes>
     </>
   )
