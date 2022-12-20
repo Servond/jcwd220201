@@ -1,5 +1,4 @@
 // import "./styles/globals.css"
-import "./App.css";
 import { useEffect, useState } from "react";
 import { login, logout } from "./redux/features/authSlice";
 import { useDispatch, useSelector } from "react-redux";
@@ -20,6 +19,8 @@ import ProductList from "./pages/products/ProductList";
 import ProductDetail from "./pages/products/ProductDetail";
 import ManageProduct from "./pages/admin/manageProduct.jsx";
 import Register from "./pages/Register";
+import CartPage from "./pages/CartPage";
+import AdminRoute from "./components/AdminRoute";
 import Address from "./pages/Address";
 
 const App = () => {
@@ -56,12 +57,25 @@ const App = () => {
   return (
     <>
       <Routes>
-        <Route path="/" element={<Navbar />}>
+        <Route
+          path="/"
+          element={
+            <AdminRoute>
+              <Navbar />
+            </AdminRoute>
+          }
+        >
           <Route index element={<MainContent />} />
           <Route index element={<Footer />} />
         </Route>
+
+        {/* Cart Page */}
+        <Route path="/cart" element={<CartPage />} />
+
+        {/* Product List */}
         <Route path="/product" element={<ProductList />} />
 
+        {/* Product Detail */}
         <Route
           path="/product-detail/:id/:product_name"
           element={<ProductDetail />}
@@ -102,7 +116,6 @@ const App = () => {
             </ProtectedRoute>
           }
         />
-
         <Route
           path="/admin/product"
           element={
