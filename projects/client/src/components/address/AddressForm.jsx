@@ -40,6 +40,7 @@ const AddressForm = ({
   setAddresses,
   setTotalPage,
   setPageIndex,
+  setAddressManipulation,
 }) => {
   // Get user id
   const id = useSelector((state) => state.auth.id);
@@ -113,6 +114,8 @@ const AddressForm = ({
       } else {
         setPageIndex(0);
       }
+
+      setAddressManipulation(true);
 
       // Alert user of the result
       toast({

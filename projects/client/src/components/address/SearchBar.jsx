@@ -10,7 +10,7 @@ import { useEffect } from "react";
 
 // Own library imports
 
-const SearchBar = ({ setQuery, setPageIndex }) => {
+const SearchBar = ({ addressManipulation, setQuery, setPageIndex }) => {
   // Form functionality
   const formik = useFormik({
     initialValues: {
@@ -22,9 +22,12 @@ const SearchBar = ({ setQuery, setPageIndex }) => {
     },
   });
 
-  // useEffect(() => {
-  //   console.log(formik.values.query);
-  // }, [formik.values.query]);
+  useEffect(() => {
+    if (addressManipulation) {
+      formik.setFieldValue("query", "");
+      setQuery("");
+    }
+  }, [addressManipulation]);
 
   return (
     <Flex

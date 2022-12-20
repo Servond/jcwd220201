@@ -31,8 +31,13 @@ const AddressCard = (props) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   // Get user address
-  const { setDefaultAddress, setAddresses, setTotalPage, setPageIndex } =
-    rest.setters;
+  const {
+    setDefaultAddress,
+    setAddresses,
+    setTotalPage,
+    setPageIndex,
+    setAddressManipulation,
+  } = rest.setters;
 
   const { pageIndex } = rest;
 
@@ -188,6 +193,7 @@ const AddressCard = (props) => {
           setAddresses={setAddresses}
           setTotalPage={setTotalPage}
           setPageIndex={setPageIndex}
+          setAddressManipulation={setAddressManipulation}
           addressData={rest.data}
         />
       )}
@@ -199,7 +205,12 @@ const AddressCard = (props) => {
           isOpen={isOpen}
           onClose={onClose}
           pageIndex={pageIndex}
-          setters={{ setAddresses, setTotalPage, setPageIndex }}
+          setters={{
+            setAddresses,
+            setTotalPage,
+            setPageIndex,
+            setAddressManipulation,
+          }}
         />
       )}
     </Box>

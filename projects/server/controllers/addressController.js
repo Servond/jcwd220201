@@ -50,12 +50,12 @@ const addressController = {
       }
 
       // Get the coordinates of said address
-      const pinpoint = await getCoordinate(city);
+      const pinpoint = await getCoordinate(postalCode);
 
       // Send error response in case of invalid coordinate
       if (!pinpoint) {
         return res.status(400).json({
-          message: "Pastikan kamu masukkan nama kota yang direkomendasikan",
+          message: "Terjadi kesalahan, silakan coba lagi",
         });
       }
 
@@ -232,7 +232,7 @@ const addressController = {
 
       // Send success response
       return res.status(201).json({
-        message: "Alamat berhasil diubah",
+        message: "Alamat lengkap berhasil disimpan",
       });
     } catch (err) {
       return res.status(500).json({

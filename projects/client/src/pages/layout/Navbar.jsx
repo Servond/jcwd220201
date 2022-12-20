@@ -28,9 +28,9 @@ import {
   PopoverBody,
   Image,
   Divider,
-} from "@chakra-ui/react"
-import { HamburgerIcon, CloseIcon, SearchIcon } from "@chakra-ui/icons"
-import { IoMdCart } from "react-icons/io"
+} from "@chakra-ui/react";
+import { HamburgerIcon, CloseIcon, SearchIcon } from "@chakra-ui/icons";
+import { IoMdCart } from "react-icons/io";
 import {
   Link,
   Link as LinkRouterDom,
@@ -39,69 +39,69 @@ import {
   useLocation,
   createSearchParams,
   useSearchParams,
-} from "react-router-dom"
-import { useDispatch, useSelector } from "react-redux"
-import { logout, login } from "../../redux/features/authSlice"
-import { axiosInstance } from "../../api"
-import { useEffect, useState } from "react"
+} from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { logout, login } from "../../redux/features/authSlice";
+import { axiosInstance } from "../../api";
+import { useEffect, useState } from "react";
 
 const Navbar = ({ onChange, onClick, onKeyDown }) => {
-  const authSelector = useSelector((state) => state.auth)
+  const authSelector = useSelector((state) => state.auth);
 
-  const [authCheck, setAuthCheck] = useState(false)
-  const { isOpen, onOpen, onClose } = useDisclosure()
+  const [authCheck, setAuthCheck] = useState(false);
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
-  const [searchValue, setSearchValue] = useState("")
-  const [searchQuery, setSearchQuery] = useSearchParams()
+  const [searchValue, setSearchValue] = useState("");
+  const [searchQuery, setSearchQuery] = useSearchParams();
 
-  const navigate = useNavigate()
-  const dispatch = useDispatch()
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
   // const location = useLocation()
 
   const keepUserLogin = async () => {
     try {
-      const auth_token = localStorage.getItem("auth_token")
+      const auth_token = localStorage.getItem("auth_token");
 
       if (!auth_token) {
-        setAuthCheck(true)
-        return
+        setAuthCheck(true);
+        return;
       }
 
-      const response = await axiosInstance.get("/auth/refresh-token")
+      const response = await axiosInstance.get("/auth/refresh-token");
 
-      dispatch(login(response.data.data))
-      localStorage.setItem("auth_token", response.data.token)
-      setAuthCheck(true)
+      dispatch(login(response.data.data));
+      localStorage.setItem("auth_token", response.data.token);
+      setAuthCheck(true);
     } catch (err) {
-      console.log(err)
-      setAuthCheck(true)
+      console.log(err);
+      setAuthCheck(true);
     }
-  }
+  };
 
   const btnLogout = () => {
-    localStorage.removeItem("auth_token")
-    dispatch(logout())
-    navigate("/")
-  }
+    localStorage.removeItem("auth_token");
+    dispatch(logout());
+    navigate("/");
+  };
 
   const handleOnChange = (e) => {
-    setSearchValue(e.target.value)
-    onChange(e)
+    setSearchValue(e.target.value);
+    onChange(e);
     // ==============================
     // if (location.pathname === "/") {
     //   setSearchValue(e.target.value)
     // } else {
     //   onChange(e)
     // }
-  }
+  };
 
   const handleOnKeyDown = (e) => {
     if (e.key === "Enter") {
       navigate({
         pathname: "/product",
         search: createSearchParams({ search: searchValue }).toString(),
-      })
-      onKeyDown(e)
+      });
+      onKeyDown(e);
     }
 
     // ===================================================
@@ -115,15 +115,15 @@ const Navbar = ({ onChange, onClick, onKeyDown }) => {
     // } else {
     //   onKeyDown(e)
     // }
-  }
+  };
 
   useEffect(() => {
-    keepUserLogin()
-  }, [])
+    keepUserLogin();
+  }, []);
 
   useEffect(() => {
-    setSearchValue(searchQuery.get("search"))
-  }, [])
+    setSearchValue(searchQuery.get("search"));
+  }, []);
   return (
     <>
       <Box
@@ -268,9 +268,12 @@ const Navbar = ({ onChange, onClick, onKeyDown }) => {
 
               <MenuList>
                 <LinkRouterDom to="/profile">
-                  <MenuItem>Profile</MenuItem>
+                  <MenuItem>Profil</MenuItem>
                 </LinkRouterDom>
-                <MenuItem>Transaction</MenuItem>
+                <LinkRouterDom to="/address">
+                  <MenuItem>Alamat</MenuItem>
+                </LinkRouterDom>
+                <MenuItem>Pesanan</MenuItem>
                 <MenuDivider />
                 <MenuItem>
                   <Button
@@ -337,7 +340,7 @@ const Navbar = ({ onChange, onClick, onKeyDown }) => {
       </Box>
       <Outlet />
     </>
-  )
-}
+  );
+};
 
-export default Navbar
+export default Navbar;

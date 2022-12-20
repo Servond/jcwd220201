@@ -1,9 +1,13 @@
 const axiosInstance = require("./api");
 
-const getCoordinate = async (location) => {
+const getCoordinate = async (postalCode) => {
   // Encode location value for API call
-  const encodedLocation = encodeURIComponent(location);
+  const encodedLocation = encodeURIComponent(postalCode);
 
+  const locationCategory = "postcode";
+  const locationType = "postcode";
+
+  /*
   // Determine location name and type
   const locationDetails = location.split(" ");
 
@@ -14,7 +18,9 @@ const getCoordinate = async (location) => {
 
   const locationCategory = "place";
 
-  // OpenCage API call
+  OpenCage API call
+  */
+
   let {
     data: { results },
   } = await axiosInstance.get(

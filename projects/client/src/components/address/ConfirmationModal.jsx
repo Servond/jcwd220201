@@ -8,6 +8,7 @@ import {
   useMediaQuery,
   Button,
   Text,
+  useToast,
 } from "@chakra-ui/react";
 
 // Own library imports
@@ -20,11 +21,14 @@ const ConfirmationModal = ({
   isOpen,
   onClose,
   pageIndex,
-  setters: { setAddresses, setTotalPage, setPageIndex },
+  setters: { setAddresses, setTotalPage, setPageIndex, setAddressManipulation },
 }) => {
   // Media query
   const [isLargerThanSm] = useMediaQuery("(min-width: 20rem)");
   const [isLargerThanMd] = useMediaQuery("(min-width: 30rem)");
+
+  // Alert functionality
+  const toast = useToast();
 
   return (
     <Modal
@@ -98,20 +102,26 @@ const ConfirmationModal = ({
             whiteSpace="nowrap"
             onClick={async () => {
               // Delete address
-              await deleteAddress(id);
+              const res = await deleteAddress(id);
 
               // Update address list
               if (!pageIndex) {
                 const response = await fetchAddresses();
-                console.log(response.data.data);
                 const { addresses: newAddressList, totalPage } =
                   response.data.data;
                 setAddresses(newAddressList);
                 setTotalPage(totalPage);
-                return;
+              } else {
+                setPageIndex(0);
               }
 
-              setPageIndex(0);
+              setAddressManipulation(true);
+
+              // Alert user of the result
+              toast({
+                title: res.data.message,
+                status: res.status === 200 ? "success" : "error",
+              });
             }}
           >
             Hapus

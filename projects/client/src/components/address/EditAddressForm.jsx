@@ -37,6 +37,7 @@ const EditAddressForm = ({
   setAddresses,
   setTotalPage,
   setPageIndex,
+  setAddressManipulation,
   addressData,
 }) => {
   // Get user data
@@ -118,9 +119,12 @@ const EditAddressForm = ({
         const { addresses: newAddressList, totalPage } = response.data.data;
         setAddresses(newAddressList);
         setTotalPage(totalPage);
+        setPageIndex(pageIndex);
       } else {
         setPageIndex(0);
       }
+
+      setAddressManipulation(true);
 
       // Alert user of the result
       toast({

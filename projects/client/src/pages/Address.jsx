@@ -18,6 +18,7 @@ const Address = () => {
   const [defaultAddress, setDefaultAddress] = useState(null);
   const [addresses, setAddresses] = useState(null);
   const [loadAddress, setLoadAddress] = useState(false);
+  const [addressManipulation, setAddressManipulation] = useState(false);
   const [query, setQuery] = useState(null);
 
   // Modal functionality
@@ -25,7 +26,6 @@ const Address = () => {
 
   // Fetch user addresses
   useEffect(() => {
-    console.log(query);
     fetchAddresses(pageIndex, query).then((res) => {
       // Get response data
       const { addresses, totalPage } = res.data.data;
@@ -38,6 +38,9 @@ const Address = () => {
 
       // Load addresses
       setLoadAddress(true);
+
+      // Persist search input if exist
+      setAddressManipulation(false);
     });
   }, [query, pageIndex, defaultAddress]);
 
@@ -71,7 +74,11 @@ const Address = () => {
             spacing={["0.25rem", "0.5rem"]}
             width={["15.2295rem", "25.7412rem", "42.7617rem", "56.125rem"]}
           >
-            <SearchBar setQuery={setQuery} setPageIndex={setPageIndex} />
+            <SearchBar
+              addressManipulation={addressManipulation}
+              setQuery={setQuery}
+              setPageIndex={setPageIndex}
+            />
             <Button
               borderRadius="0.5rem"
               colorScheme="teal"
@@ -93,7 +100,8 @@ const Address = () => {
                 setDefaultAddress,
                 setAddresses,
                 setTotalPage,
-                setPageIndex
+                setPageIndex,
+                setAddressManipulation
               )
             : null}
 
@@ -105,6 +113,7 @@ const Address = () => {
             setAddresses={setAddresses}
             setTotalPage={setTotalPage}
             setPageIndex={setPageIndex}
+            setAddressManipulation={setAddressManipulation}
           />
         </Flex>
         <ReactPaginate

@@ -6,7 +6,8 @@ const renderAddresses = (
   setDefaultAddress,
   setAddresses,
   setTotalPage,
-  setPageIndex
+  setPageIndex,
+  setAddressManipulation
 ) => {
   const addressList = addresses.map((address) => {
     if (address.is_default) {
@@ -18,6 +19,7 @@ const renderAddresses = (
             setAddresses,
             setTotalPage,
             setPageIndex,
+            setAddressManipulation,
           }}
           data={address}
           pageIndex={pageIndex}
@@ -33,6 +35,7 @@ const renderAddresses = (
           setAddresses,
           setTotalPage,
           setPageIndex,
+          setAddressManipulation,
         }}
         data={address}
         pageIndex={pageIndex}
