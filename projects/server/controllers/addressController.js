@@ -92,7 +92,13 @@ const addressController = {
   getAddresses: async (req, res) => {
     try {
       // Get user id
-      const { id } = req.user;
+      const { id: UserId } = req.user;
+
+      if (!UserId) {
+        return res.status(401).json({
+          message: "Terjadi kesalahan, silakan login terlebih dahulu",
+        });
+      }
 
       // Prepare for search and pagination feature
       const { search } = req.query;
@@ -102,10 +108,10 @@ const addressController = {
 
       const { LIMIT, OFFSET } = getPagination(page);
 
-      // Get addresses
+      // Get user addresses
       const addresses = await Address.findAndCountAll({
         where: {
-          UserId: id,
+          UserId,
           [Op.or]: [
             { address: { [Op.like]: searchPattern } },
             { recipient: { [Op.like]: searchPattern } },
@@ -137,6 +143,12 @@ const addressController = {
     try {
       // Get user id
       const { id: UserId } = req.user;
+
+      if (!UserId) {
+        return res.status(401).json({
+          message: "Terjadi kesalahan, silakan login terlebih dahulu",
+        });
+      }
 
       // Get address id
       const { addressId: id } = req.body;
@@ -180,6 +192,12 @@ const addressController = {
     try {
       // Get user id
       const { id: UserId } = req.user;
+
+      if (!UserId) {
+        return res.status(401).json({
+          message: "Terjadi kesalahan, silakan login terlebih dahulu",
+        });
+      }
 
       // Get new address details
       const {

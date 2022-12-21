@@ -9,6 +9,7 @@ const productsRoute = require("../routes/productsRoute");
 const registerRoute = require("../routes/registerRoute");
 const cartRoute = require("../routes/cartsRoute");
 const addressRoute = require("../routes/addressRoute");
+const checkoutRoute = require("../routes/checkoutRoute");
 
 dotenv.config();
 
@@ -36,6 +37,9 @@ app.use("/api/register", registerRoute);
 
 // Address middleware
 app.use("/api/address", addressRoute);
+
+// Checkout middleware
+app.use("/api/checkout", checkoutRoute);
 
 const {
   warehousesRoute,

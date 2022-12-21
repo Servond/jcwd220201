@@ -23,6 +23,7 @@ import Register from "./pages/Register";
 import CartPage from "./pages/CartPage";
 import AdminRoute from "./components/AdminRoute";
 import Address from "./pages/Address";
+import Checkout from "./pages/Checkout";
 
 const App = () => {
   const [authCheck, setAuthCheck] = useState(false);
@@ -131,6 +132,9 @@ const App = () => {
 
         {/* Address Route */}
         <Route path="/address" element={<Address />} />
+
+        {/* Checkout Route */}
+        <Route path="/cart/shipment" element={<Checkout />} />
       </Routes>
     </>
   );

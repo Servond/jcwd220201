@@ -44,7 +44,7 @@ const AddressCard = (props) => {
   const { label, recipient, phone, address, id, is_default } = rest.data;
 
   return (
-    <Box __css={styles} {...rest}>
+    <Box __css={styles} {...rest} mt={variant === "selected" ? "1rem" : 0}>
       <Flex
         color="rgba(49, 53, 59, 0.96)"
         direction="column"
