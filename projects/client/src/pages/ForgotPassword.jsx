@@ -28,7 +28,6 @@ const ForgotPassword = () => {
   const navigate = useNavigate()
   const toast = useToast()
   const [email, setEmail] = useState("")
-  const [emailMatch, setEmailMatch] = useState("")
   const dispatch = useDispatch()
   const formik = useFormik({
     initialValues: {
