@@ -25,6 +25,7 @@ import AdminRoute from "./components/AdminRoute"
 import Address from "./pages/Address"
 import ForgotPassword from "./pages/ForgotPassword"
 import RecoverPassword from "./pages/RecoverPassword"
+import ManageUser from "./pages/admin/manageUser"
 
 const App = () => {
   const [authCheck, setAuthCheck] = useState(false)
@@ -133,6 +134,14 @@ const App = () => {
           element={
             <ProtectedRoute>
               <ManageProduct />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/user"
+          element={
+            <ProtectedRoute>
+              <ManageUser />
             </ProtectedRoute>
           }
         />
