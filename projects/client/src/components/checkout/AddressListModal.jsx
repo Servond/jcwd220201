@@ -9,11 +9,10 @@ import {
   Input,
   Box,
 } from "@chakra-ui/react";
-import { useEffect } from "react";
-import { useState } from "react";
-import filterAddresses from "../../lib/checkout/filterAddresses";
+import { useEffect, useState } from "react";
 
 // Own library imports
+import filterAddresses from "../../lib/checkout/filterAddresses";
 import renderAdresses from "../../lib/checkout/renderAddresses";
 
 const AddressListModal = ({ isOpen, onClose, addresses }) => {

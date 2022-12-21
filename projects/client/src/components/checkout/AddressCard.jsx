@@ -21,7 +21,9 @@ const AddressCard = (props) => {
   const styles = useStyleConfig("AddressCard", { variant });
   const [isSmSize] = useMediaQuery("min-width: 30rem");
 
-  const { setShippingAddress, setAddresses } = useContext(CheckoutContext);
+  const {
+    address: { setShippingAddress },
+  } = useContext(CheckoutContext);
   const { id, label, recipient, phone, address, is_default } = rest.address;
 
   // Alert functionality

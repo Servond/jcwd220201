@@ -1,6 +1,5 @@
 import { Box, Button, Flex, Text, useDisclosure } from "@chakra-ui/react";
 import { useContext, useEffect, useState } from "react";
-import fetchAddresses from "../../lib/checkout/fetchAddresses";
 import AddressListModal from "./AddressListModal";
 
 // Own library imports
@@ -9,31 +8,11 @@ import { CheckoutContext } from "./CheckoutContextProvider";
 const Address = () => {
   // Get address data
   const {
-    shippingAddress,
-    addresses,
-    warehouseDetails,
-    setShippingAddress,
-    setAddresses,
+    address: { shippingAddress, addresses, isLoading },
   } = useContext(CheckoutContext);
 
   // Modal functionality
   const { isOpen, onOpen, onClose } = useDisclosure();
-
-  // Loading functionality
-  const [isLoading, setIsLoading] = useState(false);
-
-  // Find nearest warehouse
-
-  useEffect(() => {
-    fetchAddresses()
-      .then((res) => {
-        if (!shippingAddress) {
-          setShippingAddress(res.data.selectedAddress);
-        }
-        setAddresses(res.data.addresses);
-      })
-      .then(() => setIsLoading(true));
-  }, [shippingAddress]);
 
   return (
     <Box

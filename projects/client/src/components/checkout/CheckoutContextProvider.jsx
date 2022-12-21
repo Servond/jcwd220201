@@ -1,29 +1,29 @@
-import { createContext, useState, useEffect } from "react";
+import { createContext } from "react";
 
 // Own library imports
-import fetchWarehousesDetails from "../../lib/checkout/fetchWarehousesDetails";
+import useSelectAddress from "../../lib/checkout/hooks/useSelectAddress";
+import useFetchWarehouseDetails from "../../lib/checkout/hooks/useFetchWarehouseDetails";
 
 export const CheckoutContext = createContext(null);
 
 export const CheckoutContextProvider = ({ children }) => {
   // Address
-  const [shippingAddress, setShippingAddress] = useState(null);
-  const [addresses, setAddresses] = useState(null);
+  const { shippingAddress, addresses, isLoading, setShippingAddress } =
+    useSelectAddress();
 
   // Shipping
-  const [warehouseDetails, setWarehouseDetails] = useState(null);
-
-  // Get warehouse details
-  useEffect(() => {
-    fetchWarehousesDetails().then((res) => setWarehouseDetails(res));
-  }, []);
+  const warehouseDetails = useFetchWarehouseDetails();
 
   const value = {
-    shippingAddress,
-    addresses,
-    warehouseDetails,
-    setShippingAddress,
-    setAddresses,
+    address: {
+      shippingAddress,
+      addresses,
+      isLoading,
+      setShippingAddress,
+    },
+    shipping: {
+      warehouseDetails,
+    },
   };
 
   return (
