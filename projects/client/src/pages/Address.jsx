@@ -92,9 +92,9 @@ const Address = () => {
               Tambah Alamat Baru
             </Button>
           </Stack>
-
-          {loadAddress
-            ? renderAddresses(
+          {loadAddress ? (
+            <Box pt="1rem">
+              {renderAddresses(
                 addresses,
                 pageIndex,
                 setDefaultAddress,
@@ -102,9 +102,9 @@ const Address = () => {
                 setTotalPage,
                 setPageIndex,
                 setAddressManipulation
-              )
-            : null}
-
+              )}
+            </Box>
+          ) : null}
           <AddressForm
             fetchAddresses={fetchAddresses}
             pageIndex={pageIndex}

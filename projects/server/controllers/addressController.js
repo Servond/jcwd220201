@@ -35,13 +35,17 @@ const addressController = {
       } = req.body;
 
       // Reset default address if user specify a new default address
-      if (isDefault === "true") {
+      if (isDefault) {
         await sequelize.transaction(async (t) => {
           await Address.update(
-            { is_default: false },
+            { is_default: false, is_selected: false },
             {
               where: {
-                [Op.and]: [{ UserId: id }, { is_default: true }],
+                [Op.and]: [
+                  { UserId: id },
+                  { is_default: true },
+                  { is_selected: true },
+                ],
               },
               transaction: t,
             }
@@ -72,7 +76,8 @@ const addressController = {
             province,
             postal_code: postalCode,
             pinpoint,
-            is_default: isDefault === "true",
+            is_default: isDefault,
+            is_selected: isDefault ? true : false,
           },
           { transaction: t }
         );
@@ -156,7 +161,7 @@ const addressController = {
       // Update default address
       await sequelize.transaction(async (t) => {
         await Address.update(
-          { is_default: false },
+          { is_default: false, is_selected: false },
           {
             where: {
               [Op.and]: [{ UserId }, { is_default: true }],
@@ -168,7 +173,7 @@ const addressController = {
 
       await sequelize.transaction(async (t) => {
         await Address.update(
-          { is_default: true },
+          { is_default: true, is_selected: true },
           {
             where: {
               [Op.and]: [{ id }, { UserId }],
@@ -210,7 +215,6 @@ const addressController = {
           city,
           province,
           postalCode,
-          isDefault,
         },
       } = req.body;
 
@@ -237,7 +241,6 @@ const addressController = {
             province,
             postal_code: postalCode,
             pinpoint,
-            is_default: isDefault,
           },
           {
             where: {

@@ -23,7 +23,6 @@ const AddressCard = defineStyleConfig({
     selected: {
       backgroundColor: "rgba(62, 191, 184, 0.08)",
       border: "1px solid rgb(62, 191, 184)",
-      m: "0rem 0.25rem 0.25rem 0.25rem",
     },
   },
   // The default `size` or `variant` values

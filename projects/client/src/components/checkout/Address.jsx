@@ -7,8 +7,6 @@ import AddressListModal from "./AddressListModal";
 import { CheckoutContext } from "./CheckoutContextProvider";
 
 const Address = () => {
-  const [isLoading, setIsLoading] = useState(false);
-
   // Get address data
   const { shippingAddress, addresses, setShippingAddress, setAddresses } =
     useContext(CheckoutContext);
@@ -16,14 +14,19 @@ const Address = () => {
   // Modal functionality
   const { isOpen, onOpen, onClose } = useDisclosure();
 
+  // Loading functionality
+  const [isLoading, setIsLoading] = useState(false);
+
   useEffect(() => {
     fetchAddresses()
       .then((res) => {
-        setShippingAddress(res.data.defaultAddress);
+        if (!shippingAddress) {
+          setShippingAddress(res.data.selectedAddress);
+        }
         setAddresses(res.data.addresses);
       })
       .then(() => setIsLoading(true));
-  }, []);
+  }, [shippingAddress]);
 
   return (
     <Box

@@ -8,12 +8,22 @@ import {
   Divider,
   Input,
   Box,
-  InputGroup,
 } from "@chakra-ui/react";
+import { useEffect } from "react";
+import { useState } from "react";
+import filterAddresses from "../../lib/checkout/filterAddresses";
+
+// Own library imports
 import renderAdresses from "../../lib/checkout/renderAddresses";
-import AddressCard from "./AddressCard";
 
 const AddressListModal = ({ isOpen, onClose, addresses }) => {
+  // Search functionality
+  const [addressList, setAddressList] = useState(addresses);
+
+  useEffect(() => {
+    setAddressList(addresses);
+  }, [addresses]);
+
   return (
     <Modal isOpen={isOpen} onClose={onClose} size={["xs", "md", "2xl", "3xl"]}>
       <ModalOverlay />
@@ -48,6 +58,13 @@ const AddressListModal = ({ isOpen, onClose, addresses }) => {
               color="rgba(49, 53, 59, 0.96)"
               fontSize={["0.875rem", "1rem"]}
               lineHeight="1.25rem"
+              onChange={(e) =>
+                filterAddresses(
+                  e.target.value.toLowerCase(),
+                  addresses,
+                  setAddressList
+                )
+              }
               padding="0.5rem 2.75rem"
               _hover="none"
               width="100%"
@@ -55,7 +72,7 @@ const AddressListModal = ({ isOpen, onClose, addresses }) => {
           </Box>
 
           <Box height="26.5625rem" overflow="auto" mt="1rem">
-            {renderAdresses(addresses)}
+            {renderAdresses(addressList, onClose)}
           </Box>
         </ModalBody>
       </ModalContent>

@@ -7,12 +7,14 @@ import {
   Text,
   useStyleConfig,
   useMediaQuery,
+  useToast,
 } from "@chakra-ui/react";
 import { GrLocation } from "react-icons/gr";
 import { BsCheck2 } from "react-icons/bs";
 
 // Own library imports
 import { CheckoutContext } from "./CheckoutContextProvider";
+import selectAddress from "../../lib/checkout/selectAddress";
 
 const AddressCard = (props) => {
   const { variant, ...rest } = props;
@@ -20,7 +22,11 @@ const AddressCard = (props) => {
   const [isSmSize] = useMediaQuery("min-width: 30rem");
 
   const { setShippingAddress, setAddresses } = useContext(CheckoutContext);
-  const { label, recipient, phone, address } = rest.address;
+  const { id, label, recipient, phone, address, is_default } = rest.address;
+
+  // Alert functionality
+  const { onClose } = rest;
+  const toast = useToast();
 
   return (
     <Box
@@ -28,6 +34,7 @@ const AddressCard = (props) => {
       {...rest}
       width="auto"
       height={["11.4rem", "12.5rem", "10.25rem", "10.25rem"]}
+      mt={is_default ? 0 : "default"}
     >
       <Flex
         color="rgba(49, 53, 59, 0.96)"
@@ -54,7 +61,7 @@ const AddressCard = (props) => {
           >
             {label}
           </Text>
-          {variant === "selected" ? (
+          {is_default ? (
             <Box
               backgroundColor="rgb(243, 244, 245)"
               borderRadius="3px"
@@ -117,8 +124,14 @@ const AddressCard = (props) => {
           fontWeight="bold"
           fontSize="0.75rem"
           height="2rem"
-          onClick={() => {
+          onClick={async () => {
+            const res = await selectAddress(id);
             setShippingAddress(rest.address);
+            toast({
+              title: res.data.message,
+              status: res.status === 200 ? "success" : "error",
+            });
+            onClose();
           }}
           px="36px"
           width={["100%", "100%", "16.071%", "15.217%"]}
