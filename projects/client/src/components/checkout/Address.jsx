@@ -8,14 +8,21 @@ import { CheckoutContext } from "./CheckoutContextProvider";
 
 const Address = () => {
   // Get address data
-  const { shippingAddress, addresses, setShippingAddress, setAddresses } =
-    useContext(CheckoutContext);
+  const {
+    shippingAddress,
+    addresses,
+    warehouseDetails,
+    setShippingAddress,
+    setAddresses,
+  } = useContext(CheckoutContext);
 
   // Modal functionality
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   // Loading functionality
   const [isLoading, setIsLoading] = useState(false);
+
+  // Find nearest warehouse
 
   useEffect(() => {
     fetchAddresses()
@@ -88,18 +95,29 @@ const Address = () => {
             `${shippingAddress.city}, ${shippingAddress.postal_code}`}
         </Text>
       </Box>
-      <Box py="0.9375rem">
+      <Box py="0.9375rem" display="flex">
         <Button
           border="1px solid rgb(229, 231, 233)"
           borderRadius="0.5rem"
           color="rgba(49, 53, 59, 0.96)"
           colorScheme="whiteAlpha"
-          fontSize="0.9375rem"
+          fontSize="0.875rem"
           fontWeight="700"
           onClick={onOpen}
-          width="9.3047rem"
         >
           Pilih Alamat Lain
+        </Button>
+        <Button
+          border="1px solid rgb(229, 231, 233)"
+          borderRadius="0.5rem"
+          color="white"
+          colorScheme="teal"
+          fontSize="0.875rem"
+          fontWeight="700"
+          ml="0.625rem"
+          w="19.125rem"
+        >
+          Pilih Metode Pengiriman
         </Button>
       </Box>
       {isLoading && (
