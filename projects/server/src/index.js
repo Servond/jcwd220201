@@ -56,7 +56,7 @@ app.use("/products", productsRoute)
 app.use("/categories", categoriesRoute)
 app.use("/carts", cartRoute)
 app.use("/product-admin", productsAdminRoute)
-app.use("/stock", productStockRoute)
+app.use("/admin/stock", productStockRoute)
 
 app.get("/api", (req, res) => {
   res.send(`Hello, this is my API`)
