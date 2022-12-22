@@ -17,7 +17,7 @@ module.exports = function (sequelize, DataTypes) {
       type: {
         type: DataTypes.BOOLEAN,
       },
-      stock_added: {
+      stock_change: {
         type: DataTypes.INTEGER,
       },
       stock_before: {
