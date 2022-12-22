@@ -3,7 +3,7 @@ const { Model } = require("sequelize")
 module.exports = function (sequelize, DataTypes) {
   class JournalType extends Model {
     static associate(models) {
-      JournalType.hasMany(models.JournalType, {
+      JournalType.hasMany(models.JournalItem, {
         onUpdate: "CASCADE",
         onDelete: "CASCADE",
       })
@@ -11,13 +11,17 @@ module.exports = function (sequelize, DataTypes) {
   }
   JournalType.init(
     {
-      type: {
+      name: {
         type: DataTypes.STRING(50),
-        allowNull: false,
+      },
+      type: {
+        type: DataTypes.BOOLEAN,
       },
       stock_added: {
-        type: DataTypes.BOOLEAN,
-        allowNull: false,
+        type: DataTypes.INTEGER,
+      },
+      stock_before: {
+        type: DataTypes.INTEGER,
       },
     },
     {
