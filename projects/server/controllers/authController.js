@@ -4,6 +4,7 @@ const { signToken, decode } = require("../lib/jwt")
 const { Op } = require("sequelize")
 const emailer = require("../lib/emailer")
 const fs = require("fs")
+const handlebars = require("handlebars")
 
 const User = db.User
 
@@ -187,17 +188,26 @@ const authController = {
         id: findUser.id,
       })
 
-      const tempalteEmail = {
-        from: `Admin <wiredindonesia@gmail.com>`,
-        to: `${findUser.dataValues.email}`,
-        subject: "Link reset password",
-        html: `<p>Dear ${findUser.dataValues.name},</p>
-        <p>You can reset the password for your account by using the information below:</p>
-        Email: ${findUser.dataValues.email}<br>
-          Password reset link: <a href='http://localhost:3000/recover-password/${token}'>here</a></p> `,
-      }
+      const resetLink = `http://localhost:3000/recover-password/${token}`
 
-      emailer(tempalteEmail)
+      const file = fs.readFileSync(
+        "./templates/password/reset_password.html",
+        "utf-8"
+      )
+      const template = handlebars.compile(file)
+      // const ResetEmail = template({ email })
+
+      const htmlResult = template({
+        email,
+        resetLink,
+      })
+      await emailer({
+        to: email,
+        subject: "Link Reset Password",
+        html: htmlResult,
+        text: "setting new password",
+      })
+
       return res.status(200).json({
         message: " Your request reset password has been sent",
         data: findUser,
