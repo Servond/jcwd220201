@@ -93,7 +93,7 @@ const LoginPage = () => {
   return (
     <Stack minH={"100vh"} direction={{ base: "column", md: "row" }}>
       <Heading align={"right"} as="h1" size="2xl" letterSpacing={"tighter"}>
-        WIRED!
+        <LinkRouterDom to="/">WIRED!</LinkRouterDom>
       </Heading>
       <Flex p={8} flex={1} align={"center"} justify={"center"}>
         <Stack spacing={4} w={"full"} maxW={"md"}>
