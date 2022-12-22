@@ -9,6 +9,10 @@ const useSelectAddress = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
+    if (shippingAddress) {
+      return;
+    }
+
     fetchAddresses()
       .then((res) => {
         if (!shippingAddress) {

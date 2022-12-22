@@ -2,7 +2,8 @@ import { createContext } from "react";
 
 // Own library imports
 import useSelectAddress from "../../lib/checkout/hooks/useSelectAddress";
-import useFetchWarehouseDetails from "../../lib/checkout/hooks/useFetchWarehouseDetails";
+import useFindNearestWarehouse from "../../lib/checkout/hooks/useFindNearestWarehouse";
+import { useEffect } from "react";
 
 export const CheckoutContext = createContext(null);
 
@@ -12,7 +13,7 @@ export const CheckoutContextProvider = ({ children }) => {
     useSelectAddress();
 
   // Shipping
-  const warehouseDetails = useFetchWarehouseDetails();
+  const nearestWarehouse = useFindNearestWarehouse(shippingAddress);
 
   const value = {
     address: {
@@ -22,9 +23,11 @@ export const CheckoutContextProvider = ({ children }) => {
       setShippingAddress,
     },
     shipping: {
-      warehouseDetails,
+      nearestWarehouse,
     },
   };
+
+  useEffect(() => console.log(nearestWarehouse), [nearestWarehouse]);
 
   return (
     <CheckoutContext.Provider value={value}>

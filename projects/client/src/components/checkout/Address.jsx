@@ -80,7 +80,7 @@ const Address = () => {
           borderRadius="0.5rem"
           color="rgba(49, 53, 59, 0.96)"
           colorScheme="whiteAlpha"
-          fontSize="0.875rem"
+          fontSize="0.9375rem"
           fontWeight="700"
           onClick={onOpen}
         >
@@ -91,7 +91,7 @@ const Address = () => {
           borderRadius="0.5rem"
           color="white"
           colorScheme="teal"
-          fontSize="0.875rem"
+          fontSize="0.9375rem"
           fontWeight="700"
           ml="0.625rem"
           w="19.125rem"
