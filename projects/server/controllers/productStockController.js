@@ -44,29 +44,29 @@ const productStockController = {
 
       const { LIMIT, OFFSET } = pagination(page)
 
-      const findAllWarehouse = await WarehousesUser.findAndCountAll({
+      const findAllWarehouse = await Warehouse.findAndCountAll({
         // limit: Number(_limit),
         // offset: (_page - 1) * _limit,
         // order: [[_sortBy, _sortDir]],
         limit: LIMIT,
         offset: OFFSET,
         order: [["id", "ASC"]],
+        where: { warehouse_name: { [Op.like]: searchWarehouse } },
+
+        attributes: { exclude: ["pinpoint", "createdAt", "updatedAt"] },
         include: [
           {
-            model: Warehouse,
-            where: { warehouse_name: { [Op.like]: searchWarehouse } },
+            model: WarehousesUser,
+            include: [{ model: User, attributes: ["name"] }],
             attributes: { exclude: ["createdAt", "updatedAt"] },
           },
         ],
-        attributes: { exclude: ["createdAt", "updatedAt"] },
       })
 
       const result = paginationData(findAllWarehouse, page, LIMIT)
 
       return res.status(200).json({
         message: "Data Warehouse",
-        // data: findAllWarehouse.rows,
-        // dataCount: findAllWarehouse.count,
         data: result,
       })
     } catch (err) {
