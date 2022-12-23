@@ -70,7 +70,6 @@ const paymentController = {
       await db.Order.update(
         {
           StatusId: 3,
-          PaymenStatusId: 2,
         },
         {
           where: {
@@ -129,7 +128,7 @@ const paymentController = {
 
       await db.Order.update(
         {
-          PaymentStatusId: 3,
+          StatusId: 1,
         },
         {
           where: {
