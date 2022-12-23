@@ -11,13 +11,13 @@ router.get(
 )
 // Warehouse Id
 router.get(
-  "/warehouse/:id",
+  "/all-product/:id",
   verifyToken,
   productStockController.getProductStockWarehouse
 )
 // ProductStock Id
 router.patch(
-  "/update-stock/:id",
+  "/update_stock/:id",
   verifyToken,
   productStockController.updateProductStock
 )
