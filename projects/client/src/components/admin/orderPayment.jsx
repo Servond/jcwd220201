@@ -43,6 +43,7 @@ const OrderPayment = () => {
   const handleEdit = async (id) => {
     try {
       await axiosInstance.post(`/payment/confirm/${id}`)
+      console.log(id, "confirm")
       fetchOrder()
       toast({
         title: "email dikirim",
@@ -57,8 +58,11 @@ const OrderPayment = () => {
     }
   }
   const rejectOrder = async (id) => {
+    console.log(id, "id")
     try {
-      await axiosInstance.post(`/payment/reject/${id}`)
+      await axiosInstance.patch(`/payment/reject/${id}`)
+      console.log(id, "id")
+
       fetchOrder()
       toast({
         title: "email reject dikirim",
@@ -88,7 +92,7 @@ const OrderPayment = () => {
             {" "}
             <Button
               alignContent={"left"}
-              onClick={() => handleEdit(val.StatusId, val.id)}
+              onClick={() => handleEdit(val.id)}
               mx="3"
               colorScheme={"teal"}
             >
@@ -96,7 +100,7 @@ const OrderPayment = () => {
             </Button>
             <Button
               alignContent={"left"}
-              onClick={() => rejectOrder(val.StatusId, val.id)}
+              onClick={() => rejectOrder(val.id)}
               mx="3"
               colorScheme={"teal"}
             >
