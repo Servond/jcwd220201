@@ -9,6 +9,7 @@ const productsRoute = require("../routes/productsRoute")
 const registerRoute = require("../routes/registerRoute")
 const cartRoute = require("../routes/cartsRoute")
 const addressRoute = require("../routes/addressRoute")
+const orderRoute = require("../routes/orderRoute")
 
 dotenv.config()
 
@@ -57,6 +58,7 @@ app.use("/categories", categoriesRoute)
 app.use("/carts", cartRoute)
 app.use("/product-admin", productsAdminRoute)
 app.use("/warehouse-user", warehouseUserRoute)
+app.use("/order", orderRoute)
 
 app.get("/api", (req, res) => {
   res.send(`Hello, this is my API`)
