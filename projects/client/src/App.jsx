@@ -26,6 +26,7 @@ import Address from "./pages/Address"
 import ForgotPassword from "./pages/ForgotPassword"
 import RecoverPassword from "./pages/RecoverPassword"
 import ManageUser from "./pages/admin/manageUser"
+import OrderPayment from "./components/admin/orderPayment"
 
 const App = () => {
   const [authCheck, setAuthCheck] = useState(false)
@@ -143,6 +144,14 @@ const App = () => {
             <ProtectedRoute>
               <ManageUser />
             </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/payment"
+          element={
+            // <ProtectedRoute>
+            <OrderPayment />
+            // </ProtectedRoute>
           }
         />
 
