@@ -19,7 +19,7 @@ module.exports = function (sequelize, DataTypes) {
     {
       sequelize,
       modelName: "Journal",
-      timestamps: true,
+      updatedAt: true,
     }
   )
   return Journal

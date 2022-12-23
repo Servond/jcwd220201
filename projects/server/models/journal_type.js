@@ -1,22 +1,23 @@
 "use strict"
 const { Model } = require("sequelize")
 module.exports = function (sequelize, DataTypes) {
-  class JournalType extends Model {
-    static associate(models) {
-      JournalType.hasMany(models.JournalType, {
-        onUpdate: "CASCADE",
-        onDelete: "CASCADE",
-      })
-    }
-  }
+  class JournalType extends Model {}
   JournalType.init(
     {
+      name: {
+        type: DataTypes.STRING(50),
+        allowNull: false,
+      },
       type: {
         type: DataTypes.STRING(50),
         allowNull: false,
       },
-      stock_added: {
-        type: DataTypes.BOOLEAN,
+      stock_change: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      },
+      stock_before: {
+        type: DataTypes.INTEGER,
         allowNull: false,
       },
     },
