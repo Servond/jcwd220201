@@ -9,6 +9,9 @@ const orderController = {
             model: db.OrderItem,
           },
           {
+            model: db.Courier,
+          },
+          {
             model: db.User,
           },
           {
@@ -43,6 +46,9 @@ const orderController = {
             model: db.OrderItem,
           },
           {
+            model: db.Courier,
+          },
+          {
             model: db.User,
           },
           {
@@ -75,7 +81,7 @@ const orderController = {
           message: "Status tidak dapat dibatalkan",
         })
       } else {
-        await db.Order.update(
+        await db.Order.create(
           {
             StatusId: 6,
           },
