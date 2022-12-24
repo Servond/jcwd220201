@@ -26,10 +26,6 @@ const useGetCartItems = () => {
     getTotalPrice(cartItems, setTotalPrice);
   }, [cartItems]);
 
-  useEffect(() => {
-    console.log(totalPrice);
-  }, [totalPrice]);
-
   return { cartItems, totalWeight, totalQuantity, totalPrice, setTotalPrice };
 };
 

@@ -10,7 +10,7 @@ const OrderSummary = () => {
   // Get checkout context
   const {
     items: { totalPrice, totalQuantity },
-    shipping: { shippingCost, serviceType },
+    shipping: { shippingCost, serviceType, subtotal },
   } = useContext(CheckoutContext);
 
   useEffect(() => console.log(), [serviceType]);
@@ -70,8 +70,8 @@ const OrderSummary = () => {
           spacing="auto"
         >
           <Text>Total Tagihan</Text>
-          {shippingCost ? (
-            <Text>{IDR(totalPrice + shippingCost)}</Text>
+          {subtotal ? (
+            <Text>{IDR(subtotal)}</Text>
           ) : (
             <Text fontWeight="700">&ndash;</Text>
           )}

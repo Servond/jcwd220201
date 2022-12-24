@@ -17,7 +17,7 @@ const renderShippingCouriers = (
         fontWeight="600"
         key={index}
         onMouseDown={() => {
-          setSelectedCourier(courier.courier_name);
+          setSelectedCourier(courier);
           setDisplayCourier(false);
           setIsServiceSelected(false);
         }}

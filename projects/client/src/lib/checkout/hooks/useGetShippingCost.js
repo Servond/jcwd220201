@@ -6,7 +6,7 @@ import sortWarehousesByLocation from "../sortWarehousesByLocation";
 import getDestinationInfo from "../getDestinationInfo";
 import getShippingCost from "../getShippingCost";
 
-const useGetShippingCost = (shippingAddress, totalWeight) => {
+const useGetShippingCost = (shippingAddress, totalWeight, totalPrice) => {
   const [sortedWarehouse, setSortedWarehouse] = useState(null);
   const [destinationInfo, setDestinationInfo] = useState(null);
   const [shippingOptions, setShippingOptions] = useState(null);
@@ -18,6 +18,7 @@ const useGetShippingCost = (shippingAddress, totalWeight) => {
   const [displayServiceButton, setDisplayServiceButton] = useState(false);
   const [isFetchingCourier, setIsFetchingCourier] = useState(false);
   const [isReloading, setIsReloading] = useState(false);
+  const [subtotal, setSubtotal] = useState(null);
 
   // Get courier list
   useEffect(() => {
@@ -43,6 +44,7 @@ const useGetShippingCost = (shippingAddress, totalWeight) => {
       return;
     }
 
+    setSubtotal(null);
     setSelectedCourier(null);
     setSelectedCourierName(null);
     setShippingServices(null);
@@ -64,7 +66,7 @@ const useGetShippingCost = (shippingAddress, totalWeight) => {
       sortedWarehouse.nearestWarehouse.warehouseInfo.city_id,
       destinationInfo.city_id,
       totalWeight,
-      selectedCourier
+      selectedCourier.courier_name
     ).then((res) => {
       setShippingServices(res.data);
       setSelectedCourierName(res.data.name);
@@ -82,15 +84,26 @@ const useGetShippingCost = (shippingAddress, totalWeight) => {
     setShippingCost(serviceType["service"]["cost"][0]["value"]);
   }, [serviceType]);
 
+  // Set subtotal
+  useEffect(() => {
+    if (!shippingCost) {
+      return;
+    }
+
+    setSubtotal(totalPrice + shippingCost);
+  }, [shippingCost]);
+
   return {
     isFetchingCourier,
     shippingOptions,
     shippingServices,
+    selectedCourier,
     selectedCourierName,
     serviceType,
     shippingCost,
     displayServiceButton,
     isReloading,
+    subtotal,
     setSelectedCourier,
     setIsFetchingCourier,
     setServiceType,

@@ -32,11 +32,12 @@ export const CheckoutContextProvider = ({ children }) => {
     shippingCost,
     displayServiceButton,
     isReloading,
+    subtotal,
     setSelectedCourier,
     setIsFetchingCourier,
     setServiceType,
     setIsReloading,
-  } = useGetShippingCost(shippingAddress, totalWeight);
+  } = useGetShippingCost(shippingAddress, totalWeight, totalPrice);
 
   const value = {
     address: {
@@ -62,6 +63,7 @@ export const CheckoutContextProvider = ({ children }) => {
       shippingCost,
       displayServiceButton,
       isReloading,
+      subtotal,
       setSelectedCourier,
       setIsFetchingCourier,
       setServiceType,
@@ -69,9 +71,9 @@ export const CheckoutContextProvider = ({ children }) => {
     },
   };
 
-  useEffect(() => {
-    console.log(serviceType);
-  }, [serviceType]);
+  // useEffect(() => {
+  //   console.log();
+  // }, []);
 
   return (
     <CheckoutContext.Provider value={value}>
