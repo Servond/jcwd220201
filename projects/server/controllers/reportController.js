@@ -95,18 +95,238 @@ const salesReport = {
   getAllTransactions: async (req, res) => {
     try {
       let products = await db.Order.findAll({
-        attributes: ["createdAt", "updatedAt", "StatusId"],
+        attributes: ["createdAt", "updatedAt", "StatusId", "total_price"],
         where: {
-          status: 5,
+          StatusId: 5,
         },
-        include: [[db.OrderItem], [db.Status]],
+        include: [
+          {
+            model: db.OrderItem,
+          },
+
+          {
+            model: db.User,
+          },
+          {
+            model: db.Product,
+          },
+        ],
+        order: [["createdAt", "DESC"]],
       })
+
       return res.status(200).json({
         message: "get All transaction",
         data: products,
       })
     } catch (err) {
       console.log(err)
+      return res.status(500).json({
+        message: err.message,
+      })
+    }
+  },
+  getOrderItem: async (req, res) => {
+    try {
+      let products = await db.OrderItem.findAll({
+        attributes: ["ProductId", "total_price"],
+
+        include: [
+          {
+            model: db.Product,
+          },
+        ],
+        order: [["total_price", "DESC"]],
+      })
+
+      return res.status(200).json({
+        message: "get All transaction",
+        data: products,
+      })
+    } catch (err) {
+      console.log(err)
+      return res.status(500).json({
+        message: err.message,
+      })
+    }
+  },
+  getReport: async (req, res) => {
+    const CategoryId = req.query.CategoryId
+    const WarehouseId = req.query.WarehouseId
+    const { createdAt, _limit = 5, _page = 1 } = req.query
+    console.log("cat", CategoryId)
+    console.log("war", WarehouseId)
+    console.log("mnth", createdAt)
+    try {
+      if (CategoryId && WarehouseId) {
+        const findDataFilterCatWar = await db.Order.findAndCountAll({
+          include: [
+            // {
+            //     model: db.Warehouse,
+            // },
+            {
+              model: db.OrderItem,
+              include: [
+                {
+                  model: db.Product,
+                  include: [
+                    {
+                      model: db.Category,
+                    },
+                    {
+                      model: db.ProductStock,
+                    },
+                  ],
+                  where: { CategoryId },
+                },
+              ],
+              required: true,
+            },
+          ],
+          where: { WarehouseId },
+          limit: Number(_limit),
+          offset: (_page - 1) * _limit,
+        })
+        return res.status(200).json({
+          message: "Get data filtered",
+          data: findDataFilterCatWar.rows,
+          dataCount: findDataFilterCatWar.count,
+        })
+      } else if (WarehouseId) {
+        const findDataFilterWar = await db.Order.findAndCountAll({
+          include: [
+            // {
+            //     model: db.Warehouse,
+            // },
+            {
+              model: db.OrderItem,
+              include: [
+                {
+                  model: db.Product,
+                  include: [
+                    {
+                      model: db.Category,
+                    },
+                    {
+                      model: db.ProductStock,
+                    },
+                  ],
+                },
+              ],
+              required: true,
+            },
+          ],
+          where: { WarehouseId },
+          limit: Number(_limit),
+          offset: (_page - 1) * _limit,
+        })
+        return res.status(200).json({
+          message: "Get data filtered",
+          data: findDataFilterWar.rows,
+          dataCount: findDataFilterWar.count,
+        })
+      } else if (CategoryId) {
+        const findDataFilterCat = await db.Order.findAndCountAll({
+          include: [
+            // {
+            //     model: db.Warehouse,
+            // },
+            {
+              model: db.OrderItem,
+              include: [
+                {
+                  model: db.Product,
+                  include: [
+                    {
+                      model: db.Category,
+                    },
+                    {
+                      model: db.ProductStock,
+                    },
+                  ],
+                  where: { CategoryId },
+                },
+              ],
+              required: true,
+            },
+          ],
+          limit: Number(_limit),
+          offset: (_page - 1) * _limit,
+        })
+        return res.status(200).json({
+          message: "Get data filtered",
+          data: findDataFilterCat.rows,
+          dataCount: findDataFilterCat.count,
+        })
+      } else if (createdAt) {
+        const findDataFilterMnth = await db.Order.findAndCountAll({
+          include: [
+            // {
+            //     model: db.Warehouse,
+            // },
+            {
+              model: db.OrderItem,
+              include: [
+                {
+                  model: db.Product,
+                  include: [
+                    {
+                      model: db.Category,
+                    },
+                    {
+                      model: db.ProductStock,
+                    },
+                  ],
+                },
+              ],
+              required: true,
+              subQuery: true,
+            },
+          ],
+          limit: Number(_limit),
+          offset: (_page - 1) * _limit,
+        })
+        return res.status(200).json({
+          message: "Get data filtered",
+          data: findDataFilterMnth.rows,
+          dataCount: findDataFilterMnth.count,
+        })
+      }
+
+      const findData = await db.Order.findAndCountAll({
+        include: [
+          // {
+          //     model: db.Warehouse,
+          // },
+          {
+            model: db.OrderItem,
+            include: [
+              {
+                model: db.Product,
+                include: [
+                  {
+                    model: db.Category,
+                  },
+                  {
+                    model: db.ProductStock,
+                    include: [{ model: db.Warehouse }],
+                  },
+                ],
+              },
+            ],
+            attributes: [
+              sequelize.fn("MONTH", sequelize.col("OrderItem.createdAt")),
+            ],
+          },
+        ],
+        limit: Number(_limit),
+        offset: (_page - 1) * _limit,
+      })
+      return res.status(200).json({
+        message: "Get data",
+        data: findData.rows,
+        dataCount: findData.count,
+      })
+    } catch (err) {
       return res.status(500).json({
         message: err.message,
       })

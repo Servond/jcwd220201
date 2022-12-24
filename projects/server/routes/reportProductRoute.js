@@ -8,5 +8,7 @@ router.get("/", salesReport.getTodayOrder)
 router.get("/highrevenue", salesReport.highRevenue)
 router.get("/lowrevenue", salesReport.lowRevenue)
 router.get("/order", salesReport.getAllTransactions)
+router.get("/orderitem", salesReport.getOrderItem)
+router.get("/report", salesReport.getReport)
 
 module.exports = router
