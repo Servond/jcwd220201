@@ -6,13 +6,9 @@ import fetchAddresses from "../fetchAddresses";
 const useSelectAddress = () => {
   const [shippingAddress, setShippingAddress] = useState(null);
   const [addresses, setAddresses] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    if (shippingAddress) {
-      return;
-    }
-
     fetchAddresses()
       .then((res) => {
         if (!shippingAddress) {
@@ -20,10 +16,16 @@ const useSelectAddress = () => {
         }
         setAddresses(res.data.addresses);
       })
-      .then(() => setIsLoading(true));
-  }, [shippingAddress]);
+      .then(() => setIsLoading(false));
+  }, []);
 
-  return { shippingAddress, addresses, isLoading, setShippingAddress };
+  return {
+    shippingAddress,
+    addresses,
+    isLoading,
+    setShippingAddress,
+    setAddresses,
+  };
 };
 
 export default useSelectAddress;

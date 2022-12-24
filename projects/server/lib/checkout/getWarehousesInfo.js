@@ -1,4 +1,4 @@
-const axiosInstance = require("./api");
+const { axiosInstance } = require("./api");
 
 const getWarehousesInfo = async () => {
   // Get warehouses data
@@ -17,7 +17,12 @@ const getWarehousesInfo = async () => {
     const type = warehouse.city.substring(0, splitterIndex);
     const cityName = warehouse.city.slice(splitterIndex + 1);
 
-    return { type, cityName, coordinates: warehouse.pinpoint };
+    return {
+      id: warehouse.id,
+      type,
+      cityName,
+      coordinates: warehouse.pinpoint,
+    };
   });
 
   // Get additional location info
@@ -31,6 +36,7 @@ const getWarehousesInfo = async () => {
       );
     });
 
+    result.id = warehouse.id;
     result.coordinates = warehouse.coordinates;
     warehousesInfo.push(result);
   });

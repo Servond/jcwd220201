@@ -2,18 +2,41 @@ import { createContext } from "react";
 
 // Own library imports
 import useSelectAddress from "../../lib/checkout/hooks/useSelectAddress";
-import useFindNearestWarehouse from "../../lib/checkout/hooks/useFindNearestWarehouse";
+import useGetShippingCost from "../../lib/checkout/hooks/useGetShippingCost";
+import useGetCartItems from "../../lib/checkout/hooks/useGetCartItems";
 import { useEffect } from "react";
 
 export const CheckoutContext = createContext(null);
 
 export const CheckoutContextProvider = ({ children }) => {
   // Address
-  const { shippingAddress, addresses, isLoading, setShippingAddress } =
-    useSelectAddress();
+  const {
+    shippingAddress,
+    addresses,
+    isLoading,
+    setShippingAddress,
+    setAddresses,
+  } = useSelectAddress();
+
+  // Items
+  const { cartItems, totalWeight, totalQuantity, totalPrice, setTotalPrice } =
+    useGetCartItems();
 
   // Shipping
-  const nearestWarehouse = useFindNearestWarehouse(shippingAddress);
+  const {
+    isFetchingCourier,
+    shippingOptions,
+    shippingServices,
+    selectedCourierName,
+    serviceType,
+    shippingCost,
+    displayServiceButton,
+    isReloading,
+    setSelectedCourier,
+    setIsFetchingCourier,
+    setServiceType,
+    setIsReloading,
+  } = useGetShippingCost(shippingAddress, totalWeight);
 
   const value = {
     address: {
@@ -21,13 +44,34 @@ export const CheckoutContextProvider = ({ children }) => {
       addresses,
       isLoading,
       setShippingAddress,
+      setAddresses,
+    },
+    items: {
+      cartItems,
+      totalWeight,
+      totalQuantity,
+      totalPrice,
+      setTotalPrice,
     },
     shipping: {
-      nearestWarehouse,
+      isFetchingCourier,
+      shippingOptions,
+      shippingServices,
+      selectedCourierName,
+      serviceType,
+      shippingCost,
+      displayServiceButton,
+      isReloading,
+      setSelectedCourier,
+      setIsFetchingCourier,
+      setServiceType,
+      setIsReloading,
     },
   };
 
-  useEffect(() => console.log(nearestWarehouse), [nearestWarehouse]);
+  useEffect(() => {
+    console.log(serviceType);
+  }, [serviceType]);
 
   return (
     <CheckoutContext.Provider value={value}>

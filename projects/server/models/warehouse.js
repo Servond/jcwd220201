@@ -25,6 +25,12 @@ module.exports = (sequelize, DataTypes) => {
         onDelete: "CASCADE",
         foreignKey: "ToWarehouseId",
       });
+      Warehouse.hasMany(models.Order),
+        {
+          onUpdate: "CASCADE",
+          onDelete: "CASCADE",
+          foreignKey: "ShipmentFromWarehouseId",
+        };
     }
   }
   Warehouse.init(

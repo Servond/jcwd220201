@@ -1,6 +1,6 @@
 import { axiosInstance } from "../../api";
 
-const fetchNearestWarehouse = async () => {
+const sortWarehousesByLocation = async () => {
   try {
     const response = await axiosInstance.get("/api/checkout/nearest_warehouse");
     return response.data;
@@ -9,4 +9,4 @@ const fetchNearestWarehouse = async () => {
   }
 };
 
-export default fetchNearestWarehouse;
+export default sortWarehousesByLocation;

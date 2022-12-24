@@ -4,4 +4,4 @@ const axiosInstance = axios.create({
   baseURL: "http://localhost:8000",
 });
 
-module.exports = axiosInstance;
+module.exports = { axiosInstance };

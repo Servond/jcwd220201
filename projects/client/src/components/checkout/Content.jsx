@@ -1,21 +1,25 @@
-import { Box, Flex } from "@chakra-ui/react";
-import { useEffect } from "react";
-import fetchAddresses from "../../lib/checkout/fetchAddresses";
+import { Box, Flex, Text } from "@chakra-ui/react";
 import Address from "./Address";
+import CartItems from "./CartItems";
+import OrderSummary from "./OrderSummary";
 
 const Content = () => {
   return (
-    <Box>
-      <Flex
-        color="rgba(0, 0, 0, 0.54)"
-        fontSize="0.875rem"
-        mx="auto"
-        mt="1.875rem"
-        px="1.25rem"
-        width="100%"
-      >
-        <Address />
-        <Box flexBasis="50%">right</Box>
+    <Box
+      color="rgba(0, 0, 0, 0.54)"
+      fontSize="0.875rem"
+      px="5.6875rem"
+      mx="auto"
+      minHeight="82.08vh"
+    >
+      <Flex mt="1.875rem">
+        <Box maxWidth="70.65%" mr="2.8125rem">
+          <Address />
+          <CartItems />
+        </Box>
+        <Box alignSelf="flex-start" position="sticky" top="0">
+          <OrderSummary />
+        </Box>
       </Flex>
     </Box>
   );

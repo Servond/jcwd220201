@@ -136,20 +136,4 @@ const Address = () => {
   );
 };
 
-{
-  /* <Button
-        backgroundColor="white"
-        border="1px solid"
-        borderRadius="0.5rem"
-        color="rgb(0, 128, 128)"
-        colorScheme="whiteAlpha"
-        fontWeight="bold"
-        fontSize="0.875rem"
-        height="2.5rem"
-        px="1rem"
-      >
-        Tambah Alamat Baru
-      </Button> */
-}
-
 export default Address;

@@ -15,6 +15,7 @@ import { BsCheck2 } from "react-icons/bs";
 // Own library imports
 import { CheckoutContext } from "./CheckoutContextProvider";
 import selectAddress from "../../lib/checkout/selectAddress";
+import fetchAddresses from "../../lib/checkout/fetchAddresses";
 
 const AddressCard = (props) => {
   const { variant, ...rest } = props;
@@ -22,7 +23,8 @@ const AddressCard = (props) => {
   const [isSmSize] = useMediaQuery("min-width: 30rem");
 
   const {
-    address: { setShippingAddress },
+    address: { setShippingAddress, setAddresses },
+    shipping: { setIsReloading, shippingServices },
   } = useContext(CheckoutContext);
   const { id, label, recipient, phone, address, is_default } = rest.address;
 
@@ -127,12 +129,29 @@ const AddressCard = (props) => {
           fontSize="0.75rem"
           height="2rem"
           onClick={async () => {
+            // Update address data
+            if (shippingServices) {
+              setIsReloading(true);
+            }
             const res = await selectAddress(id);
+
+            // Set shipping address
             setShippingAddress(rest.address);
+
+            // Update address list
+            const {
+              data: { addresses },
+            } = await fetchAddresses();
+
+            setAddresses(addresses);
+
+            // Display result
             toast({
               title: res.data.message,
               status: res.status === 200 ? "success" : "error",
             });
+
+            // Close modal
             onClose();
           }}
           px="36px"
