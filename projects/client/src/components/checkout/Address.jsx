@@ -14,7 +14,6 @@ import { CheckoutContext } from "./CheckoutContextProvider";
 import renderShippingCouriers from "../../lib/checkout/renderShippingCouriers";
 import renderShippingServices from "../../lib/checkout/renderShippingServices";
 import { IDR } from "../../lib/currency/Rupiah";
-import { useEffect } from "react";
 
 const Address = () => {
   // Get address and shipping data

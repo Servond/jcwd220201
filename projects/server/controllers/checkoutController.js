@@ -3,6 +3,7 @@ const {
   Cart,
   Courier,
   Order,
+  OrderItem,
   ProductStock,
   StockRequest,
   StockRequestItem,
@@ -293,14 +294,19 @@ const checkoutController = {
 
       // Get order details
       const {
+        orderData: {
+          shippingService,
+          subtotal,
+          addressId,
+          courierId,
+          shippingCost,
+          sortedWarehouse,
+        },
         cartItems,
-        sortedWarehouse,
-        courierId,
-        addressId,
-        shippingService,
-        shippingCost,
-        totalPrice,
       } = req.body;
+
+      // Get warehouses details
+      const { nearestWarehouse, nearestBranches } = sortedWarehouse;
 
       // Check overall product availability
       for (let item of cartItems) {
@@ -319,13 +325,15 @@ const checkoutController = {
         // Cancel order if one of the product is not available
         if (totalStock < quantity) {
           return res.status(422).json({
-            message: "Maaf, ada barang yang tidak tersedia di keranjang Anda",
-            description: "Silakan cek kembali nanti",
+            message: "Transaksi gagal",
+            description: "Ada barang yang tidak tersedia di keranjang Anda",
           });
         }
       }
 
       // Create new order
+      let orderId = null;
+
       const { id: statusId } = await Status.findOne({
         where: {
           status: "menunggu pembayaran",
@@ -333,10 +341,10 @@ const checkoutController = {
       });
 
       await sequelize.transaction(async (t) => {
-        await Order.create(
+        const newOrder = await Order.create(
           {
             shipping_service: shippingService,
-            total_price: totalPrice,
+            total_price: subtotal,
             AddressId: addressId,
             CourierId: courierId,
             StatusId: statusId,
@@ -349,45 +357,74 @@ const checkoutController = {
             transaction: t,
           }
         );
+
+        orderId = newOrder.id;
+      });
+
+      // Persist order items
+      const itemsToOrder = [];
+      for (let item of cartItems) {
+        const {
+          Product: { price },
+          ProductId,
+          quantity,
+        } = item;
+
+        // Store cart item details
+        itemsToOrder.push({
+          ProductId,
+          quantity,
+          total_price: price * quantity,
+          OrderId: orderId,
+        });
+      }
+
+      await sequelize.transaction(async (t) => {
+        await OrderItem.bulkCreate(itemsToOrder, {
+          transaction: t,
+        });
       });
 
       // Check products availability in the nearest warehouse
       for (let item of cartItems) {
         const { ProductId, quantity } = item;
-        const { nearestWarehouse, nearestBranches } = sortedWarehouse;
 
         // Get available stock from the nearest warehouse
-        const { stock: nearestWarehouseStock } = await ProductStock.findOne({
+        const nearestWarehouseProductStockDetails = await ProductStock.findOne({
+          raw: true,
           where: {
             [Op.and]: [
               { ProductId },
               { WarehouseId: nearestWarehouse.warehouseInfo.id },
             ],
           },
-          attributes: ["stock"],
         });
 
         // Make a request to nearest branches if additional stock is needed
-        if (nearestWarehouseStock < quantity) {
-          // Calculate items needed
-          let itemsNeeded = !nearestWarehouseStock
-            ? quantity
-            : quantity - nearestWarehouseStock;
+        const requestItemsForm = [];
+        const productStockDetailsToUpdate = [];
 
-          // Create request form
-          const requestItemsForm = [];
+        if (nearestWarehouseProductStockDetails.stock < quantity) {
+          // Calculate items needed
+          let itemsNeeded = !nearestWarehouseProductStockDetails.stock
+            ? quantity
+            : quantity - nearestWarehouseProductStockDetails.stock;
 
           // Check stock availability from nearest branches
           for (let branch of nearestBranches) {
-            const { stock: nearestBranchStock } = await ProductStock.findOne({
-              where: {
-                [Op.and]: [
-                  { ProductId },
-                  { WarehouseId: branch.warehouseInfo.id },
-                ],
-              },
-            });
+            const nearestBranchProductStockDetails = await ProductStock.findOne(
+              {
+                raw: true,
+                where: {
+                  [Op.and]: [
+                    { ProductId },
+                    { WarehouseId: branch.warehouseInfo.id },
+                  ],
+                },
+              }
+            );
 
+            const nearestBranchStock = nearestBranchProductStockDetails.stock;
             const time = moment().format();
 
             /*
@@ -416,19 +453,24 @@ const checkoutController = {
               });
 
               itemsNeeded -= nearestBranchStock;
+              nearestWarehouseProductStockDetails.stock += nearestBranchStock;
+              nearestBranchProductStockDetails.stock = 0;
+              productStockDetailsToUpdate.push(
+                nearestBranchProductStockDetails
+              );
 
-              // End search if quantity is met
               if (!itemsNeeded) {
+                productStockDetailsToUpdate.push(
+                  nearestWarehouseProductStockDetails
+                );
                 break;
               }
 
-              //  Continue checking for available stock from subsequent nearest branches
-              //  if quantity is not met
               continue;
             }
 
             /*
-              Create request draft consisting of the number of items needed if available stock 
+              Create request draft consisting of the number of items needed if available stock
               is greater than items needed
             */
             if (nearestBranchStock >= itemsNeeded) {
@@ -444,30 +486,37 @@ const checkoutController = {
                 },
               });
 
-              // End search
+              nearestWarehouseProductStockDetails.stock += itemsNeeded;
+              nearestBranchProductStockDetails.stock -= itemsNeeded;
+              productStockDetailsToUpdate.push(
+                nearestWarehouseProductStockDetails,
+                nearestBranchProductStockDetails
+              );
               break;
             }
           }
 
           // Request needed product to the nearest branches
           await sequelize.transaction(async (t) => {
-            const time = moment().format();
-
             await StockRequestItem.bulkCreate(requestItemsForm, {
               include: StockRequest,
+              transaction: t,
             });
           });
         }
+
+        // Update product stock
+        await sequelize.transaction(async (t) => {
+          await ProductStock.bulkCreate(productStockDetailsToUpdate, {
+            updateOnDuplicate: ["stock"],
+            transaction: t,
+          });
+        });
       }
 
-      /* TODO LIST */
-      // Create new order
-      // Update product stock
-      // Record changes in journal
-
+      // Send successful message
       return res.status(200).json({
-        message: "berhasil",
-        // data: nearestWarehouseStock,
+        message: "Pesanan berhasil dibuat",
       });
     } catch (err) {
       console.error(err);

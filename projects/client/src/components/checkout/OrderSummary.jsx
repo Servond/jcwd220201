@@ -1,19 +1,39 @@
-import { Box, Button, Flex, HStack, Link, Text } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  Flex,
+  HStack,
+  Link,
+  Text,
+  useToast,
+} from "@chakra-ui/react";
 import { useContext } from "react";
 import { CheckoutContext } from "./CheckoutContextProvider";
+import { useNavigate } from "react-router-dom";
 
 // Own library imports
 import { IDR } from "../../lib/currency/Rupiah";
-import { useEffect } from "react";
+import createNewOrder from "../../lib/checkout/createNewOrder";
 
 const OrderSummary = () => {
   // Get checkout context
   const {
-    items: { totalPrice, totalQuantity },
-    shipping: { shippingCost, serviceType, subtotal },
+    address: { shippingAddress },
+    items: { cartItems, totalPrice, totalQuantity },
+    shipping: {
+      selectedCourier,
+      shippingCost,
+      sortedWarehouse,
+      serviceType,
+      subtotal,
+    },
   } = useContext(CheckoutContext);
 
-  useEffect(() => console.log(), [serviceType]);
+  // Alert functionality
+  const toast = useToast();
+
+  // Redirect functionality
+  const navigate = useNavigate();
 
   return (
     <Box
@@ -88,10 +108,37 @@ const OrderSummary = () => {
           .
         </Text>
         <Button
+          cursor={!subtotal ? "not-allowed" : "pointer"}
           colorScheme="teal"
           fontSize="1rem"
           fontWeight="700"
           height="3rem"
+          onClick={async () => {
+            if (!subtotal) {
+              return;
+            }
+
+            // Create new order
+            const res = await createNewOrder(
+              {
+                shippingService: serviceType.service.service,
+                subtotal,
+                addressId: shippingAddress.id,
+                courierId: selectedCourier.id,
+                shippingCost,
+                sortedWarehouse,
+              },
+              cartItems
+            );
+
+            toast({
+              title: res.data.message,
+              status: res.status === 200 ? "success" : "error",
+              description: res.status === 200 ? null : res.data.description,
+            });
+
+            navigate("/");
+          }}
         >
           Selesaikan Pembayaran
         </Button>

@@ -15,7 +15,14 @@ const Footer = () => {
           src="https://ecs7.tokopedia.net/assets-unify/img/ic-toped.jpg"
           boxSize="10"
         />
-        <Text>&copy; 2009 - 2022</Text>
+        <Text
+          color="rgba(49, 53, 59, 0.68)"
+          fontSize="0.8125rem"
+          fontWeight="700"
+          lineHeight="1.125rem"
+        >
+          &copy; 2009 - 2022
+        </Text>
       </HStack>
     </Flex>
   );

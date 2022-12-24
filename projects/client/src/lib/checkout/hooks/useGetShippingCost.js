@@ -101,6 +101,7 @@ const useGetShippingCost = (shippingAddress, totalWeight, totalPrice) => {
     selectedCourierName,
     serviceType,
     shippingCost,
+    sortedWarehouse,
     displayServiceButton,
     isReloading,
     subtotal,

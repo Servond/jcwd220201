@@ -27,9 +27,11 @@ export const CheckoutContextProvider = ({ children }) => {
     isFetchingCourier,
     shippingOptions,
     shippingServices,
+    selectedCourier,
     selectedCourierName,
     serviceType,
     shippingCost,
+    sortedWarehouse,
     displayServiceButton,
     isReloading,
     subtotal,
@@ -58,9 +60,11 @@ export const CheckoutContextProvider = ({ children }) => {
       isFetchingCourier,
       shippingOptions,
       shippingServices,
+      selectedCourier,
       selectedCourierName,
       serviceType,
       shippingCost,
+      sortedWarehouse,
       displayServiceButton,
       isReloading,
       subtotal,
@@ -71,9 +75,9 @@ export const CheckoutContextProvider = ({ children }) => {
     },
   };
 
-  // useEffect(() => {
-  //   console.log();
-  // }, []);
+  useEffect(() => {
+    console.log(cartItems);
+  }, [cartItems]);
 
   return (
     <CheckoutContext.Provider value={value}>

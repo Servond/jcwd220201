@@ -131,10 +131,24 @@ const App = () => {
         <Route path="/register" element={<Register />} />
 
         {/* Address Route */}
-        <Route path="/address" element={<Address />} />
+        <Route
+          path="/address"
+          element={
+            <ProtectedRoute>
+              <Address />
+            </ProtectedRoute>
+          }
+        />
 
         {/* Checkout Route */}
-        <Route path="/cart/shipment" element={<Checkout />} />
+        <Route
+          path="/cart/shipment"
+          element={
+            <ProtectedRoute>
+              <Checkout />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
     </>
   );
