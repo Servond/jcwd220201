@@ -392,7 +392,7 @@ const paymentController = {
 
       await db.Order.update(
         {
-          StatusId: 1,
+          StatusId: 2,
         },
         {
           where: {

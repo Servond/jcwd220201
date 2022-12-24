@@ -42,7 +42,7 @@ const OrderPayment = () => {
 
   const handleEdit = async (id) => {
     try {
-      await axiosInstance.post(`/payment/confirm/${id}`)
+      await axiosInstance.patch(`/payment/confirm/${id}`)
       console.log(id, "confirm")
       fetchOrder()
       toast({
@@ -51,9 +51,8 @@ const OrderPayment = () => {
     } catch (err) {
       console.log(err)
       toast({
-        title: "Edit Product Gagal",
+        title: "confirm gagal",
         status: "error",
-        description: "Hanya Super Admin yang dapat menghapus produk",
       })
     }
   }
