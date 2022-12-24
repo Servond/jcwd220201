@@ -101,7 +101,6 @@ const Order = () => {
                       onClick={() => {
                         cancelBtn(val.id)
                       }}
-                      disabled={true}
                     >
                       Cancel
                     </Button>
