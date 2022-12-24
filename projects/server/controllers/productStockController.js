@@ -153,10 +153,10 @@ const productStockController = {
 
       const findStock2 = await ProductStock.findByPk(id)
       const stock_before = findStock1.dataValues.stock
-      const stock_added = findStock2.dataValues.stock
+      const stock_change = findStock2.dataValues.stock
 
-      const stockCheck = (stock_added, stock_before) => {
-        const count = Math.max(stock_added, stock_before)
+      const stockCheck = (stock_change, stock_before) => {
+        const count = Math.max(stock_change, stock_before)
         if (count === stock_before) {
           return false
         } else {
@@ -166,8 +166,8 @@ const productStockController = {
 
       const addJournal = await JournalType.create({
         name: "Update Produk Stok",
-        type: stockCheck(stock_added, stock_before),
-        stock_added: findStock2.dataValues.stock,
+        type: stockCheck(stock_change, stock_before),
+        stock_change: findStock2.dataValues.stock,
         stock_before: findStock1.dataValues.stock,
         ProductId: findStock2.ProductId,
       })
@@ -175,8 +175,9 @@ const productStockController = {
       const findJournal = await JournalItem.findByPk(addJournal.id)
 
       await JournalItem.create({
-        quantity: stock_added,
+        quantity: stock_change,
         JournalTypeId: addJournal.id,
+        JournalId: id,
         ProductId: findStock2.ProductId,
         WarehouseId: findStock2.WarehouseId,
       })
@@ -193,7 +194,8 @@ const productStockController = {
       const { id } = req.params
 
       const findAdminByRole = await User.findByPk(req.user.id)
-      if (findAdminByRole.RoleId !== 3 && findAdminByRole.RoleId !== 2) {
+
+      if (findAdminByRole.RoleId !== 1 && findAdminByRole.RoleId !== 2) {
         return res.status(400).json({
           message: "Hanya Admin & Warehouse Admin bisa akses Fitur ini! ",
         })
@@ -201,17 +203,17 @@ const productStockController = {
 
       const findStock = await ProductStock.findByPk(id)
 
-      await ProductStock.update(
-        { stock: 0 },
-        { where: { id: id }, include: [{ model: Product }] }
-      )
+      await ProductStock.update({ stock: 0 }, { where: { id: id } })
 
       const findStock2 = await ProductStock.findByPk(id)
-      const stock_before = findStock.dataValues.stock
-      const stock_added = findStock2.dataValues.stock
 
-      const stockCheck = (stock_added, stock_before) => {
-        let count = Math.max(stock_added, stock_before)
+      const stock_before = findStock.dataValues.stock
+
+      const stock_change = findStock2.dataValues.stock
+
+      const stockCheck = (stock_before, stock_change) => {
+        const count = Math.max(stock_before, stock_change)
+
         if (count === stock_before) {
           return false
         } else {
@@ -221,16 +223,18 @@ const productStockController = {
 
       const addJournal = await JournalType.create({
         name: "Hapus Produk Stok",
-        type: stockCheck(stock_added, stock_before),
-        stock_added: findStock2.dataValues.stock,
+        type: stockCheck(stock_change, stock_before),
+        stock_change: findStock2.dataValues.stock,
+        stock_before: findStock.dataValues.stock,
         ProductId: findStock2.ProductId,
       })
 
       const findJournal = await JournalItem.findByPk(addJournal.id)
 
       await JournalItem.create({
-        quantity: stock_added,
+        quantity: stock_change,
         JournalTypeId: addJournal.id,
+        JournalId: findStock2.JournalId,
         ProductId: findStock2.ProductId,
         WarehouseId: findStock2.WarehouseId,
       })
