@@ -81,7 +81,7 @@ const orderController = {
           message: "Status tidak dapat dibatalkan",
         })
       } else {
-        await db.Order.create(
+        await db.Order.update(
           {
             StatusId: 6,
           },

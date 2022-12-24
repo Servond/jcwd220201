@@ -40,6 +40,7 @@ const Order = () => {
   const toast = useToast()
   const { isOpen, onOpen, onClose } = useDisclosure()
   const cancelRef = useRef()
+
   const fetchOrder = async () => {
     try {
       const resp = await axiosInstance.get(`/order`)
@@ -53,7 +54,7 @@ const Order = () => {
   }
   const cancelBtn = async (id) => {
     try {
-      await axiosInstance.patch(`/order/cancel${id}`)
+      await axiosInstance.patch(`/order/cancel/${id}`)
 
       fetchOrder()
       toast({
@@ -69,12 +70,6 @@ const Order = () => {
     }
   }
 
-  const handleConfirmCancel = () => {
-    console.log(handleConfirmCancel, "can")
-    // onCancel()
-    onClose()
-  }
-
   const renderItem = () => {
     return order.map((val) => {
       return (
@@ -83,18 +78,40 @@ const Order = () => {
           <Td>{val.shipping_service}</Td>
           <Td> {val.payment_reciept}</Td>
           <Td> {val.total_price}</Td>
-          <Td onClick={() => cancelBtn(val.id)}></Td>
-
           <Td>
-            <Menu>
-              <MenuButton>
-                <Icon as={BsThreeDots} boxSize="20px" />
-              </MenuButton>
-              <MenuList>
-                <MenuItem onClick={onOpen}>Cancel</MenuItem>
-              </MenuList>
-            </Menu>
+            <Button onClick={onOpen}> Cancel</Button>
+
+            <AlertDialog isOpen={isOpen} onClose={onClose}>
+              <AlertDialogOverlay>
+                <AlertDialogContent>
+                  <AlertDialogHeader fontSize="lg" fontStyle="bold">
+                    Cancel Order
+                  </AlertDialogHeader>
+
+                  <AlertDialogBody>
+                    Are you sure to cancel this order?
+                  </AlertDialogBody>
+
+                  <AlertDialogFooter>
+                    <Button ref={cancelRef} onClick={onClose}>
+                      Batal
+                    </Button>
+                    <Button
+                      colorScheme="red"
+                      onClick={() => {
+                        cancelBtn(val.id)
+                      }}
+                      disabled={true}
+                    >
+                      Cancel
+                    </Button>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialogOverlay>
+            </AlertDialog>
           </Td>
+
+          <Td></Td>
         </Tr>
       )
     })
@@ -146,29 +163,6 @@ const Order = () => {
             </TableContainer>
           </Box>
         </Box>
-
-        <AlertDialog isOpen={isOpen} onClose={onClose}>
-          <AlertDialogOverlay>
-            <AlertDialogContent>
-              <AlertDialogHeader fontSize="lg" fontStyle="bold">
-                Cancel Order
-              </AlertDialogHeader>
-
-              <AlertDialogBody>
-                Are you sure to cancel this order?
-              </AlertDialogBody>
-
-              <AlertDialogFooter>
-                <Button ref={cancelRef} onClick={onClose}>
-                  Batal
-                </Button>
-                <Button colorScheme="red" onClick={handleConfirmCancel}>
-                  Cancel
-                </Button>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialogOverlay>
-        </AlertDialog>
       </Stack>
     </>
   )
