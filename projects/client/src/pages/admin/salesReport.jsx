@@ -169,7 +169,7 @@ const SalesReport = () => {
                     onChange={sortHandler}
                   >
                     <Select>
-                      <option value="">---Sort---</option>
+                      <option value="">sort</option>
                       <option value={"ASC"}>Ascending</option>
                       <option value={"DESC"}>Descending</option>
                     </Select>
@@ -225,7 +225,7 @@ const SalesReport = () => {
                     borderRadius="8px"
                   ></GridItem>
 
-                  {/* <Select>
+                  <Select>
                     <option value=""> Select By Warehouse</option>
                     {sales.WarehouseId ===
                     sales.map((val) => val.WarehouseId)[0]
@@ -237,7 +237,7 @@ const SalesReport = () => {
                       : Warehouse.map((val) => (
                           <option value={val.id}>{val.warehouse_name}</option>
                         ))}
-                  </Select> */}
+                  </Select>
 
                   {/* Search */}
                   <GridItem

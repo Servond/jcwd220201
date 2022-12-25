@@ -206,8 +206,8 @@ const salesReport = {
 
       return res.status(200).json({
         message: "Filtered",
-        data: findDataReal,
-        dataCount: dataCountReal.length,
+        data: findDataReal[0],
+        dataCount: dataCountReal[0].length,
       })
     } catch (err) {
       return res.status(500).json({
