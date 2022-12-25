@@ -30,7 +30,7 @@ const OrderPayment = () => {
 
   const fetchOrder = async () => {
     try {
-      const resp = await axiosInstance.get(`/payment/order`)
+      const resp = await axiosInstance.get(`/payment`)
 
       setPayment(resp.data.data)
 

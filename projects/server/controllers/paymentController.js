@@ -6,12 +6,14 @@ const moment = require("moment")
 const handlebars = require("handlebars")
 
 const paymentController = {
-  getOrder: async (req, res) => {
+  getPayment: async (req, res) => {
     try {
       const allOrder = await db.Order.findAll({
+        attribute: ["payment_date", "total_price", "UserId"],
         include: [
           {
             model: db.OrderItem,
+            include: [db.Product],
           },
           {
             model: db.Courier,
@@ -19,18 +21,16 @@ const paymentController = {
           {
             model: db.User,
           },
-          {
-            model: db.Address,
-          },
+
           {
             model: db.Status,
           },
         ],
-        order: [["createdAt", "DESC"]],
+        order: [["createdAt", "ASC"]],
       })
 
       return res.status(200).json({
-        message: "Get all user order",
+        message: "Get all user order payment",
         data: allOrder,
       })
     } catch (err) {
@@ -40,15 +40,17 @@ const paymentController = {
       })
     }
   },
-  getOrderById: async (req, res) => {
+  getPaymentById: async (req, res) => {
     try {
       const findOrderById = await db.Order.findOne({
         where: {
           id: req.params.id,
         },
+        attribute: ["payment_date", "total_price", "UserId"],
         include: [
           {
             model: db.OrderItem,
+            include: [db.Product],
           },
           {
             model: db.Courier,
@@ -56,14 +58,12 @@ const paymentController = {
           {
             model: db.User,
           },
-          {
-            model: db.Address,
-          },
+
           {
             model: db.Status,
           },
         ],
-        order: [["createdAt", "DESC"]],
+        order: [["createdAt", "ASC"]],
       })
 
       return res.status(200).json({
@@ -77,24 +77,24 @@ const paymentController = {
       })
     }
   },
-  getPayment: async (req, res) => {
-    try {
-      const payment = await db.Order.findAll({
-        attributes: ["payment_date", "payment_receipt", "total_price"],
-        include: [{ model: db.OrderItem }],
-      })
+  // getPayment: async (req, res) => {
+  //   try {
+  //     const payment = await db.Order.findAll({
+  //       attributes: ["payment_date", "payment_receipt", "total_price"],
+  //       include: [{ model: db.OrderItem }],
+  //     })
 
-      return res.status(200).json({
-        message: "Get payment",
-        data: payment,
-      })
-    } catch (err) {
-      console.log(err)
-      return res.status(500).json({
-        message: err.message,
-      })
-    }
-  },
+  //     return res.status(200).json({
+  //       message: "Get payment",
+  //       data: payment,
+  //     })
+  //   } catch (err) {
+  //     console.log(err)
+  //     return res.status(500).json({
+  //       message: err.message,
+  //     })
+  //   }
+  // },
 
   findPaymentStatus: async (req, res) => {
     try {
