@@ -17,16 +17,15 @@ import {
 import { useEffect } from "react"
 import { useState } from "react"
 import { BiEdit } from "react-icons/bi"
+import { useParams } from "react-router-dom"
 import { axiosInstance } from "../../api"
-import EditPayment from "./editpayment"
 import SidebarAdmin from "./sidebarAdminDashboard"
 
 const OrderPayment = () => {
   const [payment, setPayment] = useState([])
-  const [statusEdit, setStatusEdit] = useState("")
-  const [openModal, setOpenModal] = useState(false)
-  const [idEdit, setIdEdit] = useState("")
   const toast = useToast()
+  const { id } = useParams()
+  const [reject, setReject] = useState("")
 
   const fetchOrder = async () => {
     try {
@@ -40,10 +39,10 @@ const OrderPayment = () => {
     }
   }
 
-  const handleEdit = async (id) => {
+  const confirmOrder = async (id) => {
     try {
       await axiosInstance.patch(`/payment/confirm/${id}`)
-      console.log(id, "confirm")
+
       fetchOrder()
       toast({
         title: "email dikirim",
@@ -57,10 +56,10 @@ const OrderPayment = () => {
     }
   }
   const rejectOrder = async (id) => {
-    console.log(id, "id")
     try {
-      await axiosInstance.patch(`/payment/reject/${id}`)
-      console.log(id, "id")
+      const resp = await axiosInstance.patch(`/payment/reject/${id}`)
+
+      setReject(resp.data.data)
 
       fetchOrder()
       toast({
@@ -76,22 +75,19 @@ const OrderPayment = () => {
   }
 
   const renderOrder = () => {
+    // console.log(payment, "pay")
     return payment.map((val) => {
       return (
         <Tr key={val.id}>
-          <Td>{val.payment_date}</Td>
-          <Td>{val.shipping_service}</Td>
-          <Td>{val.payment_receipt}</Td>
-          <Td>{val.total_price}</Td>
-          <Td>{val.AddressId}</Td>
-          <Td>{val.CourierId}</Td>
-          <Td>{val.StatusId}</Td>
-          <Td>{val.UserId}</Td>
+          <Td textAlign={"center"}>{val.payment_date}</Td>
+          <Td textAlign={"center"}>{val.total_price}</Td>
+          <Td textAlign={"center"}>{val.StatusId}</Td>
+          <Td textAlign={"center"}>{val.UserId}</Td>
+
           <Td>
-            {" "}
             <Button
               alignContent={"left"}
-              onClick={() => handleEdit(val.id)}
+              onClick={() => confirmOrder(val.id)}
               mx="3"
               colorScheme={"teal"}
             >
@@ -125,10 +121,17 @@ const OrderPayment = () => {
 
           <VStack h="full" w="full" overflowX="scroll">
             <Flex h="20%" w="full" justifyContent="flex-end" direction="column">
-              <Box padding="4">Manage Warehouse Data</Box>
+              <Box
+                padding="4"
+                textAlign="center"
+                fontSize="30px"
+                fontWeight="bold"
+              >
+                Order Payment Status
+              </Box>
             </Flex>
             <Flex>
-              <Container maxW="container.xl" py="8" pb="5" px="1">
+              <Container maxW="container.md" py="8" pb="5" px="1">
                 <TableContainer
                   border={"1px solid black"}
                   w="1800px"
@@ -136,11 +139,7 @@ const OrderPayment = () => {
                   overflowY="unset"
                 >
                   <Table responsive="md" variant="simple">
-                    <Thead
-                      position={"sticky"}
-                      top={-1}
-                      backgroundColor={"#718096"}
-                    >
+                    <Thead position={"sticky"} top={-1}>
                       <Tr border={"1px solid black"} maxW="50px">
                         <Th
                           border={"1px solid black"}
@@ -148,48 +147,18 @@ const OrderPayment = () => {
                           color="black"
                           w="100px"
                         >
-                          payment_date
+                          Payment_Date
                         </Th>
-                        <Th
-                          border={"1px solid black"}
-                          textAlign={"center"}
-                          color="black"
-                          w="300px"
-                        >
-                          shipping_service
-                        </Th>
+
                         <Th
                           border={"1px solid black"}
                           textAlign={"center"}
                           color="black"
                           w="100px"
                         >
-                          payment_receipt
+                          Total_Price
                         </Th>
-                        <Th
-                          border={"1px solid black"}
-                          textAlign={"center"}
-                          color="black"
-                          w="100px"
-                        >
-                          total_price
-                        </Th>
-                        <Th
-                          border={"1px solid black"}
-                          textAlign={"center"}
-                          color="black"
-                          w="100px"
-                        >
-                          AddresId
-                        </Th>
-                        <Th
-                          border={"1px solid black"}
-                          textAlign={"center"}
-                          color="black"
-                          w="100px"
-                        >
-                          CourierId
-                        </Th>
+
                         <Th
                           border={"1px solid black"}
                           textAlign={"center"}
@@ -206,23 +175,22 @@ const OrderPayment = () => {
                         >
                           UserId
                         </Th>
+                        {/* <Th
+                          border={"1px solid black"}
+                          textAlign={"center"}
+                          color="black"
+                          w="100px"
+                        >
+                          product name
+                        </Th> */}
                       </Tr>
                     </Thead>
-                    <Tbody maxWidth="max-content"> {renderOrder()}</Tbody>
+                    <Tbody maxWidth="max-content">{renderOrder()}</Tbody>
                   </Table>
                 </TableContainer>
               </Container>
             </Flex>
           </VStack>
-
-          {/* <Modal isOpen={openModal} onClose={() => setOpenModal(false)}>
-            <EditPayment
-              statusEdit={statusEdit}
-              setStatusEdit={setStatusEdit}
-              idEdit={idEdit}
-              fetchOrder={fetchOrder}
-            />
-          </Modal> */}
         </Flex>
       </Container>
     </>

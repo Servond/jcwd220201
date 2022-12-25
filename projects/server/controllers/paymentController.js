@@ -8,8 +8,16 @@ const handlebars = require("handlebars")
 const paymentController = {
   getPayment: async (req, res) => {
     try {
-      const allOrder = await db.Order.findAll({
-        attribute: ["payment_date", "total_price", "UserId"],
+      let allOrder = await db.Order.findAll({
+        attributes: [
+          "createdAt",
+          "updatedAt",
+          "id",
+          "payment_date",
+          "total_price",
+          "StatusId",
+          "UserId",
+        ],
         include: [
           {
             model: db.OrderItem,
@@ -77,16 +85,18 @@ const paymentController = {
       })
     }
   },
-  // getPayment: async (req, res) => {
+
+  // getProductPayment: async (req, res) => {
   //   try {
-  //     const payment = await db.Order.findAll({
-  //       attributes: ["payment_date", "payment_receipt", "total_price"],
-  //       include: [{ model: db.OrderItem }],
+  //     const findProduct = await db.Product.findAll({
+  //       attributes: ["product_name"],
+  //       include: [db.ProductPicture],
+  //       order: [["product_name", "ASC"]],
   //     })
 
   //     return res.status(200).json({
-  //       message: "Get payment",
-  //       data: payment,
+  //       message: "get product",
+  //       data: findProduct,
   //     })
   //   } catch (err) {
   //     console.log(err)

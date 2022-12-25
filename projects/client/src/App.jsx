@@ -149,9 +149,9 @@ const App = () => {
         <Route
           path="/admin/payment"
           element={
-            // <ProtectedRoute>
-            <OrderPayment />
-            // </ProtectedRoute>
+            <ProtectedRoute>
+              <OrderPayment />
+            </ProtectedRoute>
           }
         />
 
