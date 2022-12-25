@@ -43,8 +43,9 @@ const addressController = {
               where: {
                 [Op.and]: [
                   { UserId: id },
-                  { is_default: true },
-                  { is_selected: true },
+                  {
+                    [Op.or]: [{ is_default: true }, { is_selected: true }],
+                  },
                 ],
               },
               transaction: t,
