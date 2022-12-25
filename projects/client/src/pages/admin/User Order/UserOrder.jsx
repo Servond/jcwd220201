@@ -74,7 +74,7 @@ const UserOrder = () => {
 
           <VStack h="90%" w="full" overflowX="scroll">
             <Search />
-            <Table>
+            <Table variant="simple">
               <Thead>
                 <Tr>
                   <Th>User</Th>
@@ -83,6 +83,7 @@ const UserOrder = () => {
                   <Th>Total Harga</Th>
                   <Th>Warehouse</Th>
                   <Th>Status Order</Th>
+                  <Th>Konfirmasi</Th>
                 </Tr>
               </Thead>
               <Tbody>
@@ -95,11 +96,17 @@ const UserOrder = () => {
                     >
                       {val.name}
                     </Td>
-                    <Td>{val.product_name}</Td>
+                    <Td>
+                      <Text>{val.product_name}</Text>
+                    </Td>
                     <Td>{val.quantity}</Td>
                     <Td>{Rupiah(val.total_price)}</Td>
                     <Td>{val.warehouse_name}</Td>
                     <Td>{val.status}</Td>
+                    <Td>
+                      <Button>Button1</Button>
+                      <Button>Button2</Button>
+                    </Td>
                   </Tr>
                 ))}
               </Tbody>
