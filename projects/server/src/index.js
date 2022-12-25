@@ -9,6 +9,7 @@ const productsRoute = require("../routes/productsRoute");
 const registerRoute = require("../routes/registerRoute");
 const cartRoute = require("../routes/cartsRoute");
 const addressRoute = require("../routes/addressRoute");
+const productStockRoute = require("../routes/productStockRoute");
 const checkoutRoute = require("../routes/checkoutRoute");
 
 dotenv.config();
@@ -42,6 +43,9 @@ app.use("/api/address", addressRoute);
 // Checkout middleware
 app.use("/api/checkout", checkoutRoute);
 
+// Checkout middleware
+app.use("/api/checkout", checkoutRoute);
+
 const {
   warehousesRoute,
   citiesRoute,
@@ -60,6 +64,7 @@ app.use("/products", productsRoute);
 app.use("/categories", categoriesRoute);
 app.use("/carts", cartRoute);
 app.use("/product-admin", productsAdminRoute);
+app.use("/admin/stock", productStockRoute);
 app.use("/warehouse-user", warehouseUserRoute);
 
 app.get("/api", (req, res) => {

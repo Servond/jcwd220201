@@ -132,6 +132,8 @@ const AddressForm = ({
     },
   });
 
+  useEffect(() => console.log(formik.values), [formik.values]);
+
   // Invalid input error handling
   const recipientErrorTrigger =
     formik.touched.recipient && formik.errors.recipient;

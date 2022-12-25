@@ -23,6 +23,8 @@ import Register from "./pages/Register";
 import CartPage from "./pages/CartPage";
 import AdminRoute from "./components/AdminRoute";
 import Address from "./pages/Address";
+import WarehouseStock from "./pages/admin/Stock/WarehouseStock";
+import Stock from "./pages/admin/Stock/Stock";
 import ForgotPassword from "./pages/ForgotPassword";
 import RecoverPassword from "./pages/RecoverPassword";
 import ManageUser from "./pages/admin/manageUser";
@@ -139,6 +141,28 @@ const App = () => {
             </ProtectedRoute>
           }
         />
+        {/* Admin Manage Stock */}
+        <Route
+          path={authSelector.RoleId === 1 ? "/admin/update-stock" : null}
+          element={
+            <ProtectedRoute>
+              <Stock />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path={
+            authSelector.RoleId === 2
+              ? "/admin/update-stock"
+              : "/admin/update-stock/:id/"
+          }
+          element={
+            <ProtectedRoute>
+              <WarehouseStock />
+            </ProtectedRoute>
+          }
+        />
+
         <Route
           path="/admin/user"
           element={
