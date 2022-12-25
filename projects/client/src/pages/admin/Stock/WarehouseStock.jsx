@@ -55,7 +55,16 @@ const WarehouseStock = ({}) => {
 
   // Produck Data & Category
   const [data, setData] = useState([])
+  console.log(
+    "data",
+    data.map((val) => val.ProductStock)
+  )
   const [category, setCategory] = useState([])
+
+  const [page, setPage] = useState(0)
+  const [limit, setLimit] = useState(3)
+  const [pages, setPages] = useState(0)
+  const [rows, setRows] = useState(0)
 
   // Modal Edit Stock Props
   const [openModal, setOpenModal] = useState(false)
@@ -91,6 +100,34 @@ const WarehouseStock = ({}) => {
       console.log(err)
     }
   }
+
+  // const fetchProductWarehouse = async () => {
+  //   try {
+  //     if (authSelector.RoleId === 2) {
+  //       const response = await axiosInstance.get(
+  //         `admin/stock/all-product/${authSelector.WarehouseId}`
+  //       )
+  //       console.log("res", response)
+
+  //       setData(response.data.result)
+  //     }
+
+  //     const allWarehouse = await axiosInstance.get("admin/stock/all-warehouse")
+
+  //     const warehouseId = allWarehouse.data.result.filter((val) => {
+  //       return val.warehouse_name == params.id
+  //     })
+
+  //     const response = await axiosInstance.get(
+  //       `admin/stock/all-product/${warehouseId[0].id}`
+  //     )
+  //     console.log("res", response)
+
+  //     setData(response.data.result)
+  //   } catch (err) {
+  //     console.log(err)
+  //   }
+  // }
 
   const handleEdit = (stock, id) => {
     setOpenModal(true)
@@ -157,7 +194,7 @@ const WarehouseStock = ({}) => {
 
   useEffect(() => {
     fetchProductWarehouse()
-  }, [])
+  }, [page])
   return (
     <>
       <Container bg="#e0e7eb" maxW="vw" p="0">

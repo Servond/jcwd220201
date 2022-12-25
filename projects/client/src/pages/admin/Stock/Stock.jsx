@@ -41,61 +41,54 @@ import { useSelector } from "react-redux"
 
 const Stock = () => {
   const authSelector = useSelector((state) => state.auth)
-  // console.log(authSelector)
-  // Pagination & Search
-  // const [pageIndex, setPageIndex] = useState(0)
-  // const [totalPage, setTotalPage] = useState(0)
-  //   const [warehouses, setWarehouses] = useState(null)
-  //   const [warehouseLoad, setWarehouseLoad] = useState(false)
-  // const [query, setQuery] = useState(null)
   const navigate = useNavigate()
-  const toWarehouse = (warehouse_name) => {
-    navigate(`/admin/update-stock/${warehouse_name}`)
-  }
+
+  // Pagination & Search
+  // const [page, setPage] = useState(0)
+  // const [limit, setLimit] = useState(3)
+  // const [pages, setPages] = useState(0)
+  // const [rows, setRows] = useState(0)
+
   // Render Warehouse
   const [warehouse, setWarehouse] = useState([])
-  console.log("ware", warehouse)
 
   const fetchAllWarehouse = async () => {
     try {
       const response = await axiosInstance.get(`/admin/stock/all-warehouse`)
 
       setWarehouse(response.data.data.Warehouse)
-      //   return response.data.data
     } catch (err) {
       console.log(err.response)
     }
   }
 
-  // const fetchAllWarehouse = async (pageIndex = 0, input) => {
+  // const fetchAllWarehouse = async () => {
   //   try {
-  //     const page = pageIndex + 1
-  //     const query = input ? input : ""
-  //     const value = encodeURI(query)
   //     const response = await axiosInstance.get(
-  //       `/admin/stock/all-warehouse?page=${page}&search=${value}`
+  //       `/admin/stock/all-warehouse?page=${page}&limit=${limit}`
   //     )
+  //     console.log("res", response)
 
-  //     setWarehouse(response.data.data.Warehouse)
-  //     //   return response.data.data
+  //     setWarehouse(response.data.result)
+  //     setPage(response.data.page)
+  //     setPages(response.data.totalPage)
+  //     setRows(response.data.totalRows)
   //   } catch (err) {
   //     console.log(err.response)
   //   }
   // }
 
+  const toWarehouse = (warehouse_name) => {
+    navigate(`/admin/update-stock/${warehouse_name}`)
+  }
+
+  // const changePage = ({ selected }) => {
+  //   setPage(selected)
+  // }
+
   useEffect(() => {
     fetchAllWarehouse()
   }, [])
-
-  // useEffect(() => {
-  //   fetchAllWarehouse(pageIndex, query).then((response) => {
-  //     const { warehouses, totalPage } = response.data.data
-
-  //     setWarehouse(warehouses)
-  //     setTotalPage(totalPage)
-  //   })
-  // }, [query, pageIndex])
-
   return (
     <>
       <Container bg="#e0e7eb" maxW="vw" p="0">
@@ -120,7 +113,6 @@ const Stock = () => {
                 {warehouse.map((val) =>
                   val.WarehousesUsers.map((value) => (
                     <Tr h="auto">
-                      {/* <Link to={`/admin/update-stock/${id}/${warehouse_name}`}> */}
                       <Td
                         cursor="pointer"
                         _hover={{ color: "teal.400" }}
@@ -128,7 +120,6 @@ const Stock = () => {
                       >
                         {val.warehouse_name || "Not found"}
                       </Td>
-                      {/* </Link> */}
                       <Td>{val.address}</Td>
                       <Td>{val.city}</Td>
                       <Td>{val.province}</Td>
@@ -136,23 +127,34 @@ const Stock = () => {
                     </Tr>
                   ))
                 )}
+                {/* {warehouse.map((val) => (
+                  <Tr h="auto">
+                    <Td
+                      cursor="pointer"
+                      _hover={{ color: "teal.400" }}
+                      onClick={() => toWarehouse(val.warehouse_name)}
+                    >
+                      {val.warehouse_name || "Not found"}
+                    </Td>
+                    <Td>{val.address}</Td>
+                    <Td>{val.city}</Td>
+                    <Td>{val.province}</Td>
+                    <Td>{val.User?.name || "Need Assign"}</Td>
+                  </Tr>
+                ))} */}
               </Tbody>
             </Table>
+            {/* <ReactPaginate
+              breakLabel="..."
+              containerClassName="address-pagination-buttons"
+              nextLabel="Berikutnya"
+              onPageChange={changePage}
+              pageRangeDisplayed={5}
+              pageClassName="address-pagination-pages"
+              pageCount={Math.min(10, pages)}
+              previousLabel="Sebelumnya"
+            /> */}
           </VStack>
-          {/* <ReactPaginate
-        breakLabel="..."
-        containerClassName="address-pagination-buttons"
-        forcePage={pageIndex}
-        nextLabel="Berikutnya"
-        onPageChange={({ selected }) => {
-          setPageIndex(selected)
-        }}
-        pageRangeDisplayed={5}
-        pageClassName="address-pagination-pages"
-        pageCount={totalPage}
-        previousLabel="Sebelumnya"
-        renderOnZeroPageCount={null}
-      /> */}
         </Flex>
       </Container>
     </>

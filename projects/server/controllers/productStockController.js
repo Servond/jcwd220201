@@ -31,10 +31,10 @@ const productStockController = {
       }
 
       const {
-        // _limit = 4,
-        // _page = 1,
-        // _sortBy = "id",
-        // _sortDir = "ASC",
+        _limit = 4,
+        _page = 1,
+        _sortBy = "id",
+        _sortDir = "ASC",
         search,
       } = req.query
 
@@ -45,9 +45,9 @@ const productStockController = {
       const { LIMIT, OFFSET } = pagination(page)
 
       const findAllWarehouse = await Warehouse.findAndCountAll({
-        // limit: Number(_limit),
-        // offset: (_page - 1) * _limit,
-        // order: [[_sortBy, _sortDir]],
+        limit: Number(_limit),
+        offset: (_page - 1) * _limit,
+        order: [[_sortBy, _sortDir]],
         limit: LIMIT,
         offset: OFFSET,
         order: [["id", "ASC"]],
@@ -69,6 +69,56 @@ const productStockController = {
         message: "Data Warehouse",
         data: result,
       })
+
+      // THIS METHOD IS WORKING ON PAGINATION
+      //   const findAdminByRole = await User.findByPk(req.user.id)
+
+      //   if (findAdminByRole.RoleId !== 1) {
+      //     return res.status(400).json({
+      //       message:
+      //         "Hanya Admin yang bisa melihat Fitur ini, silahkan Login sebagai Admin",
+      //     })
+      //   }
+
+      //   const page = parseInt(req.query.page) || 0
+      //   const limit = parseInt(req.query.limit) || 3
+      //   const search = req.query.search_query || ""
+      //   const offset = limit * page
+      //   const totalRows = await Warehouse.count({
+      //     where: { warehouse_name: { [Op.like]: "%" + search + "%" } },
+      //     attributes: { exclude: ["pinpoint", "createdAt", "updatedAt"] },
+      //     include: [
+      //       {
+      //         model: WarehousesUser,
+      //         include: [{ model: User, attributes: ["name"] }],
+      //         attributes: { exclude: ["createdAt", "updatedAt"] },
+      //       },
+      //     ],
+      //   })
+      //   const totalPage = Math.ceil(totalRows / limit)
+      //   const result = await Warehouse.findAll({
+      //     where: { warehouse_name: { [Op.like]: "%" + search + "%" } },
+      //     attributes: { exclude: ["pinpoint", "createdAt", "updatedAt"] },
+      //     include: [
+      //       {
+      //         model: WarehousesUser,
+      //         include: [{ model: User, attributes: ["name"] }],
+      //         attributes: { exclude: ["createdAt", "updatedAt"] },
+      //       },
+      //     ],
+      //     offset: offset,
+      //     limit: limit,
+      //     order: [["id", "DESC"]],
+      //   })
+
+      //   return res.status(200).json({
+      //     message: "Data Warehouse",
+      //     result: result,
+      //     page: page,
+      //     limit: limit,
+      //     totalRows: totalRows,
+      //     totalPage: totalPage,
+      //   })
     } catch (err) {
       console.log(err)
       return res.status(500).json({ mesage: err.message })
@@ -80,7 +130,6 @@ const productStockController = {
       const { search } = req.query
       const { id } = req.params
 
-      // Check Warehouse Admin Role
       const findAdminByRole = await User.findByPk(req.user.id)
 
       if (findAdminByRole.RoleId !== 1 && findAdminByRole.RoleId !== 2) {
@@ -118,6 +167,60 @@ const productStockController = {
       console.log(err)
       return res.status(500).json({ message: err.message })
     }
+
+    // Later Try This Method
+    //   const { id } = req.params
+
+    //   const findAdminByRole = await User.findByPk(req.user.id)
+
+    //   if (findAdminByRole.RoleId !== 1 && findAdminByRole.RoleId !== 2) {
+    //     return res.status(400).json({
+    //       message: "Hanya Warehouse Admin & Admin yang bisa melihat Fitur ini",
+    //     })
+    //   }
+
+    //   const page = parseInt(req.query.page) || 0
+    //   const limit = parseInt(req.query.limit) || 2
+    //   const search = req.query.search_query || ""
+    //   const offset = limit * page
+    //   const totalRows = await ProductStock.count({
+    //     where: { WarehouseId: id },
+    //     include: [
+    //       {
+    //         model: Product,
+    //         where: { product_name: { [Op.like]: "%" + search + "%" } },
+    //         include: [{ model: Category }, { model: ProductPicture }],
+    //       },
+    //     ],
+    //   })
+    //   const totalPage = Math.ceil(totalRows / limit)
+    //   const result = await ProductStock.findAll({
+    //     where: { WarehouseId: id },
+    //     include: [
+    //       {
+    //         model: Product,
+    //         where: { product_name: { [Op.like]: "%" + search + "%" } },
+    //         include: [{ model: Category }, { model: ProductPicture }],
+    //       },
+    //     ],
+    //     offset: offset,
+    //     limit: limit,
+    //     subQuery: false,
+    //     order: [[{ model: Product }, "id", "ASC"]],
+    //   })
+
+    //   return res.status(200).json({
+    //     message: "Data Warehouse Admin",
+    //     result: result,
+    //     page: page,
+    //     limit: limit,
+    //     totalRows: totalRows,
+    //     totalPage: totalPage,
+    //   })
+    // } catch (err) {
+    //   console.log(err)
+    //   return res.status(500).json({ message: err.message })
+    // }
   },
   getAllCategory: async (req, res) => {
     try {
