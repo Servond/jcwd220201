@@ -76,8 +76,8 @@ const addressController = {
             province,
             postal_code: postalCode,
             pinpoint,
-            is_default: isDefault,
-            is_selected: isDefault ? true : false,
+            is_default: isDefault === "true",
+            is_selected: isDefault === "true" ? true : false,
           },
           { transaction: t }
         );
