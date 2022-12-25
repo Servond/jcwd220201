@@ -160,9 +160,9 @@ const salesReport = {
       if (CategoryId && WarehouseId) {
         const findDataFilterCatWar = await db.Order.findAndCountAll({
           include: [
-            // {
-            //     model: db.Warehouse,
-            // },
+            {
+              model: db.User,
+            },
             {
               model: db.OrderItem,
               include: [
@@ -194,9 +194,9 @@ const salesReport = {
       } else if (WarehouseId) {
         const findDataFilterWar = await db.Order.findAndCountAll({
           include: [
-            // {
-            //     model: db.Warehouse,
-            // },
+            {
+              model: db.User,
+            },
             {
               model: db.OrderItem,
               include: [
@@ -227,9 +227,9 @@ const salesReport = {
       } else if (CategoryId) {
         const findDataFilterCat = await db.Order.findAndCountAll({
           include: [
-            // {
-            //     model: db.Warehouse,
-            // },
+            {
+              model: db.User,
+            },
             {
               model: db.OrderItem,
               include: [
@@ -260,9 +260,9 @@ const salesReport = {
       } else if (createdAt) {
         const findDataFilterMnth = await db.Order.findAndCountAll({
           include: [
-            // {
-            //     model: db.Warehouse,
-            // },
+            {
+              model: db.User,
+            },
             {
               model: db.OrderItem,
               include: [
@@ -294,9 +294,9 @@ const salesReport = {
 
       const findData = await db.Order.findAndCountAll({
         include: [
-          // {
-          //     model: db.Warehouse,
-          // },
+          {
+            model: db.User,
+          },
           {
             model: db.OrderItem,
             include: [
@@ -308,13 +308,12 @@ const salesReport = {
                   },
                   {
                     model: db.ProductStock,
-                    include: [{ model: db.Warehouse }],
                   },
                 ],
               },
             ],
             attributes: [
-              sequelize.fn("MONTH", sequelize.col("OrderItem.createdAt")),
+              sequelize.fn("MONTH", sequelize.col("Order.CreatedAt")),
             ],
           },
         ],
