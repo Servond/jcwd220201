@@ -102,13 +102,11 @@ const salesReport = {
         include: [
           {
             model: db.OrderItem,
+            include: [{ model: db.Product }],
           },
 
           {
             model: db.User,
-          },
-          {
-            model: db.Product,
           },
         ],
         order: [["createdAt", "DESC"]],
