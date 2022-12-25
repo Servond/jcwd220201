@@ -175,31 +175,7 @@ const SalesReport = () => {
                 onChange={filterWarehouseBtn}
                 border="1px solid #dfe1e3"
                 borderRadius="8px"
-              >
-                {/* RAW QUERY */}
-                {/* <Select>
-                  <option value="">---By Warehouse---</option>
-                  {authSelector.WarehouseId ===
-                  salesData.map((val) => val.WarehouseId)[0]
-                    ? salesData.map((val) => (
-                        <option value={val.WarehouseId}>
-                          {val.warehouse_name}
-                        </option>
-                      ))[0]
-                    : warehouseData.map((val) => (
-                        <option value={val.id}>{val.warehouse_name}</option>
-                      ))}
-                </Select> */}
-
-                {/* <Select>
-                            <option value="">---By Warehouse---</option>
-                            {authSelector.WarehouseId === salesData.map((val) => val.WarehouseId)[0]
-                            ? salesData.map((val) => (
-                                <option value={val.WarehouseId}
-                            ))
-                            }
-                        </Select> */}
-              </GridItem>
+              ></GridItem>
 
               {/* Search */}
               <GridItem
@@ -214,15 +190,6 @@ const SalesReport = () => {
                     onKeyDown={handleKeyEnter}
                     value={nameSearch}
                   />
-                  {/* <Button
-                                borderLeftRadius={"0"}
-                                type="submit"
-                                bgColor={"white"}
-                                border="1px solid #e2e8f0"
-                                borderLeft={"0px"}
-                            >
-                                <TbSearch />
-                            </Button> */}
                 </InputGroup>
               </GridItem>
             </Grid>
@@ -248,9 +215,7 @@ const SalesReport = () => {
                   <Th w="200px">
                     <Text fontSize="10px">Product Name</Text>
                   </Th>
-                  {/* <Th w="200px">
-                                <Text fontSize="10px">Description</Text>
-                            </Th> */}
+
                   <Th w="100px">
                     <Text fontSize="10px">Price</Text>
                   </Th>
@@ -274,49 +239,19 @@ const SalesReport = () => {
                         {val.createdAt.split("T")[0]} /{" "}
                         {val.createdAt.split("T")[1].split(".000Z")}
                       </Text>
-
-                      {/* <Text maxW="150px">
-                                        {val.createdAt.split("T")[0]} /{" "}
-                                        {val.createdAt
-                                            .split("T")[1]
-                                            .split(".000Z")}
-                                    </Text> */}
                     </Td>
                     <Td>
-                      {/* RAW QUERY */}
-                      <Text>
-                        {
-                          val.productId //raw query
-                        }
-                      </Text>
-
-                      {/* <Text>
-                                        {val.TransactionItems.map(
-                                            (val) => val.ProductId
-                                        )}
-                                    </Text> */}
+                      <Text>{val.productId}</Text>
                     </Td>
                     <Td>
-                      <Text>
-                        {/* {val.User.username} */}
-
-                        {/* raw query */}
-                        {val.category}
-                      </Text>
+                      <Text>{val.category}</Text>
                     </Td>
                     <Td maxW="200px">
                       <Text overflow="hidden" textOverflow="ellipsis">
                         {val.product_name}
                       </Text>
                     </Td>
-                    {/* <Td maxW="200px">
-                                    <Text
-                                        overflow="hidden"
-                                        textOverflow="ellipsis"
-                                    >
-                                        {val.description}
-                                    </Text>
-                                </Td> */}
+
                     <Td>
                       <Text>
                         {new Intl.NumberFormat("id-ID", {
@@ -327,22 +262,11 @@ const SalesReport = () => {
                       </Text>
                     </Td>
                     <Td>
-                      <Text>
-                        {/* {
-                                            val.Order_status
-                                                .order_status_name
-                                        } */}
-
-                        {/* raw query */}
-                        {val.quantity}
-                      </Text>
+                      <Text>{val.quantity}</Text>
                     </Td>
 
                     <Td>
                       <Text>
-                        {/* {val.Warehouse.warehouse_name} */}
-
-                        {/* raw query */}
                         {new Intl.NumberFormat("id-ID", {
                           style: "currency",
                           currency: "IDR",
@@ -358,29 +282,6 @@ const SalesReport = () => {
               </Tbody>
             </Table>
           </TableContainer>
-
-          {/* Page */}
-          {/* <HStack justifyContent="center" gap="2" mt="1em">
-                {page === 1 ? null : (
-                    <CgChevronLeft
-                        bgColor="#0095DA"
-                        onClick={prevPageBtnHandler}
-                        color="#0095DA"
-                        cursor="pointer"
-                        size={20}
-                    />
-                )}
-                <Text color="#0095DA">{page}</Text>
-                {page >= maxPage ? null : (
-                    <CgChevronRight
-                        bgColor="#0095DA"
-                        color="#0095DA"
-                        onClick={nextPageBtnHandler}
-                        cursor="pointer"
-                        size={20}
-                    />
-                )}
-            </HStack> */}
         </Box>
       </Box>
     </>
