@@ -29,7 +29,6 @@ module.exports = (sequelize, DataTypes) => {
         {
           onUpdate: "CASCADE",
           onDelete: "CASCADE",
-          foreignKey: "ShipmentFromWarehouseId",
         };
     }
   }

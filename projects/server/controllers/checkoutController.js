@@ -218,7 +218,7 @@ const checkoutController = {
 
       if (!cartItems.length) {
         return res.status(400).json({
-          message: "Keranjang kamu kosong nih.",
+          message: "Keranjang kamu kosong.",
           description: "Yuk tambahkan barang favoritmu ke keranjang!",
         });
       }
@@ -366,8 +366,7 @@ const checkoutController = {
             StatusId: statusId,
             UserId,
             shipping_cost: shippingCost,
-            ShipmentFromWarehouseId:
-              sortedWarehouse.nearestWarehouse.warehouseInfo.id,
+            WarehouseId: sortedWarehouse.nearestWarehouse.warehouseInfo.id,
           },
           {
             transaction: t,

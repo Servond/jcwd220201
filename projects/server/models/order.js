@@ -21,7 +21,6 @@ module.exports = (sequelize, DataTypes) => {
       Order.belongsTo(models.Warehouse, {
         onUpdate: "CASCADE",
         onDelete: "CASCADE",
-        foreignKey: "ShipmentFromWarehouseId",
       });
       Order.hasMany(models.JournalItem, {
         onUpdate: "CASCADE",

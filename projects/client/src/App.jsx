@@ -154,14 +154,21 @@ const App = () => {
         <Route
           path="/address"
           element={
-            <ProtectedRoute>
+            <GeneralRoute>
               <Address />
-            </ProtectedRoute>
+            </GeneralRoute>
           }
         />
 
         {/* Checkout Route */}
-        <Route path="/cart/shipment" element={<Checkout />} />
+        <Route
+          path="/cart/shipment"
+          element={
+            <GeneralRoute>
+              <Checkout />
+            </GeneralRoute>
+          }
+        />
       </Routes>
     </>
   );
