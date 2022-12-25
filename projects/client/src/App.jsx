@@ -29,6 +29,7 @@ import ForgotPassword from "./pages/ForgotPassword"
 import RecoverPassword from "./pages/RecoverPassword"
 import ManageUser from "./pages/admin/manageUser"
 import Checkout from "./pages/Checkout"
+import UserOrder from "./pages/admin/User Order/UserOrder"
 
 const App = () => {
   const [authCheck, setAuthCheck] = useState(false)
@@ -159,6 +160,15 @@ const App = () => {
           element={
             <ProtectedRoute>
               <WarehouseStock />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path={authSelector.RoleId === 1 ? "/order/all-order" : null}
+          element={
+            <ProtectedRoute>
+              <UserOrder />
             </ProtectedRoute>
           }
         />

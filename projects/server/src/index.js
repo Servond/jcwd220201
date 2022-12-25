@@ -11,6 +11,7 @@ const cartRoute = require("../routes/cartsRoute")
 const addressRoute = require("../routes/addressRoute")
 const productStockRoute = require("../routes/productStockRoute")
 const checkoutRoute = require("../routes/checkoutRoute")
+const userOrderRoute = require("../routes/userOrderRoute")
 
 dotenv.config()
 
@@ -49,6 +50,7 @@ const {
   provincesRoute,
   categoriesRoute,
 } = require("../routes")
+const { use } = require("../routes/adminRoute")
 
 app.use("/public", express.static("public"))
 
@@ -63,6 +65,7 @@ app.use("/carts", cartRoute)
 app.use("/product-admin", productsAdminRoute)
 app.use("/admin/stock", productStockRoute)
 app.use("/warehouse-user", warehouseUserRoute)
+app.use("/order/", userOrderRoute)
 
 app.get("/api", (req, res) => {
   res.send(`Hello, this is my API`)
