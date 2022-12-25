@@ -32,6 +32,7 @@ app.use(express.json());
 // NOTE : Add your routes here
 
 const productsAdminRoute = require("../routes/productsAdminRoute");
+const warehouseUserRoute = require("../routes/warehouseUserRoute");
 // Register middleware
 app.use("/api/register", registerRoute);
 
@@ -59,6 +60,7 @@ app.use("/products", productsRoute);
 app.use("/categories", categoriesRoute);
 app.use("/carts", cartRoute);
 app.use("/product-admin", productsAdminRoute);
+app.use("/warehouse-user", warehouseUserRoute);
 
 app.get("/api", (req, res) => {
   res.send(`Hello, this is my API`);

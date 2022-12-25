@@ -12,7 +12,7 @@ import {
   Input,
   InputGroup,
   InputRightElement,
-  Link,
+  Link as LinkChakra,
   Stack,
   Text,
   useToast,
@@ -20,18 +20,22 @@ import {
 import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons"
 import { useState } from "react"
 import { useFormik } from "formik"
-import { useDispatch, useSelector } from "react-redux"
-import { useNavigate } from "react-router-dom"
+import { useDispatch } from "react-redux"
+import {
+  useNavigate,
+  Link as LinkRouterDom,
+  useLocation,
+} from "react-router-dom"
 import * as Yup from "yup"
 import { axiosInstance } from "../api"
 import { login } from "../redux/features/authSlice"
 
 const LoginPage = () => {
-  const authSelector = useSelector((state) => state.auth)
   const toast = useToast()
   const dispatch = useDispatch()
   const [showPassword, setShowPassword] = useState(false)
   const navigate = useNavigate()
+  const location = useLocation()
 
   const formik = useFormik({
     initialValues: {
@@ -44,7 +48,6 @@ const LoginPage = () => {
           email,
           password,
         })
-        console.log(response)
 
         localStorage.setItem("auth_token", response.data.token)
         dispatch(
@@ -77,6 +80,7 @@ const LoginPage = () => {
           description: err.response.data.message,
         })
       }
+      navigate(location.state.from)
     },
     validationSchema: Yup.object({
       email: Yup.string().required(),
@@ -137,24 +141,26 @@ const LoginPage = () => {
                   </InputRightElement>
                 </InputGroup>
                 <FormHelperText mt="5" mb="5" textAlign="right">
-                  <Link>Lupa Password?</Link>
+                  <LinkChakra
+                    onClick={() => {
+                      navigate("/forgot-password")
+                    }}
+                  >
+                    Lupa Password?
+                  </LinkChakra>
                 </FormHelperText>
                 <FormErrorMessage>{formik.errors.password}</FormErrorMessage>
               </FormControl>
-              <Button
-                onClick={navigate.goBack}
-                type="submit"
-                colorScheme="teal"
-              >
+              <Button type="submit" colorScheme="teal">
                 Masuk
               </Button>
             </Stack>
             <Stack pt={6}>
               <Text align={"center"}>
                 Belum punya akun?{" "}
-                <Link to="/register" color={"teal"}>
+                <LinkRouterDom to="/register" color={"teal"}>
                   Daftar
-                </Link>
+                </LinkRouterDom>
               </Text>
             </Stack>
           </form>

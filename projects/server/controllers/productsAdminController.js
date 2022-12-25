@@ -2,6 +2,7 @@ const { sequelize } = require("../models")
 const db = require("../models")
 ProductPicture = db.ProductPicture
 const fs = require("fs")
+const { Op } = require("sequelize")
 
 const productAdminController = {
   createProducts: async (req, res) => {
@@ -36,7 +37,6 @@ const productAdminController = {
           price: req.body.price,
           CategoryId: findCategoryId.id,
           weight: req.body.weight,
-          CategoryId: findCategoryId.id,
         })
 
         const files = req.files
@@ -46,7 +46,6 @@ const productAdminController = {
 
         const productId = createProduct.id
 
-        console.log(productId)
         const newProductImg = img_path.map((item) => {
           return {
             product_picture: item,
@@ -55,11 +54,10 @@ const productAdminController = {
           }
         })
 
-        console.log(newProductImg)
         await db.ProductPicture.bulkCreate(newProductImg)
 
         const foundProductById = await db.Product.findByPk(createProduct.id, {
-          include: { all: true },
+          include: [db.ProductPicture],
         })
 
         return res.status(200).json({
@@ -77,15 +75,75 @@ const productAdminController = {
 
   getAllProduct: async (req, res) => {
     try {
-      const { _limit = 10, _page = 1, _sortDir = "DESC" } = req.query
+      const {
+        _limit = 6,
+        _page = 1,
+        _sortDir = "DESC",
+        product_name = "",
+        CategoryId = "",
+        price = "",
+        _sortBy = "product_name",
+      } = req.query
+
+      if (
+        _sortBy === "product_name" ||
+        _sortBy === "CategoryId" ||
+        _sortBy === "price" ||
+        product_name ||
+        price ||
+        CategoryId
+      ) {
+        if (!Number(CategoryId)) {
+          const findAllProducts = await db.Product.findAndCountAll({
+            include: [db.ProductPicture],
+            limit: Number(_limit),
+            offset: (_page - 1) * _limit,
+            order: [[_sortBy, _sortDir]],
+            where: {
+              [Op.or]: [
+                {
+                  product_name: {
+                    [Op.like]: `%${product_name}`,
+                  },
+                },
+              ],
+            },
+          })
+          return res.status(200).json({
+            message: "Get All Product",
+            data: findAllProducts.rows,
+            dataCount: findAllProducts.count,
+          })
+        }
+
+        const findAllProducts = await db.Product.findAndCountAll({
+          include: [db.ProductPicture],
+          limit: Number(_limit),
+          offset: (_page - 1) * _limit,
+          order: [[_sortBy, _sortDir]],
+          where: {
+            [Op.or]: [
+              {
+                product_name: {
+                  [Op.like]: `%${product_name}`,
+                },
+              },
+            ],
+            CategoryId: CategoryId,
+          },
+        })
+        return res.status(200).json({
+          message: "Get All Product",
+          data: findAllProducts.rows,
+          dataCount: findAllProducts.count,
+        })
+      }
 
       const findAllProducts = await db.Product.findAndCountAll({
-        include: { all: true },
+        include: [db.ProductPicture],
         limit: Number(_limit),
         offset: (_page - 1) * _limit,
-        order: [["id", _sortDir]],
       })
-
       return res.status(200).json({
         message: "Get All Product",
         data: findAllProducts.rows,
@@ -94,7 +152,7 @@ const productAdminController = {
     } catch (err) {
       console.log(err)
       return res.status(500).json({
-        message: "Server error",
+        message: err.message,
       })
     }
   },
@@ -106,6 +164,17 @@ const productAdminController = {
       if (findAdmin.RoleId === 3 || findAdmin.RoleId === 2) {
         return res.status(400).json({
           message: "Admin unauthorized",
+        })
+      }
+      const findProductByName = await db.Product.findOne({
+        where: {
+          product_name: req.body.product_name || "".toUpperCase(),
+        },
+      })
+
+      if (findProductByName) {
+        return res.status(400).json({
+          message: "Nama Produk telah ada",
         })
       }
 
@@ -121,7 +190,7 @@ const productAdminController = {
     } catch (err) {
       console.log(err)
       return res.status(500).json({
-        message: "Server error",
+        message: err.message,
       })
     }
   },
@@ -269,7 +338,7 @@ const productAdminController = {
           id: req.params.id,
         },
       })
-      console.log(req.file)
+
       const createImg = await db.ProductPicture.create({
         product_picture: req.file.filename,
         ProductId: req.params.id,

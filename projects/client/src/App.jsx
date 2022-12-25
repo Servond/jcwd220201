@@ -23,6 +23,9 @@ import Register from "./pages/Register";
 import CartPage from "./pages/CartPage";
 import AdminRoute from "./components/AdminRoute";
 import Address from "./pages/Address";
+import ForgotPassword from "./pages/ForgotPassword";
+import RecoverPassword from "./pages/RecoverPassword";
+import ManageUser from "./pages/admin/manageUser";
 import Checkout from "./pages/Checkout";
 
 const App = () => {
@@ -99,6 +102,15 @@ const App = () => {
             </GuestRoute>
           }
         />
+        <Route
+          path="/forgot-password"
+          element={
+            <GeneralRoute>
+              <ForgotPassword />
+            </GeneralRoute>
+          }
+        />
+        <Route path="/recover-password/:token" element={<RecoverPassword />} />
 
         {/* Admin Route */}
         <Route
@@ -123,6 +135,14 @@ const App = () => {
           element={
             <ProtectedRoute>
               <ManageProduct />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/user"
+          element={
+            <ProtectedRoute>
+              <ManageUser />
             </ProtectedRoute>
           }
         />
