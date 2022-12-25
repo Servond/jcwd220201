@@ -280,7 +280,7 @@ const productStockController = {
       await JournalItem.create({
         quantity: stock_change,
         JournalTypeId: addJournal.id,
-        JournalId: id,
+        // JournalId: id,
         ProductId: findStock2.ProductId,
         WarehouseId: findStock2.WarehouseId,
       })
@@ -337,7 +337,7 @@ const productStockController = {
       await JournalItem.create({
         quantity: stock_change,
         JournalTypeId: addJournal.id,
-        JournalId: findStock2.JournalId,
+        // JournalId: findStock2.JournalId,
         ProductId: findStock2.ProductId,
         WarehouseId: findStock2.WarehouseId,
       })
