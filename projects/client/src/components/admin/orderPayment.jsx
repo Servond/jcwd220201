@@ -1,4 +1,10 @@
 import {
+  AlertDialog,
+  AlertDialogBody,
+  AlertDialogContent,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogOverlay,
   Box,
   Button,
   Container,
@@ -11,10 +17,11 @@ import {
   Th,
   Thead,
   Tr,
+  useDisclosure,
   useToast,
   VStack,
 } from "@chakra-ui/react"
-import { useEffect } from "react"
+import { useEffect, useRef } from "react"
 import { useState } from "react"
 import { axiosInstance } from "../../api"
 import SidebarAdmin from "./sidebarAdminDashboard"
@@ -23,6 +30,8 @@ const OrderPayment = () => {
   const [payment, setPayment] = useState([])
   const toast = useToast()
   const [reject, setReject] = useState("")
+  const { isOpen, onOpen, onClose } = useDisclosure()
+  const cancelRef = useRef()
 
   const fetchOrder = async () => {
     try {
@@ -81,7 +90,6 @@ const OrderPayment = () => {
           <Td textAlign={"center"}>{val.StatusId}</Td>
           <Td textAlign={"center"}>{val.UserId}</Td>
           <Td textAlign={"center"}>{val.shipping_cost}</Td>
-
           <Td>
             <Button
               alignContent={"left"}
@@ -91,14 +99,36 @@ const OrderPayment = () => {
             >
               confirm
             </Button>
-            <Button
-              alignContent={"left"}
-              onClick={() => rejectOrder(val.id)}
-              mx="3"
-              colorScheme={"teal"}
-            >
-              reject
+            <Button colorScheme="red" onClick={onOpen}>
+              Reject
             </Button>
+            <AlertDialog isOpen={isOpen} onClose={onClose}>
+              <AlertDialogOverlay>
+                <AlertDialogContent>
+                  <AlertDialogHeader fontSize="lg" fontStyle="bold">
+                    Pembatalan Pembayaran
+                  </AlertDialogHeader>
+
+                  <AlertDialogBody>
+                    Apakah pembayaran ini ingin dibatalkan?
+                  </AlertDialogBody>
+
+                  <AlertDialogFooter>
+                    <Button mr="10px" ref={cancelRef} onClick={onClose}>
+                      Cancel
+                    </Button>
+                    <Button
+                      colorScheme="red"
+                      onClick={() => {
+                        rejectOrder(val.id)
+                      }}
+                    >
+                      Reject
+                    </Button>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialogOverlay>
+            </AlertDialog>
           </Td>
         </Tr>
       )
