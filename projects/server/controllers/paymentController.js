@@ -26,7 +26,7 @@ const paymentController = {
             model: db.Status,
           },
         ],
-        order: [["id", "ASC"]],
+        order: [["createdAt", "ASC"]],
       })
 
       return res.status(200).json({
