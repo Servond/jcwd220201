@@ -199,18 +199,34 @@ const checkoutController = {
         });
       }
 
-      // Find all checked items in the cart
-      const checkedItems = await Cart.findAll({
+      // Get items in the cart
+      let cartItems = await Cart.findAll({
         where: {
           [Op.and]: [{ UserId }, { is_checked: true }],
         },
         include: [{ model: Product }],
       });
 
+      if (!cartItems.length) {
+        cartItems = await Cart.findAll({
+          where: {
+            UserId,
+          },
+          include: [{ model: Product }],
+        });
+      }
+
+      if (!cartItems.length) {
+        return res.status(400).json({
+          message: "Keranjang kamu kosong nih.",
+          description: "Yuk tambahkan barang favoritmu ke keranjang!",
+        });
+      }
+
       // Return successful response
       return res.status(200).json({
         message: "Berhasil mengambil data keranjang",
-        data: checkedItems,
+        data: cartItems,
       });
     } catch (err) {
       return res.status(500).json({
@@ -390,7 +406,7 @@ const checkoutController = {
         const { ProductId, quantity } = item;
 
         // Get available stock from the nearest warehouse
-        const nearestWarehouseProductStockDetails = await ProductStock.findOne({
+        const { stock } = await ProductStock.findOne({
           raw: true,
           where: {
             [Op.and]: [
@@ -402,29 +418,23 @@ const checkoutController = {
 
         // Make a request to nearest branches if additional stock is needed
         const requestItemsForm = [];
-        const productStockDetailsToUpdate = [];
 
-        if (nearestWarehouseProductStockDetails.stock < quantity) {
+        if (stock < quantity) {
           // Calculate items needed
-          let itemsNeeded = !nearestWarehouseProductStockDetails.stock
-            ? quantity
-            : quantity - nearestWarehouseProductStockDetails.stock;
+          let itemsNeeded = !stock ? quantity : quantity - stock;
 
           // Check stock availability from nearest branches
           for (let branch of nearestBranches) {
-            const nearestBranchProductStockDetails = await ProductStock.findOne(
-              {
-                raw: true,
-                where: {
-                  [Op.and]: [
-                    { ProductId },
-                    { WarehouseId: branch.warehouseInfo.id },
-                  ],
-                },
-              }
-            );
+            const { stock: nearestBranchStock } = await ProductStock.findOne({
+              raw: true,
+              where: {
+                [Op.and]: [
+                  { ProductId },
+                  { WarehouseId: branch.warehouseInfo.id },
+                ],
+              },
+            });
 
-            const nearestBranchStock = nearestBranchProductStockDetails.stock;
             const time = moment().format();
 
             /*
@@ -445,24 +455,15 @@ const checkoutController = {
                 quantity: nearestBranchStock,
                 StockRequest: {
                   date: time,
-                  is_approved: true,
-                  approved_date: time,
+                  is_approved: false,
                   FromWarehouseId: nearestWarehouse.warehouseInfo.id,
                   ToWarehouseId: branch.warehouseInfo.id,
                 },
               });
 
               itemsNeeded -= nearestBranchStock;
-              nearestWarehouseProductStockDetails.stock += nearestBranchStock;
-              nearestBranchProductStockDetails.stock = 0;
-              productStockDetailsToUpdate.push(
-                nearestBranchProductStockDetails
-              );
 
               if (!itemsNeeded) {
-                productStockDetailsToUpdate.push(
-                  nearestWarehouseProductStockDetails
-                );
                 break;
               }
 
@@ -479,19 +480,12 @@ const checkoutController = {
                 quantity: itemsNeeded,
                 StockRequest: {
                   date: time,
-                  is_approved: true,
-                  approved_date: time,
+                  is_approved: false,
                   FromWarehouseId: nearestWarehouse.warehouseInfo.id,
                   ToWarehouseId: branch.warehouseInfo.id,
                 },
               });
 
-              nearestWarehouseProductStockDetails.stock += itemsNeeded;
-              nearestBranchProductStockDetails.stock -= itemsNeeded;
-              productStockDetailsToUpdate.push(
-                nearestWarehouseProductStockDetails,
-                nearestBranchProductStockDetails
-              );
               break;
             }
           }
@@ -504,14 +498,6 @@ const checkoutController = {
             });
           });
         }
-
-        // Update product stock
-        await sequelize.transaction(async (t) => {
-          await ProductStock.bulkCreate(productStockDetailsToUpdate, {
-            updateOnDuplicate: ["stock"],
-            transaction: t,
-          });
-        });
       }
 
       // Send successful message

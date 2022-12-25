@@ -141,14 +141,7 @@ const App = () => {
         />
 
         {/* Checkout Route */}
-        <Route
-          path="/cart/shipment"
-          element={
-            <ProtectedRoute>
-              <Checkout />
-            </ProtectedRoute>
-          }
-        />
+        <Route path="/cart/shipment" element={<Checkout />} />
       </Routes>
     </>
   );

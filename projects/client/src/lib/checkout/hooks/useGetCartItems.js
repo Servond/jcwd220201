@@ -1,4 +1,6 @@
 import { useState, useEffect } from "react";
+import { useToast } from "@chakra-ui/react";
+import { useNavigate } from "react-router-dom";
 
 // Own library imports
 import fetchCartItems from "../fetchCartItems";
@@ -12,8 +14,24 @@ const useGetCartItems = () => {
   const [totalQuantity, setTotalQuantity] = useState(null);
   const [totalPrice, setTotalPrice] = useState(null);
 
+  const toast = useToast();
+  const navigate = useNavigate();
+
   useEffect(() => {
-    fetchCartItems().then((res) => setCartItems(res.data));
+    fetchCartItems().then((res) => {
+      if (res.status === 400) {
+        toast({
+          title: res.data.message,
+          status: "success",
+          description: res.data.description,
+        });
+
+        navigate("/");
+        return;
+      }
+
+      setCartItems(res.data.data);
+    });
   }, []);
 
   useEffect(() => {
