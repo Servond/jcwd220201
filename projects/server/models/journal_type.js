@@ -1,12 +1,12 @@
-"use strict"
-const { Model } = require("sequelize")
+"use strict";
+const { Model } = require("sequelize");
 module.exports = function (sequelize, DataTypes) {
   class JournalType extends Model {
     static associate(models) {
       JournalType.hasMany(models.JournalItem, {
         onUpdate: "CASCADE",
         onDelete: "CASCADE",
-      })
+      });
     }
   }
   JournalType.init(
@@ -27,8 +27,8 @@ module.exports = function (sequelize, DataTypes) {
     {
       sequelize,
       modelName: "JournalType",
-      timestamps: true,
+      timestamps: false,
     }
-  )
-  return JournalType
-}
+  );
+  return JournalType;
+};

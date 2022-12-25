@@ -10,6 +10,7 @@ const registerRoute = require("../routes/registerRoute")
 const cartRoute = require("../routes/cartsRoute")
 const addressRoute = require("../routes/addressRoute")
 const productStockRoute = require("../routes/productStockRoute")
+const checkoutRoute = require("../routes/checkoutRoute")
 
 dotenv.config()
 
@@ -32,11 +33,15 @@ app.use(express.json())
 // NOTE : Add your routes here
 
 const productsAdminRoute = require("../routes/productsAdminRoute")
+const warehouseUserRoute = require("../routes/warehouseUserRoute")
 // Register middleware
 app.use("/api/register", registerRoute)
 
 // Address middleware
 app.use("/api/address", addressRoute)
+
+// Checkout middleware
+app.use("/api/checkout", checkoutRoute)
 
 const {
   warehousesRoute,
@@ -57,6 +62,7 @@ app.use("/categories", categoriesRoute)
 app.use("/carts", cartRoute)
 app.use("/product-admin", productsAdminRoute)
 app.use("/admin/stock", productStockRoute)
+app.use("/warehouse-user", warehouseUserRoute)
 
 app.get("/api", (req, res) => {
   res.send(`Hello, this is my API`)
@@ -103,7 +109,7 @@ app.use(express.static(join(__dirname, clientPath)))
 //#endregion
 
 app.listen(PORT, async (err) => {
-  db.sequelize.sync({ force: false })
+  db.sequelize.sync({ alter: true })
   if (err) {
     console.log(`ERROR: ${err}`)
   } else {

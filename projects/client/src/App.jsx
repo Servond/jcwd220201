@@ -25,6 +25,10 @@ import AdminRoute from "./components/AdminRoute"
 import Address from "./pages/Address"
 import WarehouseStock from "./pages/admin/Stock/WarehouseStock"
 import Stock from "./pages/admin/Stock/Stock"
+import ForgotPassword from "./pages/ForgotPassword"
+import RecoverPassword from "./pages/RecoverPassword"
+import ManageUser from "./pages/admin/manageUser"
+import Checkout from "./pages/Checkout"
 
 const App = () => {
   const [authCheck, setAuthCheck] = useState(false)
@@ -101,6 +105,15 @@ const App = () => {
             </GuestRoute>
           }
         />
+        <Route
+          path="/forgot-password"
+          element={
+            <GeneralRoute>
+              <ForgotPassword />
+            </GeneralRoute>
+          }
+        />
+        <Route path="/recover-password/:token" element={<RecoverPassword />} />
 
         {/* Admin Route */}
         <Route
@@ -150,11 +163,37 @@ const App = () => {
           }
         />
 
+        <Route
+          path="/admin/user"
+          element={
+            <ProtectedRoute>
+              <ManageUser />
+            </ProtectedRoute>
+          }
+        />
+
         {/* Register Route */}
         <Route path="/register" element={<Register />} />
 
         {/* Address Route */}
-        <Route path="/address" element={<Address />} />
+        <Route
+          path="/address"
+          element={
+            <GeneralRoute>
+              <Address />
+            </GeneralRoute>
+          }
+        />
+
+        {/* Checkout Route */}
+        <Route
+          path="/cart/shipment"
+          element={
+            <GeneralRoute>
+              <Checkout />
+            </GeneralRoute>
+          }
+        />
       </Routes>
     </>
   )
