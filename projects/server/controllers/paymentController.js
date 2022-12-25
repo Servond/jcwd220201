@@ -9,19 +9,11 @@ const paymentController = {
   getPayment: async (req, res) => {
     try {
       let allOrder = await db.Order.findAll({
-        attributes: [
-          "createdAt",
-          "updatedAt",
-          "id",
-          "payment_date",
-          "total_price",
-          "StatusId",
-          "UserId",
-        ],
+        attributes: ["id", "payment_date", "total_price", "StatusId", "UserId"],
         include: [
           {
             model: db.OrderItem,
-            include: [db.Product],
+            include: [{ model: db.Product, attributes: ["product_name"] }],
           },
           {
             model: db.Courier,
@@ -34,7 +26,7 @@ const paymentController = {
             model: db.Status,
           },
         ],
-        order: [["createdAt", "ASC"]],
+        order: [["id", "ASC"]],
       })
 
       return res.status(200).json({
@@ -71,7 +63,7 @@ const paymentController = {
             model: db.Status,
           },
         ],
-        order: [["createdAt", "ASC"]],
+        order: [["id", "ASC"]],
       })
 
       return res.status(200).json({

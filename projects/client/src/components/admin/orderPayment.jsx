@@ -83,6 +83,7 @@ const OrderPayment = () => {
           <Td textAlign={"center"}>{val.total_price}</Td>
           <Td textAlign={"center"}>{val.StatusId}</Td>
           <Td textAlign={"center"}>{val.UserId}</Td>
+          <Td textAlign={"center"}>{val.product_name}</Td>
 
           <Td>
             <Button
@@ -121,12 +122,7 @@ const OrderPayment = () => {
 
           <VStack h="full" w="full" overflowX="scroll">
             <Flex h="20%" w="full" justifyContent="flex-end" direction="column">
-              <Box
-                padding="4"
-                textAlign="center"
-                fontSize="30px"
-                fontWeight="bold"
-              >
+              <Box padding="4" textAlign="center">
                 Order Payment Status
               </Box>
             </Flex>
@@ -175,14 +171,14 @@ const OrderPayment = () => {
                         >
                           UserId
                         </Th>
-                        {/* <Th
+                        <Th
                           border={"1px solid black"}
                           textAlign={"center"}
                           color="black"
                           w="100px"
                         >
                           product name
-                        </Th> */}
+                        </Th>
                       </Tr>
                     </Thead>
                     <Tbody maxWidth="max-content">{renderOrder()}</Tbody>
