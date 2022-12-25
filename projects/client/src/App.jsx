@@ -30,12 +30,13 @@ import RecoverPassword from "./pages/RecoverPassword"
 import ManageUser from "./pages/admin/manageUser"
 import OrderPayment from "./components/admin/orderPayment"
 import Checkout from "./pages/Checkout"
+import UserOrder from "./pages/admin/User Order/UserOrder"
+import Transactions from "./pages/Transactions"
 
 const App = () => {
   const [authCheck, setAuthCheck] = useState(false)
 
   const authSelector = useSelector((state) => state.auth)
-  // console.log("1", authSelector)
 
   const dispatch = useDispatch()
 
@@ -165,6 +166,15 @@ const App = () => {
         />
 
         <Route
+          path={"/order/all-order"}
+          element={
+            <ProtectedRoute>
+              <UserOrder />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
           path="/admin/user"
           element={
             <ProtectedRoute>
@@ -200,6 +210,16 @@ const App = () => {
           element={
             <GeneralRoute>
               <Checkout />
+            </GeneralRoute>
+          }
+        />
+
+        {/* Transactions Route */}
+        <Route
+          path="/transactions"
+          element={
+            <GeneralRoute>
+              <Transactions />
             </GeneralRoute>
           }
         />
