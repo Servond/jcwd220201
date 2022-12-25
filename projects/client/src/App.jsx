@@ -165,7 +165,7 @@ const App = () => {
         />
 
         <Route
-          path={authSelector.RoleId === 1 ? "/order/all-order" : null}
+          path={"/order/all-order"}
           element={
             <ProtectedRoute>
               <UserOrder />

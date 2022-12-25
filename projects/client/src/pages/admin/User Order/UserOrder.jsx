@@ -49,7 +49,11 @@ const UserOrder = () => {
 
   const fetchAllOrder = async () => {
     try {
-      const response = await axiosInstance.get("/order/all-user")
+      let url = `/order/all-user`
+      if (authSelector.WarehouseId) {
+        url += `?WarehouseId=${authSelector.WarehouseId}`
+      }
+      const response = await axiosInstance.get(url)
 
       setData(response.data.data)
     } catch (err) {
