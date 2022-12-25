@@ -35,7 +35,7 @@ const addressController = {
       } = req.body;
 
       // Reset default address if user specify a new default address
-      if (isDefault) {
+      if (isDefault.toLowerCase() === "true") {
         await sequelize.transaction(async (t) => {
           await Address.update(
             { is_default: false, is_selected: false },
