@@ -22,6 +22,7 @@ module.exports = (sequelize, DataTypes) => {
       User.hasMany(models.StockRequest, {
         onUpdate: "CASCADE",
         onDelete: "CASCADE",
+        foreignKey: "CreatedByUserId",
       })
       User.hasMany(models.WarehousesUser, {
         onUpdate: "CASCADE",

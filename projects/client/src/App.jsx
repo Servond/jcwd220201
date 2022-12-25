@@ -23,15 +23,19 @@ import Register from "./pages/Register"
 import CartPage from "./pages/CartPage"
 import AdminRoute from "./components/AdminRoute"
 import Address from "./pages/Address"
+import WarehouseStock from "./pages/admin/Stock/WarehouseStock"
+import Stock from "./pages/admin/Stock/Stock"
 import ForgotPassword from "./pages/ForgotPassword"
 import RecoverPassword from "./pages/RecoverPassword"
 import ManageUser from "./pages/admin/manageUser"
 import OrderPayment from "./components/admin/orderPayment"
+import Checkout from "./pages/Checkout"
 
 const App = () => {
   const [authCheck, setAuthCheck] = useState(false)
 
   const authSelector = useSelector((state) => state.auth)
+  // console.log("1", authSelector)
 
   const dispatch = useDispatch()
 
@@ -138,6 +142,28 @@ const App = () => {
             </ProtectedRoute>
           }
         />
+        {/* Admin Manage Stock */}
+        <Route
+          path={authSelector.RoleId === 1 ? "/admin/update-stock" : null}
+          element={
+            <ProtectedRoute>
+              <Stock />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path={
+            authSelector.RoleId === 2
+              ? "/admin/update-stock"
+              : "/admin/update-stock/:id/"
+          }
+          element={
+            <ProtectedRoute>
+              <WarehouseStock />
+            </ProtectedRoute>
+          }
+        />
+
         <Route
           path="/admin/user"
           element={
@@ -159,7 +185,24 @@ const App = () => {
         <Route path="/register" element={<Register />} />
 
         {/* Address Route */}
-        <Route path="/address" element={<Address />} />
+        <Route
+          path="/address"
+          element={
+            <GeneralRoute>
+              <Address />
+            </GeneralRoute>
+          }
+        />
+
+        {/* Checkout Route */}
+        <Route
+          path="/cart/shipment"
+          element={
+            <GeneralRoute>
+              <Checkout />
+            </GeneralRoute>
+          }
+        />
       </Routes>
     </>
   )

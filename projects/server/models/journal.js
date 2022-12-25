@@ -10,16 +10,11 @@ module.exports = function (sequelize, DataTypes) {
     }
   }
   Journal.init(
-    {
-      date: {
-        type: DataTypes.DATEONLY,
-        allowNull: false,
-      },
-    },
+    {},
     {
       sequelize,
       modelName: "Journal",
-      updatedAt: true,
+      updatedAt: false,
     }
   )
   return Journal
