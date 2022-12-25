@@ -37,9 +37,10 @@ const SalesReport = () => {
   const [warehouse, setWarehouse] = useState([])
   const [categories, setCategories] = useState([])
   const [sales, setSales] = useState([])
+
   const fetchReport = async () => {
     try {
-      const response = await axiosInstance.get(`/sales/report/query`, {
+      const response = await axiosInstance.get(`/sales/report`, {
         params: {
           _page: page,
           _limit: limit,
@@ -50,6 +51,9 @@ const SalesReport = () => {
           category: catSearch,
         },
       })
+
+      setSales(response.data.data)
+      console.log(response, "SALE")
     } catch (err) {
       console.log(err)
     }
@@ -105,7 +109,26 @@ const SalesReport = () => {
     setSortBy(value)
   }
 
+  //   console.log(
+  //     "sal",
+  //     sales.map((val) => val.category)
+  //   )
+
+  // return renderSales = () => {
+  //   return sales.map((val) => {
+  //       return (
+  //         <Tr>
+  //             <Td>
+
+  //             </Td>
+  //         </Tr>
+
+  //       )
+  //   })
+  // }
+
   useEffect(() => {
+    fetchReport()
     fethWarehouse()
     getCategory()
   }, [filterMonth, filterWare, filter, page, sortBy, nameSearch, catSearch])
@@ -186,7 +209,7 @@ const SalesReport = () => {
                     onChange={filterCategoryBtn}
                   >
                     <Select>
-                      <option value="">---By Category---</option>
+                      <option value="">Select Category</option>
                       {categories.map((val) => (
                         <option value={val.id}>{val.category}</option>
                       ))}
@@ -202,7 +225,7 @@ const SalesReport = () => {
                     borderRadius="8px"
                   ></GridItem>
 
-                  <Select>
+                  {/* <Select>
                     <option value=""> Select By Warehouse</option>
                     {sales.WarehouseId ===
                     sales.map((val) => val.WarehouseId)[0]
@@ -214,7 +237,7 @@ const SalesReport = () => {
                       : Warehouse.map((val) => (
                           <option value={val.id}>{val.warehouse_name}</option>
                         ))}
-                  </Select>
+                  </Select> */}
 
                   {/* Search */}
                   <GridItem
@@ -243,23 +266,23 @@ const SalesReport = () => {
                   <Thead>
                     <Tr>
                       <Th w="100px">
-                        <Text fontSize="10px">Date</Text>
+                        <Text fontSize="10px">Payment_Date</Text>
                       </Th>
                       <Th w="100px">
-                        <Text fontSize="10px">Product id</Text>
+                        <Text fontSize="10px">ProductId</Text>
                       </Th>
                       <Th w="100px">
-                        <Text fontSize="10px">Category</Text>
+                        <Text fontSize="10px">CategoryId</Text>
                       </Th>
                       <Th w="200px">
-                        <Text fontSize="10px">Product Name</Text>
+                        <Text fontSize="10px">product_name</Text>
                       </Th>
 
                       <Th w="100px">
-                        <Text fontSize="10px">Price</Text>
+                        <Text fontSize="10px">price</Text>
                       </Th>
                       <Th w="100px">
-                        <Text fontSize="10px">qty</Text>
+                        <Text fontSize="10px">quantity</Text>
                       </Th>
                       <Th w="100px">
                         <Text fontSize="10px">Total</Text>
