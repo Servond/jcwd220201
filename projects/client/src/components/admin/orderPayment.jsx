@@ -16,15 +16,12 @@ import {
 } from "@chakra-ui/react"
 import { useEffect } from "react"
 import { useState } from "react"
-import { BiEdit } from "react-icons/bi"
-import { useParams } from "react-router-dom"
 import { axiosInstance } from "../../api"
 import SidebarAdmin from "./sidebarAdminDashboard"
 
 const OrderPayment = () => {
   const [payment, setPayment] = useState([])
   const toast = useToast()
-  const { id } = useParams()
   const [reject, setReject] = useState("")
 
   const fetchOrder = async () => {
@@ -50,7 +47,7 @@ const OrderPayment = () => {
     } catch (err) {
       console.log(err)
       toast({
-        title: "confirm gagal",
+        title: "konfirmasi pembayaran gagal",
         status: "error",
       })
     }
@@ -68,7 +65,7 @@ const OrderPayment = () => {
     } catch (err) {
       console.log(err)
       toast({
-        title: "Gagal",
+        title: "reject pembayaran gagal",
         status: "error",
       })
     }
@@ -83,7 +80,7 @@ const OrderPayment = () => {
           <Td textAlign={"center"}>{val.total_price}</Td>
           <Td textAlign={"center"}>{val.StatusId}</Td>
           <Td textAlign={"center"}>{val.UserId}</Td>
-          <Td textAlign={"center"}>{val.product_name}</Td>
+          <Td textAlign={"center"}>{val.shipping_cost}</Td>
 
           <Td>
             <Button
@@ -122,12 +119,17 @@ const OrderPayment = () => {
 
           <VStack h="full" w="full" overflowX="scroll">
             <Flex h="20%" w="full" justifyContent="flex-end" direction="column">
-              <Box padding="4" textAlign="center">
+              <Box
+                padding="4"
+                textAlign="center"
+                fontWeight="bold"
+                fontSize="200x"
+              >
                 Order Payment Status
               </Box>
             </Flex>
             <Flex>
-              <Container maxW="container.md" py="8" pb="5" px="1">
+              <Container maxW="container.lg" py="8" pb="5" px="1">
                 <TableContainer
                   border={"1px solid black"}
                   w="1800px"
@@ -161,7 +163,7 @@ const OrderPayment = () => {
                           color="black"
                           w="100px"
                         >
-                          StatusId
+                          Status Id
                         </Th>
                         <Th
                           border={"1px solid black"}
@@ -169,7 +171,7 @@ const OrderPayment = () => {
                           color="black"
                           w="100px"
                         >
-                          UserId
+                          User Id
                         </Th>
                         <Th
                           border={"1px solid black"}
@@ -177,7 +179,7 @@ const OrderPayment = () => {
                           color="black"
                           w="100px"
                         >
-                          product name
+                          shipping cost
                         </Th>
                       </Tr>
                     </Thead>
