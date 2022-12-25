@@ -310,9 +310,7 @@ const salesReport = {
                 ],
               },
             ],
-            attributes: [
-              sequelize.fn("MONTH", sequelize.col("Order.CreatedAt")),
-            ],
+            attributes: [sequelize.fn("MONTH", sequelize.col("Order.id"))],
           },
         ],
         limit: Number(_limit),
