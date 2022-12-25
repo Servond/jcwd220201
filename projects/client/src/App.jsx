@@ -23,10 +23,17 @@ import Register from "./pages/Register"
 import CartPage from "./pages/CartPage"
 import AdminRoute from "./components/AdminRoute"
 import Address from "./pages/Address"
+import WarehouseStock from "./pages/admin/Stock/WarehouseStock"
+import Stock from "./pages/admin/Stock/Stock"
 import ForgotPassword from "./pages/ForgotPassword"
 import RecoverPassword from "./pages/RecoverPassword"
 import ManageUser from "./pages/admin/manageUser"
 import Order from "./components/order/orderCard"
+import SalesReport from "./pages/admin/salesReport"
+import OrderPayment from "./components/admin/orderPayment"
+import Checkout from "./pages/Checkout"
+import UserOrder from "./pages/admin/User Order/UserOrder"
+import Transactions from "./pages/Transactions"
 
 const App = () => {
   const [authCheck, setAuthCheck] = useState(false)
@@ -138,6 +145,37 @@ const App = () => {
             </ProtectedRoute>
           }
         />
+        {/* Admin Manage Stock */}
+        <Route
+          path={authSelector.RoleId === 1 ? "/admin/update-stock" : null}
+          element={
+            <ProtectedRoute>
+              <Stock />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path={
+            authSelector.RoleId === 2
+              ? "/admin/update-stock"
+              : "/admin/update-stock/:id/"
+          }
+          element={
+            <ProtectedRoute>
+              <WarehouseStock />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path={"/order/all-order"}
+          element={
+            <ProtectedRoute>
+              <UserOrder />
+            </ProtectedRoute>
+          }
+        />
+
         <Route
           path="/admin/user"
           element={
@@ -147,12 +185,55 @@ const App = () => {
           }
         />
         <Route path="/payment-list" element={<Order />} />
+        <Route
+          path="/admin/sales-report"
+          element={
+            <ProtectedRoute>
+              <SalesReport />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/payment"
+          element={
+            <ProtectedRoute>
+              <OrderPayment />
+            </ProtectedRoute>
+          }
+        />
 
         {/* Register Route */}
         <Route path="/register" element={<Register />} />
 
         {/* Address Route */}
-        <Route path="/address" element={<Address />} />
+        <Route
+          path="/address"
+          element={
+            <GeneralRoute>
+              <Address />
+            </GeneralRoute>
+          }
+        />
+
+        {/* Checkout Route */}
+        <Route
+          path="/cart/shipment"
+          element={
+            <GeneralRoute>
+              <Checkout />
+            </GeneralRoute>
+          }
+        />
+
+        {/* Transactions Route */}
+        <Route
+          path="/transactions"
+          element={
+            <GeneralRoute>
+              <Transactions />
+            </GeneralRoute>
+          }
+        />
       </Routes>
     </>
   )
