@@ -10,7 +10,7 @@ const salesReport = {
     try {
       const todayOrder = await db.Order.count({
         where: {
-          createdAt: {
+          payment_date: {
             [Op.gt]: TODAY_START,
             [Op.lt]: NOW,
           },
@@ -22,7 +22,7 @@ const salesReport = {
 
       const yesterdayOrder = await db.Order.count({
         where: {
-          createdAt: {
+          payment_date: {
             [Op.gt]: moment(TODAY_START).subtract(1, "day"),
             [Op.lt]: TODAY_START,
           },
@@ -52,7 +52,7 @@ const salesReport = {
     try {
       const { _sortDir = "DESC" } = req.query
       let products = await db.Order.findAll({
-        attributes: ["createdAt", "total_price"],
+        attributes: ["id", "total_price"],
         order: [["total_price", _sortDir]],
 
         where: {
@@ -74,7 +74,7 @@ const salesReport = {
     try {
       const { _sortDir = "ASC" } = req.query
       let products = await db.Order.findAndCountAll({
-        attributes: ["createdAt", "total_price"],
+        attributes: ["id", "total_price"],
         order: [["total_price", _sortDir]],
 
         where: {
@@ -95,7 +95,7 @@ const salesReport = {
   getAllTransactions: async (req, res) => {
     try {
       let products = await db.Order.findAll({
-        attributes: ["createdAt", "updatedAt", "StatusId", "total_price"],
+        attributes: ["id", "updatedAt", "StatusId", "total_price"],
         where: {
           StatusId: 5,
         },
@@ -109,7 +109,7 @@ const salesReport = {
             model: db.User,
           },
         ],
-        order: [["createdAt", "DESC"]],
+        order: [["id", "DESC"]],
       })
 
       return res.status(200).json({
@@ -150,10 +150,10 @@ const salesReport = {
   getReport: async (req, res) => {
     const CategoryId = req.query.CategoryId
     const WarehouseId = req.query.WarehouseId
-    const { createdAt, _limit = 5, _page = 1 } = req.query
+    const { id, _limit = 5, _page = 1 } = req.query
     console.log("cat", CategoryId)
     console.log("war", WarehouseId)
-    console.log("mnth", createdAt)
+    console.log("mnth", id)
     try {
       if (CategoryId && WarehouseId) {
         const findDataFilterCatWar = await db.Order.findAndCountAll({
@@ -255,7 +255,7 @@ const salesReport = {
           data: findDataFilterCat.rows,
           dataCount: findDataFilterCat.count,
         })
-      } else if (createdAt) {
+      } else if (id) {
         const findDataFilterMnth = await db.Order.findAndCountAll({
           include: [
             {
@@ -310,7 +310,10 @@ const salesReport = {
                 ],
               },
             ],
-            attributes: [sequelize.fn("MONTH", sequelize.col("Order.id"))],
+            attributes: [
+              sequelize.fn("MONTH", sequelize.col("Order.id")),
+              "M_order",
+            ],
           },
         ],
         limit: Number(_limit),
@@ -320,6 +323,75 @@ const salesReport = {
         message: "Get data",
         data: findData.rows,
         dataCount: findData.count,
+      })
+    } catch (err) {
+      return res.status(500).json({
+        message: err.message,
+      })
+    }
+  },
+  getReportWithQuery: async (req, res) => {
+    const CategoryId = req.query.CategoryId
+    const WarehouseId = req.query.WarehouseId
+    const {
+      payment_date,
+      product_name = "",
+      category = "",
+      _limit = 10,
+      _page = 1,
+    } = req.query
+    // const page = parseInt(req.query.page)
+    // const { _limit, _offset } = pagination(page)
+    console.log("ct", CategoryId)
+    console.log("wr", WarehouseId)
+    console.log("mnth", payment_date)
+    console.log("pr", product_name)
+    console.log("cname", category)
+    try {
+      const { _sortBy = "" } = req.query
+      let sql = `SELECT trx.WarehouseId, pr.CategoryId, pr.id AS productId, ct.category, pr.product_name, pr.description, ord_items.total_price AS price, trx_items.quantity,
+                    ord_items.total_price * trx_items.quantity AS total, wr.warehouse_name, trx_items.payment_date
+                    FROM orderitems AS trx_items
+                    JOIN orders AS trx ON trx.id = trx_items.OrderId
+                    JOIN products AS pr ON pr.id = trx_items.ProductId
+                    JOIN categories AS ct ON ct.id = pr.CategoryId
+                    JOIN warehouse as wr ON wr.id = trx.WarehouseId `
+
+      if (WarehouseId && CategoryId && payment_date) {
+        sql += `WHERE WarehouseId=${WarehouseId} AND CategoryId=${CategoryId} AND MONTH(trx_items.payment_date)=${payment_date} `
+      } else if (WarehouseId && CategoryId) {
+        sql += `WHERE WarehouseId=${WarehouseId} AND CategoryId=${CategoryId} `
+      } else if (WarehouseId && payment_date) {
+        sql += `WHERE WarehouseId=${WarehouseId} AND MONTH(trx_items.payment_date)=${payment_date} `
+      } else if (CategoryId && payment_date) {
+        sql += `WHERE CategoryId=${CategoryId} AND MONTH(trx_items.payment_date)=${payment_date} `
+      } else if (CategoryId) {
+        sql += `WHERE CategoryId=${CategoryId} `
+      } else if (WarehouseId) {
+        sql += `WHERE WarehouseId=${WarehouseId} `
+      } else if (payment_date) {
+        sql += `WHERE MONTH(trx_items.payment_date)=${payment_date} `
+      } else if (product_name) {
+        sql += `WHERE pr.product_name LIKE "%${product_name}%" `
+      } else if (category) {
+        sql += `WHERE ct.category LIKE "%${category}%" `
+      }
+
+      const dataCount = await db.sequelize.query(sql)
+      const dataCountReal = dataCount[0]
+
+      sql += `ORDER BY trx_items.payment_date ${_sortBy}
+                LIMIT ${_limit}
+                OFFSET ${(_page - 1) * _limit} `
+
+      const findData = await db.sequelize.query(sql)
+      const findDataReal = findData[0]
+
+      // const result = paginationData(findData, page, _limit)
+      return res.status(200).json({
+        message: "Filtered",
+        data: findDataReal,
+        dataCount: dataCountReal.length,
       })
     } catch (err) {
       return res.status(500).json({
