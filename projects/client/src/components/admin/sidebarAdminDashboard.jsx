@@ -128,6 +128,7 @@ const SidebarAdmin = () => {
               Manage Product
             </Button>
           </NavLink>
+          {/* Product Stock */}
           {/* Role Admin */}
           {authSelector.RoleId === 1 ? (
             <NavLink
@@ -168,7 +169,24 @@ const SidebarAdmin = () => {
               </Button>
             </NavLink>
           ) : null}
-
+          {/* ====================================================================== */}
+          <NavLink
+            to="/order/all-order"
+            style={({ isActive }) => ({
+              backgroundColor: isActive ? "#005e9d" : "#008deb",
+            })}
+          >
+            <Button
+              whiteSpace="initial"
+              w="100%"
+              pl="10%"
+              textAlign="left"
+              borderRadius="0px"
+              _hover={{ bg: "#005e9d" }}
+            >
+              Manage User Order
+            </Button>
+          </NavLink>
           <NavLink
             // to="/admin/warehouseData" ISI INI YA TEMAN2
             style={({ isActive }) => ({
@@ -186,8 +204,9 @@ const SidebarAdmin = () => {
               Manage Stock Mutation
             </Button>
           </NavLink>
+
           <NavLink
-            // to="/admin/warehouseData" ISI INI YA TEMAN2
+            to="/admin/payment"
             style={({ isActive }) => ({
               backgroundColor: isActive ? "#005e9d" : "#008deb",
             })}
@@ -200,13 +219,14 @@ const SidebarAdmin = () => {
               borderRadius="0px"
               _hover={{ bg: "#005e9d" }}
             >
-              Manage Orders
+              Payment Order
             </Button>
           </NavLink>
         </ButtonGroup>
+
         <ButtonGroup flexDirection="column" spacing="0" variant="unstyled">
           <NavLink
-            // to="/admin/warehouseData" ISI INI YA TEMAN2
+            to="/admin/sales-report"
             style={({ isActive }) => ({
               backgroundColor: isActive ? "#005e9d" : "#008deb",
             })}
