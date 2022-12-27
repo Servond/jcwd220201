@@ -44,6 +44,7 @@ const MotionBox = motion(Box)
 
 const ProductList = () => {
   const [products, setProducts] = useState([])
+  const [categories, setCategories] = useState([])
   const [page, setPage] = useState(1)
   const [maxPage, setMaxPage] = useState(0)
   const [totalCount, setTotalCount] = useState(0)
@@ -149,6 +150,16 @@ const ProductList = () => {
     setSearchParams(queryParams)
   }
 
+  const fetchAllCategory = async () => {
+    try {
+      const responseCategory = await axiosInstance.get("/products/category")
+
+      setCategories(responseCategory.data.data)
+    } catch (err) {
+      console.log(err)
+    }
+  }
+
   const filterCategory = ({ target }) => {
     const { value } = target
     setFilterProduct(value)
@@ -183,9 +194,9 @@ const ProductList = () => {
     fetchProducts()
   }, [page, sortDir, sortBy, filterProduct, searchValue])
 
-  // useEffect(() => {
-  //   fetchCategoryData()
-  // }, [])
+  useEffect(() => {
+    fetchAllCategory()
+  }, [])
 
   const renderProducts = () => {
     return products.map((val) => (
@@ -234,9 +245,9 @@ const ProductList = () => {
                   <FormLabel>Filter</FormLabel>
                   <Select variant="flushed" onChange={filterCategory}>
                     <option value="All">Category</option>
-                    <option value={1}>Handphone</option>
-                    <option value={2}>TV</option>
-                    <option value={3}>Home Appliances</option>
+                    {categories.map((val) => (
+                      <option value={val.id}>{val.category}</option>
+                    ))}
                   </Select>
                 </FormControl>
               </GridItem>

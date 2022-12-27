@@ -23,7 +23,7 @@ import SlideBanner from "../../components/SlideBanner"
 import Footer from "./Footer"
 import "../../styles/globals.css"
 import Features from "../../components/Features"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import { useState, useEffect } from "react"
 import { axiosInstance } from "../../api"
 import ProductCard from "../../components/product/ProductCard"
@@ -34,6 +34,7 @@ const MainContent = () => {
   const [page, setPage] = useState(1)
   const [maxPage, setMaxPage] = useState(0)
   const [totalCount, setTotalCount] = useState(0)
+  const navigate = useNavigate()
   console.log("cat", categories)
 
   const fetchProducts = async () => {
@@ -64,7 +65,7 @@ const MainContent = () => {
   const fetchAllCategory = async () => {
     try {
       const responseCategory = await axiosInstance.get("/products/category")
-      // console.log("res", responseCategory)
+
       setCategories(responseCategory.data.data)
     } catch (err) {
       console.log(err)
@@ -82,6 +83,7 @@ const MainContent = () => {
       />
     ))
   }
+
   useEffect(() => {
     fetchProducts()
     fetchAllCategory()
@@ -125,9 +127,14 @@ const MainContent = () => {
           maxW="auto"
         >
           {categories.map((val) => (
-            <Card boxShadow="lg">
+            <Card
+              boxShadow="lg"
+              // onClick={() => {
+              //   navigate(`/product/${id}`)
+              // }}
+            >
               <CardHeader>
-                <Heading size="16px" fontWeight="700">
+                <Heading key={val.id} size="16px" fontWeight="700">
                   {val.category}
                 </Heading>
               </CardHeader>
