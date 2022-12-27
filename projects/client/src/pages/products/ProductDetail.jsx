@@ -177,7 +177,7 @@ const ProductDetail = () => {
                 <img
                   // className="image-prod-detail"
                   h={{ base: "100%", sm: "400px", lg: "500px" }}
-                  src={val.product_picture}
+                  src={`http://localhost:8000/public/${val.product_picture}`}
                   align="center"
                   rounded="md"
                   fit="cover"

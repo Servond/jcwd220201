@@ -31,7 +31,7 @@ const ProductCard = ({ id, product_name, price }) => {
     try {
       const responseImg = await axiosInstance.get(`/products/image/${id}`)
       console.log("res", responseImg)
-      setProductImg([responseImg.data.data])
+      setProductImg(responseImg.data.data)
     } catch (err) {
       console.log(err)
     }
@@ -68,7 +68,7 @@ const ProductCard = ({ id, product_name, price }) => {
               <Image
                 objectFit="fill"
                 alt="pict of product"
-                src={productImg.Product?.ProductPictures?.product_picture}
+                src={`http://localhost:8000/public/${productImg.product_picture}`}
               />
             </Box>
           </Link>
