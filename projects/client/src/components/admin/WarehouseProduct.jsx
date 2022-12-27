@@ -14,7 +14,6 @@ import {
   Input,
   InputGroup,
   Modal,
-  Select,
   Table,
   TableContainer,
   Tbody,
@@ -35,6 +34,7 @@ import { RiDeleteBin5Fill } from "react-icons/ri"
 import * as Yup from "yup"
 import EditProduct from "./editProduct"
 import PageButton from "./pageButton"
+import Select from "react-select"
 
 import { Rupiah } from "../../lib/currency/Rupiah"
 
@@ -79,6 +79,7 @@ const WarehouseProduct = () => {
       setTotalCount(response.data.dataCount)
 
       setproducts(response.data.data)
+      formik.handleReset()
       const temporary = response.data.data.filter((item) => item.id === idEdit)
       setImageEdit(temporary[0].ProductPictures)
     } catch (err) {
@@ -102,16 +103,6 @@ const WarehouseProduct = () => {
 
       setCategories(responCat.data.data)
       console.log(categories, "cat")
-    } catch (err) {
-      console.log(err)
-    }
-  }
-  const getWarehouse = async () => {
-    try {
-      const respon = await axiosInstance.get(`/warehouses`)
-
-      setWarehouse(respon.data.data)
-      console.log(warehouse, "ware")
     } catch (err) {
       console.log(err)
     }
@@ -271,7 +262,6 @@ const WarehouseProduct = () => {
   useEffect(() => {
     getCategories()
     fetchImage()
-    getWarehouse()
   }, [])
 
   const formik = useFormik({
@@ -281,8 +271,7 @@ const WarehouseProduct = () => {
       price: "",
       CategoryId: "",
       weight: "",
-      stock: "",
-      WarehouseId: "",
+
       product_picture: null,
       id: "",
     },
@@ -306,8 +295,7 @@ const WarehouseProduct = () => {
         formData.append("price", price)
         formData.append("CategoryId", CategoryId)
         formData.append("weight", weight)
-        formData.append("stock", stock)
-        formData.append("WarehouseId", WarehouseId)
+
         Object.values(product_picture).forEach((product_picture) => {
           formData.append("product_picture", product_picture)
         })
@@ -318,8 +306,7 @@ const WarehouseProduct = () => {
         formik.setFieldValue(price, "")
         formik.setFieldValue(CategoryId, "")
         formik.setFieldValue(weight, "")
-        formik.setFieldValue(stock, "")
-        formik.setFieldValue(WarehouseId, "")
+
         formik.setFieldValue(product_picture, [])
         formik.setSubmitting(false)
 
@@ -366,12 +353,21 @@ const WarehouseProduct = () => {
     }
   }
 
+  const categoryOption = categories.map((val) => {
+    return { value: val.id, label: val.category }
+  })
+
+  const nameOption = [
+    { value: "product_name ASC", label: "Name A-Z" },
+    { value: "product_name DESC", label: "Name Z-A" },
+  ]
+
   return (
     <>
       <Flex h="100%" w="full" direction="column">
         <Flex w="full" justifyContent="center">
           <HStack mt="3" wrap="wrap" justifyContent="center">
-            <Grid templateColumns="repeat(3, 1fr)" gap="4">
+            <Grid templateColumns="repeat(2, 1fr)" gap="4">
               <GridItem>
                 <FormControl isInvalid={formik.errors.product_name}>
                   <FormLabel>Nama Produk</FormLabel>
@@ -379,6 +375,7 @@ const WarehouseProduct = () => {
                     borderColor="black"
                     name="product_name"
                     onChange={formChangeHandler}
+                    value={formik.values.product_name}
                   />
                   <FormErrorMessage>
                     {formik.errors.product_name}
@@ -398,6 +395,7 @@ const WarehouseProduct = () => {
                     borderColor="black"
                     name="description"
                     onChange={formChangeHandler}
+                    value={formik.values.description}
                   />
                   <FormErrorMessage>
                     {formik.errors.description}
@@ -411,6 +409,7 @@ const WarehouseProduct = () => {
                     borderColor="black"
                     name="price"
                     onChange={formChangeHandler}
+                    value={formik.values.price}
                   />
                   <FormErrorMessage>{formik.errors.price}</FormErrorMessage>
                 </FormControl>
@@ -422,13 +421,13 @@ const WarehouseProduct = () => {
                   <Select
                     borderColor="black"
                     name="CategoryId"
-                    onChange={formChangeHandler}
-                  >
-                    <option value="">Select Category</option>
-                    {categories.map((val) => (
-                      <option value={val.id}>{val.category}</option>
-                    ))}
-                  </Select>
+                    // onChange={formChangeHandler}
+                    onChange={(e) => {
+                      formik.setFieldValue("CategoryId", e.value)
+                    }}
+                    value={{ label: formik.values.CategoryId }}
+                    options={categoryOption}
+                  ></Select>
                   <FormErrorMessage>
                     {formik.errors.CategoryId}
                   </FormErrorMessage>
@@ -442,32 +441,9 @@ const WarehouseProduct = () => {
                     borderColor="black"
                     name="weight"
                     onChange={formChangeHandler}
+                    value={formik.values.weight}
                   />
                   <FormErrorMessage>{formik.errors.weight}</FormErrorMessage>
-                </FormControl>
-              </GridItem>
-              <GridItem>
-                <FormControl maxW="100%" isInvalid={formik.errors.stock}>
-                  <FormLabel>Stock</FormLabel>
-                  <Input
-                    borderColor="black"
-                    name="stock"
-                    onChange={formChangeHandler}
-                  />
-                  <FormErrorMessage>{formik.errors.stock}</FormErrorMessage>
-                </FormControl>
-              </GridItem>
-              <GridItem>
-                <FormControl maxW="100%" isInvalid={formik.errors.WarehouseId}>
-                  <FormLabel>WarehouseId</FormLabel>
-                  <Input
-                    borderColor="black"
-                    name="weight"
-                    onChange={formChangeHandler}
-                  />
-                  <FormErrorMessage>
-                    {formik.errors.WarehouseId}
-                  </FormErrorMessage>
                 </FormControl>
               </GridItem>
 
@@ -492,6 +468,7 @@ const WarehouseProduct = () => {
                       handleImage(event)
                       console.log(event.target.files, "eve")
                     }}
+                    value={formik.values.product_picture}
                   />
                   <FormHelperText>
                     Besar file: maksimum 1 MB. Ekstensi file yang diperbolehkan:
@@ -511,8 +488,8 @@ const WarehouseProduct = () => {
             <Box w="full" h="8%"></Box>
 
             <Button
-              disabled={formik.isSubmitting}
-              onClick={formik.handleSubmit}
+              disabled={formik.isSubmitting ? true : false}
+              // onClick={formik.handleSubmit}
               my="4"
               colorScheme="teal"
             >
@@ -535,13 +512,14 @@ const WarehouseProduct = () => {
             bgColor="white"
             color={"#6D6D6F"}
             placeholder="Filter"
+            options={categoryOption}
           >
-            <option value="">Select Category</option>
+            {/* <option value="">Select Category</option>
             {categories.map((val) => (
               <option value={val.id}>
                 {val.id}. {val.category}
               </option>
-            ))}
+            ))} */}
           </Select>
 
           <Select
@@ -552,11 +530,12 @@ const WarehouseProduct = () => {
             bgColor="white"
             color={"#6D6D6F"}
             placeholder="Sort By"
+            options={nameOption}
           >
-            <option value="product_name ASC" selected>
+            {/* <option value="product_name ASC" selected>
               Name A-Z
             </option>
-            <option value="product_name DESC">Name Z-A</option>
+            <option value="product_name DESC">Name Z-A</option> */}
           </Select>
 
           <form onSubmit={formikSearch.handleSubmit}>
