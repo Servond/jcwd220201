@@ -47,6 +47,14 @@ const ManageUser = () => {
             <Button
               _focus={{ bg: "#005e9d" }}
               onClick={() => {
+                setActiveComponent("Admin User Data")
+              }}
+            >
+              Admin User Data
+            </Button>
+            <Button
+              _focus={{ bg: "#005e9d" }}
+              onClick={() => {
                 setActiveComponent("User Data")
               }}
             >
@@ -63,6 +71,7 @@ const ManageUser = () => {
           </HStack>
 
           {{
+            "Admin User Data": <></>,
             "User Data": <></>,
             "Warehouse User": <WarehouseUser />,
           }[activeComponent] || <Box />}
