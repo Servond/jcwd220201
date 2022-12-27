@@ -50,7 +50,6 @@ const ProductList = () => {
   const [sortBy, setSortBy] = useState("product_name")
   const [sortDir, setSortDir] = useState("ASC")
   const [filterProduct, setFilterProduct] = useState("All")
-  // const [categoryData, setCategoryData] = useState([])
 
   const [searchInput, setSearchInput] = useState()
   const [searchValue, setSearchValue] = useState("")
@@ -74,7 +73,6 @@ const ProductList = () => {
 
       setProducts(response.data.data)
       setTotalCount(response.data.dataCount)
-      console.log("result", totalCount)
       setMaxPage(Math.ceil(response.data.dataCount / maxProductInPage))
 
       if (page === 1) {
