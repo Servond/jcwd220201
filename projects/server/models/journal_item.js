@@ -31,11 +31,17 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.INTEGER,
         allowNull: false,
       },
+      stock_before: {
+        type: DataTypes.INTEGER,
+      },
+      stock_after: {
+        type: DataTypes.INTEGER,
+      },
     },
     {
       sequelize,
       modelName: "JournalItem",
-      timestamps: true,
+      updatedAt: false,
     }
   )
   return JournalItem
