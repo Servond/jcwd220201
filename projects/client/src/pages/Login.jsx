@@ -1,15 +1,18 @@
 import {
   Button,
+  Center,
+  Container,
   Flex,
   FormControl,
   FormErrorMessage,
+  FormHelperText,
   FormLabel,
   Heading,
   Image,
   Input,
   InputGroup,
   InputRightElement,
-  Link,
+  Link as LinkChakra,
   Stack,
   Text,
   useToast,
@@ -17,18 +20,22 @@ import {
 import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons"
 import { useState } from "react"
 import { useFormik } from "formik"
-import { useDispatch, useSelector } from "react-redux"
-import { useNavigate } from "react-router-dom"
+import { useDispatch } from "react-redux"
+import {
+  useNavigate,
+  Link as LinkRouterDom,
+  useLocation,
+} from "react-router-dom"
 import * as Yup from "yup"
 import { axiosInstance } from "../api"
 import { login } from "../redux/features/authSlice"
 
 const LoginPage = () => {
-  const authSelector = useSelector((state) => state.auth)
   const toast = useToast()
   const dispatch = useDispatch()
   const [showPassword, setShowPassword] = useState(false)
   const navigate = useNavigate()
+  const location = useLocation()
 
   const formik = useFormik({
     initialValues: {
@@ -41,19 +48,25 @@ const LoginPage = () => {
           email,
           password,
         })
-        console.log(response)
+        console.log(
+          "res",
+          response.data.data.WarehousesUsers.map((val) => val.WarehouseId)[0]
+        )
 
         localStorage.setItem("auth_token", response.data.token)
         dispatch(
           login({
             id: response.data.data.id,
-            role_id: response.data.data.role_id,
+            RoleId: response.data.data.RoleId,
             name: response.data.data.name,
             email: response.data.data.email,
             phone: response.data.data.phone,
             gender: response.data.data.gender,
             date_of_birth: response.data.data.date_of_birth,
             profile_picture: response.data.data.profile_picture,
+            WarehouseId: response.data.data.WarehousesUsers.map(
+              (val) => val.WarehouseId
+            )[0],
           })
         )
         toast({
@@ -65,6 +78,7 @@ const LoginPage = () => {
 
         formik.setFieldValue("email", "")
         formik.setFieldValue("password", "")
+        formik.setSubmitting(false)
       } catch (err) {
         console.log(err)
         toast({
@@ -73,6 +87,7 @@ const LoginPage = () => {
           description: err.response.data.message,
         })
       }
+      navigate(location.state.from)
     },
     validationSchema: Yup.object({
       email: Yup.string().required(),
@@ -88,6 +103,9 @@ const LoginPage = () => {
 
   return (
     <Stack minH={"100vh"} direction={{ base: "column", md: "row" }}>
+      <Heading align={"right"} as="h1" size="2xl" letterSpacing={"tighter"}>
+        <LinkRouterDom to="/">WIRED!</LinkRouterDom>
+      </Heading>
       <Flex p={8} flex={1} align={"center"} justify={"center"}>
         <Stack spacing={4} w={"full"} maxW={"md"}>
           <Stack align={"center"}>
@@ -129,6 +147,15 @@ const LoginPage = () => {
                     </Button>
                   </InputRightElement>
                 </InputGroup>
+                <FormHelperText mt="5" mb="5" textAlign="right">
+                  <LinkChakra
+                    onClick={() => {
+                      navigate("/forgot-password")
+                    }}
+                  >
+                    Lupa Password?
+                  </LinkChakra>
+                </FormHelperText>
                 <FormErrorMessage>{formik.errors.password}</FormErrorMessage>
               </FormControl>
               <Button type="submit" colorScheme="teal">
@@ -137,16 +164,22 @@ const LoginPage = () => {
             </Stack>
             <Stack pt={6}>
               <Text align={"center"}>
-                Belum punya akun? <Link color={"teal"}>Daftar</Link>
+                Belum punya akun?{" "}
+                <LinkRouterDom to="/register" color={"teal"}>
+                  Daftar
+                </LinkRouterDom>
               </Text>
             </Stack>
           </form>
+          <Text align={"center"}>© 2022 PT WIRED! Indonesia</Text>
         </Stack>
       </Flex>
       <Flex flex={1}>
         <Image
           alt={"Login Image"}
           objectFit={"cover"}
+          maxH="80%"
+          maxW="80%"
           src={
             "https://img.freepik.com/free-vector/account-concept-illustration_114360-399.jpg?w=740&t=st=1668700968~exp=1668701568~hmac=2fc7a4e39aedc62a508eeccea0651ff5742d91ff72a3cda488b0861ddaf4a62f"
           }

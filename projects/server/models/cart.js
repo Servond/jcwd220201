@@ -1,40 +1,34 @@
-const Sequelize = require('sequelize');
-module.exports = function(sequelize, DataTypes) {
-  return sequelize.define('Cart', {
-    id: {
-      autoIncrement: true,
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      primaryKey: true
-    },
-    user_id: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      references: {
-        model: 'users',
-        key: 'id'
-      }
+"use strict";
+const { Model } = require("sequelize");
+module.exports = (sequelize, DataTypes) => {
+  class Cart extends Model {
+    static associate(models) {
+      Cart.belongsTo(models.User, {
+        onUpdate: "CASCADE",
+        onDelete: "CASCADE",
+      });
+      Cart.belongsTo(models.Product, {
+        onUpdate: "CASCADE",
+        onDelete: "CASCADE",
+      });
     }
-  }, {
-    sequelize,
-    tableName: 'carts',
-    timestamps: false,
-    indexes: [
-      {
-        name: "PRIMARY",
-        unique: true,
-        using: "BTREE",
-        fields: [
-          { name: "id" },
-        ]
+  }
+  Cart.init(
+    {
+      quantity: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
       },
-      {
-        name: "fk_user_id_idx",
-        using: "BTREE",
-        fields: [
-          { name: "user_id" },
-        ]
+      is_checked: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false,
       },
-    ]
-  });
+    },
+    {
+      sequelize,
+      modelName: "Cart",
+      timestamps: true,
+    }
+  );
+  return Cart;
 };

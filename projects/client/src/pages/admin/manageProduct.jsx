@@ -3,7 +3,10 @@ import { Box, Button, Container, Flex, HStack, VStack } from "@chakra-ui/react"
 import React, { useState } from "react"
 
 import sidebarAdmin from "../../components/admin/sidebarAdminDashboard.jsx"
+import WarehouseProduct from "../../components/admin/WarehouseProduct.jsx"
+// import CategoryContent from "../../components/admin/categoryContent.jsx"
 import CategoryContent from "../../components/admin/categoryContent.jsx"
+import Stock from "./Stock/Stock.jsx"
 
 // =======================================
 // =======================================
@@ -56,14 +59,6 @@ const ManageProduct = () => {
             <Button
               _focus={{ bg: "#005e9d" }}
               onClick={() => {
-                setActiveComponent("Product Stock")
-              }}
-            >
-              Product Stock
-            </Button>
-            <Button
-              _focus={{ bg: "#005e9d" }}
-              onClick={() => {
                 setActiveComponent("Product Category")
               }}
             >
@@ -72,8 +67,7 @@ const ManageProduct = () => {
           </HStack>
 
           {{
-            "Product Data": <Box />,
-            "Product Stock": <Box />,
+            "Product Data": <WarehouseProduct />,
             "Product Category": <CategoryContent />,
           }[activeComponent] || <Box />}
         </VStack>

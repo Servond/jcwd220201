@@ -1,4 +1,5 @@
 // import "./styles/globals.css"
+import "./App.css"
 import { useEffect, useState } from "react"
 import { login, logout } from "./redux/features/authSlice"
 import { useDispatch, useSelector } from "react-redux"
@@ -19,6 +20,19 @@ import ProductList from "./pages/products/ProductList"
 import ProductDetail from "./pages/products/ProductDetail"
 import ManageProduct from "./pages/admin/manageProduct.jsx"
 import Register from "./pages/Register"
+import CartPage from "./pages/CartPage"
+import AdminRoute from "./components/AdminRoute"
+import Address from "./pages/Address"
+import WarehouseStock from "./pages/admin/Stock/WarehouseStock"
+import Stock from "./pages/admin/Stock/Stock"
+import ForgotPassword from "./pages/ForgotPassword"
+import RecoverPassword from "./pages/RecoverPassword"
+import ManageUser from "./pages/admin/manageUser"
+import SalesReport from "./pages/admin/salesReport"
+import OrderPayment from "./components/admin/orderPayment"
+import Checkout from "./pages/Checkout"
+import UserOrder from "./pages/admin/User Order/UserOrder"
+import Transactions from "./pages/Transactions"
 
 const App = () => {
   const [authCheck, setAuthCheck] = useState(false)
@@ -54,12 +68,25 @@ const App = () => {
   return (
     <>
       <Routes>
-        <Route path="/" element={<Navbar />}>
+        <Route
+          path="/"
+          element={
+            <AdminRoute>
+              <Navbar />
+            </AdminRoute>
+          }
+        >
           <Route index element={<MainContent />} />
           <Route index element={<Footer />} />
         </Route>
+
+        {/* Cart Page */}
+        <Route path="/cart" element={<CartPage />} />
+
+        {/* Product List */}
         <Route path="/product" element={<ProductList />} />
 
+        {/* Product Detail */}
         <Route
           path="/product-detail/:id/:product_name"
           element={<ProductDetail />}
@@ -81,6 +108,15 @@ const App = () => {
             </GuestRoute>
           }
         />
+        <Route
+          path="/forgot-password"
+          element={
+            <GeneralRoute>
+              <ForgotPassword />
+            </GeneralRoute>
+          }
+        />
+        <Route path="/recover-password/:token" element={<RecoverPassword />} />
 
         {/* Admin Route */}
         <Route
@@ -100,7 +136,6 @@ const App = () => {
             </ProtectedRoute>
           }
         />
-
         <Route
           path="/admin/product"
           element={
@@ -109,9 +144,94 @@ const App = () => {
             </ProtectedRoute>
           }
         />
+        {/* Admin Manage Stock */}
+        <Route
+          path={authSelector.RoleId === 1 ? "/admin/update-stock" : null}
+          element={
+            <ProtectedRoute>
+              <Stock />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path={
+            authSelector.RoleId === 2
+              ? "/admin/update-stock"
+              : "/admin/update-stock/:id/"
+          }
+          element={
+            <ProtectedRoute>
+              <WarehouseStock />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/order/all-order"
+          element={
+            <ProtectedRoute>
+              <UserOrder />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/admin/user"
+          element={
+            <ProtectedRoute>
+              <ManageUser />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/sales-report"
+          element={
+            <ProtectedRoute>
+              <SalesReport />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/payment"
+          element={
+            <ProtectedRoute>
+              <OrderPayment />
+            </ProtectedRoute>
+          }
+        />
 
         {/* Register Route */}
         <Route path="/register" element={<Register />} />
+
+        {/* Address Route */}
+        <Route
+          path="/address"
+          element={
+            <GeneralRoute>
+              <Address />
+            </GeneralRoute>
+          }
+        />
+
+        {/* Checkout Route */}
+        <Route
+          path="/cart/shipment"
+          element={
+            <GeneralRoute>
+              <Checkout />
+            </GeneralRoute>
+          }
+        />
+
+        {/* Transactions Route */}
+        <Route
+          path="/transactions"
+          element={
+            <GeneralRoute>
+              <Transactions />
+            </GeneralRoute>
+          }
+        />
       </Routes>
     </>
   )

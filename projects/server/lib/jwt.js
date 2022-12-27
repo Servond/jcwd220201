@@ -10,7 +10,12 @@ const validToken = (token) => {
   return jwt.verify(token, SECRET_KEY)
 }
 
+const decode = (token) => {
+  return jwt.decode(token)
+}
+
 module.exports = {
   signToken,
   validToken,
+  decode,
 }
