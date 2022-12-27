@@ -20,6 +20,12 @@ const productAdminController = {
         throw new Error("Category tidak ditemukan")
       }
 
+      const findWarehouse = await db.Warehouse.findByPk(req.body.WarehouseId)
+
+      if (!findWarehouse) {
+        throw new Error("Warehouse tidak ditemukan")
+      }
+
       const findProductByName = await db.Product.findOne({
         where: {
           product_name: req.body.product_name || "".toUpperCase(),
@@ -56,8 +62,14 @@ const productAdminController = {
 
         await db.ProductPicture.bulkCreate(newProductImg)
 
+        const ProductStock = await db.ProductStock.create({
+          stock: req.body.stock,
+          ProductId: createProduct.id,
+          WarehouseId: findWarehouse.id,
+        })
+
         const foundProductById = await db.Product.findByPk(createProduct.id, {
-          include: [db.ProductPicture],
+          include: [{ model: db.ProductPicture }, { model: db.ProductStock }],
         })
 
         return res.status(200).json({
