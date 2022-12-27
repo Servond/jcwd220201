@@ -2,7 +2,7 @@ const express = require("express")
 const { upload } = require("../lib/uploader")
 const productAdminController = require("../controllers/productsAdminController")
 const { verifyToken } = require("../middlewares/authMiddleware")
-const { categoriesController } = require("../controllers")
+const { categoriesController, warehousesController } = require("../controllers")
 
 const router = express.Router()
 
@@ -26,6 +26,7 @@ router.post(
 )
 router.get("/", productAdminController.getAllProduct)
 router.get("/", categoriesController.getAllCategories)
+router.get("/", warehousesController.getAllWarehouses)
 router.get("/image", productAdminController.getAllImage)
 router.get("/:id", productAdminController.getProductById)
 router.get("/image/:id", productAdminController.getImageById)

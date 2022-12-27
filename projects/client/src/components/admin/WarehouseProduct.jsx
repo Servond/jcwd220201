@@ -51,6 +51,7 @@ const WarehouseProduct = () => {
   const [images, setImages] = useState([])
   const inputFileRef = useRef()
   const [categories, setCategories] = useState([])
+  const [warehouse, setWarehouse] = useState([])
   const [preview, setPreview] = useState([])
   const [page, setPage] = useState(1)
   const [limit, setLimit] = useState(6)
@@ -100,6 +101,17 @@ const WarehouseProduct = () => {
       const responCat = await axiosInstance.get(`/categories`)
 
       setCategories(responCat.data.data)
+      console.log(categories, "cat")
+    } catch (err) {
+      console.log(err)
+    }
+  }
+  const getWarehouse = async () => {
+    try {
+      const respon = await axiosInstance.get(`/warehouses`)
+
+      setWarehouse(respon.data.data)
+      console.log(warehouse, "ware")
     } catch (err) {
       console.log(err)
     }
@@ -259,6 +271,7 @@ const WarehouseProduct = () => {
   useEffect(() => {
     getCategories()
     fetchImage()
+    getWarehouse()
   }, [])
 
   const formik = useFormik({
@@ -268,6 +281,8 @@ const WarehouseProduct = () => {
       price: "",
       CategoryId: "",
       weight: "",
+      stock: "",
+      WarehouseId: "",
       product_picture: null,
       id: "",
     },
@@ -280,6 +295,8 @@ const WarehouseProduct = () => {
           price,
           CategoryId,
           weight,
+          stock,
+          WarehouseId,
           product_picture,
         } = values
 
@@ -289,6 +306,8 @@ const WarehouseProduct = () => {
         formData.append("price", price)
         formData.append("CategoryId", CategoryId)
         formData.append("weight", weight)
+        formData.append("stock", stock)
+        formData.append("WarehouseId", WarehouseId)
         Object.values(product_picture).forEach((product_picture) => {
           formData.append("product_picture", product_picture)
         })
@@ -299,6 +318,8 @@ const WarehouseProduct = () => {
         formik.setFieldValue(price, "")
         formik.setFieldValue(CategoryId, "")
         formik.setFieldValue(weight, "")
+        formik.setFieldValue(stock, "")
+        formik.setFieldValue(WarehouseId, "")
         formik.setFieldValue(product_picture, [])
         formik.setSubmitting(false)
 
@@ -423,6 +444,30 @@ const WarehouseProduct = () => {
                     onChange={formChangeHandler}
                   />
                   <FormErrorMessage>{formik.errors.weight}</FormErrorMessage>
+                </FormControl>
+              </GridItem>
+              <GridItem>
+                <FormControl maxW="100%" isInvalid={formik.errors.stock}>
+                  <FormLabel>Stock</FormLabel>
+                  <Input
+                    borderColor="black"
+                    name="stock"
+                    onChange={formChangeHandler}
+                  />
+                  <FormErrorMessage>{formik.errors.stock}</FormErrorMessage>
+                </FormControl>
+              </GridItem>
+              <GridItem>
+                <FormControl maxW="100%" isInvalid={formik.errors.WarehouseId}>
+                  <FormLabel>WarehouseId</FormLabel>
+                  <Input
+                    borderColor="black"
+                    name="weight"
+                    onChange={formChangeHandler}
+                  />
+                  <FormErrorMessage>
+                    {formik.errors.WarehouseId}
+                  </FormErrorMessage>
                 </FormControl>
               </GridItem>
 

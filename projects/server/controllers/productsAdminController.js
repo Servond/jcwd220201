@@ -20,11 +20,11 @@ const productAdminController = {
         throw new Error("Category tidak ditemukan")
       }
 
-      const findWarehouse = await db.Warehouse.findByPk(req.body.WarehouseId)
+      // const findWarehouse = await db.Warehouse.findByPk(req.body.WarehouseId)
 
-      if (!findWarehouse) {
-        throw new Error("Warehouse tidak ditemukan")
-      }
+      // if (!findWarehouse) {
+      //   throw new Error("Warehouse tidak ditemukan")
+      // }
 
       const findProductByName = await db.Product.findOne({
         where: {
@@ -65,7 +65,7 @@ const productAdminController = {
         const ProductStock = await db.ProductStock.create({
           stock: req.body.stock,
           ProductId: createProduct.id,
-          WarehouseId: findWarehouse.id,
+          WarehouseId: req.body.WarehouseId,
         })
 
         const foundProductById = await db.Product.findByPk(createProduct.id, {
