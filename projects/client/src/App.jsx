@@ -165,7 +165,7 @@ const App = () => {
         />
 
         <Route
-          path={"/order/all-order"}
+          path="/order/all-order"
           element={
             <ProtectedRoute>
               <UserOrder />
