@@ -29,11 +29,7 @@ import {
 } from "@chakra-ui/react"
 import { useEffect, useRef } from "react"
 import { useState } from "react"
-import { BsThreeDots } from "react-icons/bs"
-
 import { axiosInstance } from "../../api"
-
-import OrderCard from "./order"
 
 const Order = () => {
   const [order, setOrder] = useState([])
