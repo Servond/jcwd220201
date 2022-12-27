@@ -350,7 +350,7 @@ const WarehouseProduct = () => {
       <Flex h="100%" w="full" direction="column">
         <Flex w="full" justifyContent="center">
           <HStack mt="3" wrap="wrap" justifyContent="center">
-            <Grid templateColumns="repeat(3, 1fr)" gap="4">
+            <Grid templateColumns="repeat(2, 1fr)" gap="4">
               <GridItem>
                 <FormControl isInvalid={formik.errors.product_name}>
                   <FormLabel>Nama Produk</FormLabel>
