@@ -38,7 +38,7 @@ const MainContent = () => {
   console.log("cat", categories)
 
   const fetchProducts = async () => {
-    const maxProductInPage = 6
+    const maxProductInPage = 5
     try {
       const response = await axiosInstance.get("/products", {
         params: {
