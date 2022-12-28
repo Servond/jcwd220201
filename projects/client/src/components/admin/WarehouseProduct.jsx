@@ -60,8 +60,6 @@ const WarehouseProduct = () => {
   const [sortDir, setSortDir] = useState("DESC")
   const [filter, setFilter] = useState("All")
   const [currentSearch, setCurrentSearch] = useState("")
-  const [searchInput, setSearchInput] = useState()
-  const [searchParams, setSearchParams] = useSearchParams()
 
   const toast = useToast()
 
@@ -235,32 +233,32 @@ const WarehouseProduct = () => {
     setFilter(value)
   }
 
-  // const formikSearch = useFormik({
-  //   initialValues: {
-  //     search: "",
-  //   },
-  //   onSubmit: ({ search }) => {
-  //     setCurrentSearch(search)
-  //   },
-  // })
+  const formikSearch = useFormik({
+    initialValues: {
+      search: "",
+    },
+    onSubmit: ({ search }) => {
+      setCurrentSearch(search)
+    },
+  })
 
-  // const searchHandler = ({ target }) => {
-  //   const { name, value } = target
-  //   formikSearch.setFieldValue(name, value)
+  const searchHandler = ({ target }) => {
+    const { name, value } = target
+    formikSearch.setFieldValue(name, value)
+  }
+  // const searchHandler = () => {
+  //   setCurrentSearch(searchInput)
+
+  //   const queryParams = {}
+  //   queryParams["search"]= searchInput
+  //   setSearchParams(queryParams)
   // }
-  const searchHandler = () => {
-    setCurrentSearch(searchInput)
 
-    const queryParams = {}
-    queryParams["search"] = searchInput
-    setSearchParams(queryParams)
-  }
-
-  const handleEnter = (e) => {
-    if (e.key === "Enter") {
-      setSearchValue(searchInput)
-    }
-  }
+  // const handleEnter = (e) => {
+  //   if (e.key === "Enter") {
+  //     setSearchValue(searchInput)
+  //   }
+  // }
 
   const btnResetFilter = () => {
     setCurrentSearch(false)
@@ -270,11 +268,6 @@ const WarehouseProduct = () => {
   }
 
   useEffect(() => {
-    for (let passing of searchParams.entries()) {
-      if (passing[0] === "search") {
-        setSearchValue(passing[1])
-      }
-    }
     fetchProduct()
   }, [page, sortBy, sortDir, filter, currentSearch])
 
