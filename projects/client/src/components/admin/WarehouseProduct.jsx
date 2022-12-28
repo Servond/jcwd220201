@@ -60,6 +60,8 @@ const WarehouseProduct = () => {
   const [sortDir, setSortDir] = useState("DESC")
   const [filter, setFilter] = useState("All")
   const [currentSearch, setCurrentSearch] = useState("")
+  const [searchInput, setSearchInput] = useState()
+  const [searchParams, setSearchParams] = useSearchParams()
 
   const toast = useToast()
 
@@ -222,30 +224,42 @@ const WarehouseProduct = () => {
     })
   }
 
-  const sortProductHandler = ({ target }) => {
-    const { value } = target
+  const sortProductHandler = (event) => {
+    const value = event.value
     setSortBy(value.split(" ")[0])
     setSortDir(value.split(" ")[1])
   }
 
-  const filterProductHandler = ({ target }) => {
-    const { value } = target
-
+  const filterProductHandler = (event) => {
+    const value = event.value
     setFilter(value)
   }
 
-  const formikSearch = useFormik({
-    initialValues: {
-      search: "",
-    },
-    onSubmit: ({ search }) => {
-      setCurrentSearch(search)
-    },
-  })
+  // const formikSearch = useFormik({
+  //   initialValues: {
+  //     search: "",
+  //   },
+  //   onSubmit: ({ search }) => {
+  //     setCurrentSearch(search)
+  //   },
+  // })
 
-  const searchHandler = ({ target }) => {
-    const { name, value } = target
-    formikSearch.setFieldValue(name, value)
+  // const searchHandler = ({ target }) => {
+  //   const { name, value } = target
+  //   formikSearch.setFieldValue(name, value)
+  // }
+  const searchHandler = () => {
+    setCurrentSearch(searchInput)
+
+    const queryParams = {}
+    queryParams["search"] = searchInput
+    setSearchParams(queryParams)
+  }
+
+  const handleEnter = (e) => {
+    if (e.key === "Enter") {
+      setSearchValue(searchInput)
+    }
   }
 
   const btnResetFilter = () => {
@@ -256,6 +270,11 @@ const WarehouseProduct = () => {
   }
 
   useEffect(() => {
+    for (let passing of searchParams.entries()) {
+      if (passing[0] === "search") {
+        setSearchValue(passing[1])
+      }
+    }
     fetchProduct()
   }, [page, sortBy, sortDir, filter, currentSearch])
 
@@ -271,7 +290,6 @@ const WarehouseProduct = () => {
       price: "",
       CategoryId: "",
       weight: "",
-
       product_picture: null,
       id: "",
     },
@@ -284,8 +302,6 @@ const WarehouseProduct = () => {
           price,
           CategoryId,
           weight,
-          stock,
-          WarehouseId,
           product_picture,
         } = values
 
@@ -306,7 +322,6 @@ const WarehouseProduct = () => {
         formik.setFieldValue(price, "")
         formik.setFieldValue(CategoryId, "")
         formik.setFieldValue(weight, "")
-
         formik.setFieldValue(product_picture, [])
         formik.setSubmitting(false)
 
@@ -421,7 +436,6 @@ const WarehouseProduct = () => {
                   <Select
                     borderColor="black"
                     name="CategoryId"
-                    // onChange={formChangeHandler}
                     onChange={(e) => {
                       formik.setFieldValue("CategoryId", e.value)
                     }}
@@ -468,7 +482,6 @@ const WarehouseProduct = () => {
                       handleImage(event)
                       console.log(event.target.files, "eve")
                     }}
-                    value={formik.values.product_picture}
                   />
                   <FormHelperText>
                     Besar file: maksimum 1 MB. Ekstensi file yang diperbolehkan:
@@ -488,8 +501,8 @@ const WarehouseProduct = () => {
             <Box w="full" h="8%"></Box>
 
             <Button
-              disabled={formik.isSubmitting ? true : false}
-              // onClick={formik.handleSubmit}
+              // disabled={formik.isSubmitting ? true : false}
+              onClick={formik.handleSubmit}
               my="4"
               colorScheme="teal"
             >
@@ -513,17 +526,12 @@ const WarehouseProduct = () => {
             color={"#6D6D6F"}
             placeholder="Filter"
             options={categoryOption}
-          >
-            {/* <option value="">Select Category</option>
-            {categories.map((val) => (
-              <option value={val.id}>
-                {val.id}. {val.category}
-              </option>
-            ))} */}
-          </Select>
+          ></Select>
 
           <Select
-            onChange={sortProductHandler}
+            onChange={(e) => {
+              sortProductHandler(e)
+            }}
             fontSize={"15px"}
             fontWeight="normal"
             fontFamily="serif"
@@ -531,12 +539,7 @@ const WarehouseProduct = () => {
             color={"#6D6D6F"}
             placeholder="Sort By"
             options={nameOption}
-          >
-            {/* <option value="product_name ASC" selected>
-              Name A-Z
-            </option>
-            <option value="product_name DESC">Name Z-A</option> */}
-          </Select>
+          ></Select>
 
           <form onSubmit={formikSearch.handleSubmit}>
             <FormControl>
@@ -547,6 +550,7 @@ const WarehouseProduct = () => {
                   name="search"
                   bgColor={"white"}
                   onChange={searchHandler}
+                  // onChange={(e) => searchHandler(e)}
                   borderRightRadius="0"
                   value={formikSearch.values.search}
                 />
