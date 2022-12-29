@@ -1,6 +1,7 @@
 const db = require("../models")
 const { validationResult, Result } = require("express-validator")
 const { Op } = require("sequelize")
+const bcrypt = require("bcrypt")
 
 const AdminUser = db.User
 
@@ -16,19 +17,21 @@ module.exports = {
       //   }
 
       // Create admin data
-      const { name, email, password, roleId } = req.body
+      const { name, email, password, RoleId } = req.body
+
+      const hash = bcrypt.hashSync(password, 10)
 
       const newAdminUser = await AdminUser.create({
         name: name,
         email: email,
-        password: password,
+        password: hash,
         is_verified: 1,
-        roleId: roleId,
+        RoleId: RoleId,
       })
 
       return res.status(201).json({
         message: "Admin User Created",
-        data: newWarehouse,
+        data: newAdminUser,
       })
       //
     } catch (err) {
@@ -46,7 +49,7 @@ module.exports = {
 
       const findAllAdminUser = await AdminUser.findAndCountAll({
         where: {
-          [Op.or]: [{ roleId: 1 }, { roleId: 2 }],
+          [Op.or]: [{ RoleId: 1 }, { RoleId: 2 }],
         },
         limit: Number(_limit),
         offset: (_page - 1) * _limit,
