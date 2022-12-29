@@ -211,6 +211,7 @@ const MainContent = () => {
 
         {/* Footer Component */}
         <Box>
+          <Divider />
           <Footer />
         </Box>
       </Box>
