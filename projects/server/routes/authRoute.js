@@ -16,6 +16,7 @@ router.patch(
   }).single("profile_picture"),
   authController.editUserProfile
 )
+// router.patch("/profile", verifyToken, authController.editUserPassword)
 router.patch("/recover-password", authController.recoverPassword)
 
 router.get("/refresh-token", verifyToken, authController.refreshToken)

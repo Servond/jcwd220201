@@ -56,22 +56,28 @@ const authController = {
 
   editUserProfile: async (req, res) => {
     try {
-      const { name, phone, gender, date_of_birth, profile_picture, password } =
-        req.body
-
+      // const { name, gender, phone, date_of_birth, profile_picture } = req.body
+      const { password } = req.body
+      const salt = bcrypt.genSaltSync(5)
+      const hashedPassword = bcrypt.hashSync(password, salt)
       if (req.file) {
         req.body.profile_picture = `http://localhost:8000/public/${req.file.filename}`
       }
-      const hashedPassword = bcrypt.hashSync(password, 5)
 
       await User.update(
         {
-          name,
-          phone,
-          gender,
-          date_of_birth,
-          profile_picture,
+          name: req.body.name,
+          gender: req.body.gender,
+          phone: req.body.phone,
+          date_of_birth: req.body.date_of_birth,
+          profile_picture: req.body.profile_picture,
           password: hashedPassword,
+          // password: hashedPassword,
+          // name: name,
+          // gender: gender,
+          // phone: phone,
+          // date_of_birth: date_of_birth,
+          // profile_picture: profile_picture,
         },
         {
           where: {
@@ -93,7 +99,33 @@ const authController = {
       })
     }
   },
+  // editUserPassword: async (req, res) => {
+  //   try {
+  //     const { password } = req.body
+  //     const salt = bcrypt.genSaltSync(5)
+  //     const hashedPassword = bcrypt.hashSync(password, salt)
 
+  //     await User.update(
+  //       { password: hashedPassword },
+  //       {
+  //         where: {
+  //           id: req.user.id,
+  //         },
+  //       }
+  //     )
+
+  //     const findUserById = await User.findByPk(req.user.id)
+
+  //     return res.status(200).json({
+  //       message: "Edited user data",
+  //     })
+  //   } catch (err) {
+  //     console.log(err)
+  //     return res.status(500).json({
+  //       message: err.message,
+  //     })
+  //   }
+  // },
   refreshToken: async (req, res) => {
     try {
       const findUserById = await User.findByPk(req.user.id)
