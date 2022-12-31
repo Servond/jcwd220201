@@ -172,12 +172,12 @@ const ProductDetail = () => {
           py={{ base: 18, md: 24 }}
         >
           <Flex>
-            <Carousel swipeable={true} showStatus={false} dynamicHeight={false}>
+            <Carousel showStatus={false} showThumbs={false}>
               {productImg.map((val) => (
-                <img
+                <Image
                   // className="image-prod-detail"
                   h={{ base: "100%", sm: "400px", lg: "500px" }}
-                  src={val.product_picture}
+                  src={`http://localhost:8000/public/${val.product_picture}`}
                   align="center"
                   rounded="md"
                   fit="cover"
