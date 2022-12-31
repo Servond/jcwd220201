@@ -161,7 +161,7 @@ const LoginPage = () => {
                       p="24px 40px 32px "
                     >
                       <Heading textColor="black" fontSize={"2xl"} mb="5px">
-                        Masuk ke akun anda
+                        Masuk Ke Akun Anda
                       </Heading>
                       <Text fontSize={"lg"} color={"gray.600"} mb="20px">
                         Untuk berbelanja semua produk kami ✌️
@@ -216,15 +216,17 @@ const LoginPage = () => {
                         </FormControl>
                         <Button
                           onClick={formik.handleSubmit}
-                          type="submit"
-                          colorScheme="teal"
+                          isDisabled={!formik.values.email}
+                          type={"submit"}
+                          bgColor="teal.500"
+                          color={"white"}
                         >
                           Masuk
                         </Button>
                       </VStack>
                       <Stack>
-                        <Text align={"center"} mt="20px">
-                          Belum punya akun?
+                        <Text align={"center"} mt="20px" mr="2">
+                          Belum Punya Akun?
                           <LinkRouterDom
                             style={{ color: "teal" }}
                             to="/register"

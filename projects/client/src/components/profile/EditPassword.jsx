@@ -1,5 +1,4 @@
 import {
-  Avatar,
   Box,
   Button,
   Center,
@@ -38,7 +37,6 @@ const EditPassword = () => {
   const dispatch = useDispatch()
   const navigate = useNavigate()
   const toast = useToast()
-  const [cancelEdit, setCancelEdit] = useState(false)
 
   const getUser = async () => {
     try {
