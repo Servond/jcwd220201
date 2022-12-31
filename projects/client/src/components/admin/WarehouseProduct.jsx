@@ -92,6 +92,7 @@ const WarehouseProduct = () => {
       const responseImg = await axiosInstance.get(`/product-admin/image`)
 
       setImages(responseImg.data.data)
+      console.log(images, "img")
     } catch (err) {
       console.log(err)
     }
@@ -145,6 +146,16 @@ const WarehouseProduct = () => {
     setIdEdit(id)
   }
 
+  // const renderImage = () => {
+  //   return images.map((item) => {
+  //     return (
+  //       <Td>
+
+  //       </Td>
+  //     )
+  //   })
+  // }
+
   const renderProduct = () => {
     console.log(products, "product")
     return products.map((val) => {
@@ -173,7 +184,7 @@ const WarehouseProduct = () => {
           </Td>
 
           <Image
-            src={`http://localhost:8000/public/${val.ProductPictures[0].product_picture}`}
+            src={`http://localhost:8000/public/${val.product_picture}`}
           ></Image>
 
           <Td border={"1px solid black"} textAlign={"center"}>
@@ -375,12 +386,11 @@ const WarehouseProduct = () => {
       <Flex h="100%" w="full" direction="column">
         <Flex w="full" justifyContent="center">
           <HStack mt="3" wrap="wrap" justifyContent="center">
-            <Grid templateColumns="repeat(3, 1fr)" gap="2" ml="40" mr="40">
+            <Grid templateColumns="repeat(3, 1fr)" gap="2" ml="60" mr="60">
               <GridItem>
                 <FormControl isInvalid={formik.errors.product_name}>
                   <FormLabel>Nama Produk</FormLabel>
                   <Input
-                    h="20"
                     borderColor="black"
                     name="product_name"
                     onChange={formChangeHandler}
@@ -400,6 +410,7 @@ const WarehouseProduct = () => {
                 >
                   <FormLabel>Deskripsi</FormLabel>
                   <Textarea
+                    minH="unset"
                     minRows="1"
                     borderColor="black"
                     name="description"
@@ -415,7 +426,6 @@ const WarehouseProduct = () => {
                 <FormControl maxW="100%" isInvalid={formik.errors.price}>
                   <FormLabel>Harga</FormLabel>
                   <Input
-                    h="20"
                     size="md"
                     borderColor="black"
                     name="price"
@@ -463,7 +473,6 @@ const WarehouseProduct = () => {
                     + Tambahkan Foto
                   </Button>
                   <Input
-                    h="20"
                     accept="image/*"
                     type="file"
                     multiple={true}
