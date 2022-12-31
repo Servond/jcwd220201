@@ -22,17 +22,24 @@ import {
   InputLeftElement,
   useToast,
   useDisclosure,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalCloseButton,
+  ModalBody,
+  ModalFooter,
 } from "@chakra-ui/react"
 import { Carousel } from "react-responsive-carousel"
 import { useState } from "react"
-import { useParams } from "react-router-dom"
+import { Link, useLocation, useParams } from "react-router-dom"
 import "react-responsive-carousel/lib/styles/carousel.min.css"
 // import "../products/ProductDetail.css"
 import { axiosInstance } from "../../api"
 import { useEffect } from "react"
 import Navbar from "../layout/Navbar"
 import { AddIcon, MinusIcon } from "@chakra-ui/icons"
-import { useDispatch } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 import { addProductToCart, itemCart } from "../../redux/features/cartSlice"
 import { Rupiah } from "../../lib/currency/Rupiah"
 
@@ -53,6 +60,8 @@ const ProductDetail = () => {
   const [cartQty, setCartQty] = useState(null)
 
   const { isOpen, onOpen, onClose } = useDisclosure()
+  const authSelector = useSelector((state) => state.auth)
+  const location = useLocation()
   const dispatch = useDispatch()
   const toast = useToast()
   const params = useParams()
@@ -112,6 +121,7 @@ const ProductDetail = () => {
       console.log(err)
     }
   }
+
   const addToCart1 = async () => {
     try {
       let addToCart1 = {
@@ -138,6 +148,17 @@ const ProductDetail = () => {
         description: err.response.data.message,
       })
     }
+  }
+
+  // Validate User Functionality
+  const validateUser = () => {
+    if (!authSelector.id) {
+      onOpen()
+    }
+  }
+
+  const navigateLogin = () => {
+    onClose()
   }
 
   const updateAddProduct = async () => {
@@ -257,21 +278,10 @@ const ProductDetail = () => {
                     </Text>{" "}
                     {productStock}
                   </ListItem>
-                  {/* // ))} */}
-                  {/* <ListItem>
-                    <Text as="span" fontWeight="thin">
-                      Subtotal: {Rupiah(produck.price * qty)}
-                    </Text>{" "}
-                  </ListItem> */}
                 </List>
               </Box>
             </Stack>
             <HStack alignSelf="center" maxW="320px">
-              {/* <Button>-</Button>
-              <NumberInput>
-                <NumberInputField />
-              </NumberInput>
-              <Button>+</Button> */}
               <InputGroup>
                 <InputLeftElement>
                   <AddIcon
@@ -305,7 +315,7 @@ const ProductDetail = () => {
                 mt="8"
                 py="6"
                 rounded="none"
-                onClick={addToCart1}
+                onClick={authSelector.id ? addToCart1 : validateUser}
               >
                 Masukkan Keranjang
               </Button>
@@ -320,7 +330,7 @@ const ProductDetail = () => {
                 mt="8"
                 py="6"
                 rounded="none"
-                onClick={updateAddProduct}
+                onClick={authSelector.id ? updateAddProduct : validateUser}
               >
                 Masukkan Keranjang
               </Button>
@@ -328,6 +338,31 @@ const ProductDetail = () => {
           </Stack>
         </SimpleGrid>
       </Container>
+
+      {/* User Validate Modal  */}
+      <Modal
+        isOpen={isOpen}
+        onClose={onClose}
+        isCentered
+        motionPreset="slideInBottom"
+      >
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Tidak dapat Menambahkan Barang !</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            Silahkan Login atau Register terlebih dahulu untuk bisa beli produk
+            ini . Terimakasih 😄
+          </ModalBody>
+          <ModalFooter>
+            <Link to="/login" replace state={{ from: location }}>
+              <Button colorScheme="teal" onClick={navigateLogin}>
+                OK
+              </Button>
+            </Link>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </>
   )
 }
