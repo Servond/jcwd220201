@@ -26,6 +26,7 @@ import Address from "./pages/Address"
 import ForgotPassword from "./pages/ForgotPassword"
 import RecoverPassword from "./pages/RecoverPassword"
 import ManageUser from "./pages/admin/manageUser"
+import EditPassword from "./components/profile/EditPassword"
 
 const App = () => {
   const [authCheck, setAuthCheck] = useState(false)
@@ -90,6 +91,14 @@ const App = () => {
           element={
             <GeneralRoute>
               <EditProfile />
+            </GeneralRoute>
+          }
+        />
+        <Route
+          path="/profile/change-password"
+          element={
+            <GeneralRoute>
+              <EditPassword />
             </GeneralRoute>
           }
         />

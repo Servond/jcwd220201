@@ -112,7 +112,7 @@ const ForgotPassword = () => {
           </form>
         </Flex>
         <Box>
-          <Link to="/">
+          <Link to="/login">
             <Box>
               <Button
                 bgColor={"white"}

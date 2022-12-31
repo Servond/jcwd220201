@@ -42,7 +42,6 @@ const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false)
   const navigate = useNavigate()
   const location = useLocation()
-  const { toggleColorMode } = useColorMode()
 
   const formik = useFormik({
     initialValues: {
@@ -127,7 +126,7 @@ const LoginPage = () => {
                 textColor="black"
                 textAlign="center"
                 mb="30px"
-                mt="-10"
+                mt="-5"
               >
                 WIRED!
               </Heading>
@@ -218,20 +217,13 @@ const LoginPage = () => {
                             {formik.errors.password}
                           </FormErrorMessage>
                         </FormControl>
-                        <Button type="submit" colorScheme="teal">
+                        <Button
+                          onClick={formik.handleSubmit}
+                          type="submit"
+                          colorScheme="teal"
+                        >
                           Masuk
                         </Button>
-                        {/* <FormControl display="flex" alignItems="center">
-                          <FormLabel htmlFor="dark_mode" mb="0">
-                            Enable Dark Mode?
-                          </FormLabel>
-                          <Switch
-                            id="dark_mode"
-                            colorScheme="teal"
-                            size="lg"
-                            onChange={toggleColorMode}
-                          />
-                        </FormControl> */}
                       </VStack>
                       <Stack>
                         <Text align={"center"} mt="20px">
@@ -252,90 +244,17 @@ const LoginPage = () => {
           </Box>
         </Flex>
       </Container>
-      {/* <Stack minH={"100vh"} direction={{ base: "column", md: "row" }}>
-        <Heading align={"right"} as="h1" size="2xl" letterSpacing={"tighter"}>
-          WIRED!
-        </Heading>
-        <Flex p={8} flex={1} align={"center"} justify={"center"}>
-          <Stack spacing={4} w={"full"} maxW={"md"}>
-            <Stack align={"center"}>
-              <Heading fontSize={"4xl"}>Masuk ke akun anda</Heading>
-              <Text fontSize={"lg"} color={"gray.600"}>
-                Untuk berbelanja semua produk kami ✌️
-              </Text>
-            </Stack>
-
-            <form onSubmit={formik.handleSubmit}>
-              <Stack>
-                <FormControl isInvalid={formik.errors.email}>
-                  <FormLabel>Email</FormLabel>
-                  <Input
-                    value={formik.values.email}
-                    name="email"
-                    type="email"
-                    onChange={formChangeHandler}
-                  />
-                  <FormErrorMessage>{formik.errors.email}</FormErrorMessage>
-                </FormControl>
-                <FormControl isInvalid={formik.errors.password}>
-                  <FormLabel>Password</FormLabel>
-                  <InputGroup>
-                    <Input
-                      value={formik.values.password}
-                      name="password"
-                      onChange={formChangeHandler}
-                      type={showPassword ? "text" : "password"}
-                    />
-                    <InputRightElement h={"full"}>
-                      <Button
-                        variant={"ghost"}
-                        onClick={() =>
-                          setShowPassword((showPassword) => !showPassword)
-                        }
-                      >
-                        {showPassword ? <ViewIcon /> : <ViewOffIcon />}
-                      </Button>
-                    </InputRightElement>
-                  </InputGroup>
-                  <FormHelperText mt="5" mb="5" textAlign="right">
-                    <LinkChakra
-                      onClick={() => {
-                        navigate("/forgot-password")
-                      }}
-                    >
-                      Lupa Password?
-                    </LinkChakra>
-                  </FormHelperText>
-                  <FormErrorMessage>{formik.errors.password}</FormErrorMessage>
-                </FormControl>
-                <Button type="submit" colorScheme="teal">
-                  Masuk
-                </Button>
-              </Stack>
-              <Stack pt={6}>
-                <Text align={"center"}>
-                  Belum punya akun?{" "}
-                  <LinkRouterDom to="/register" color={"teal"}>
-                    Daftar
-                  </LinkRouterDom>
-                </Text>
-              </Stack>
-            </form>
-            <Text align={"center"}>© 2022 PT WIRED! Indonesia</Text>
-          </Stack>
-        </Flex>
-        <Flex flex={1}>
-          <Image
-            alt={"Login Image"}
-            objectFit={"cover"}
-            maxH="80%"
-            maxW="80%"
-            src={
-              "https://img.freepik.com/free-vector/account-concept-illustration_114360-399.jpg?w=740&t=st=1668700968~exp=1668701568~hmac=2fc7a4e39aedc62a508eeccea0651ff5742d91ff72a3cda488b0861ddaf4a62f"
-            }
-          />
-        </Flex>
-      </Stack> */}
+      <Text
+        color="rgb(96, 96, 96)"
+        mt="7.5rem"
+        mb="0.125rem"
+        lineHeight="1.375rem"
+        whiteSpace="nowrap"
+        display="block"
+        textAlign="center"
+      >
+        © 2022 PT WIRED! Indonesia
+      </Text>
     </>
   )
 }
