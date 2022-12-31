@@ -239,10 +239,10 @@ const CartItem = ({
             md: "none",
           }}
         >
-          <Link fontSize="sm" textDecor="underline">
+          <Link fontSize="sm" textDecor="underline" onClick={btnDelete}>
             Hapus Produk
           </Link>
-          <Select
+          {/* <Select
             maxW="64px"
             aria-label="Select quantity"
             focusBorderColor={useColorModeValue("blue.500", "blue.200")}
@@ -251,7 +251,26 @@ const CartItem = ({
             <option value="2">2</option>
             <option value="3">3</option>
             <option value="4">4</option>
-          </Select>
+          </Select> */}
+          <InputGroup w="40%">
+            <InputLeftElement>
+              <MinusIcon
+                fontSize="10"
+                {...dec}
+                color={qtyProduct > 1 ? "#0095DA" : "#c0cada"}
+                onClick={decQty}
+              />
+            </InputLeftElement>
+            <Input width="10em" textAlign="center" _hover={"none"} {...input} />
+            <InputRightElement>
+              <AddIcon
+                fontSize="10"
+                {...inc}
+                color={productStock <= qtyProduct ? "#c0cada" : "#0095DA"}
+                onClick={addQty}
+              />
+            </InputRightElement>
+          </InputGroup>
           {/* <PriceTag price={price} currency={currency} /> */}
         </Flex>
       </Flex>
