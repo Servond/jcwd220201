@@ -21,6 +21,7 @@ import {
   InputRightElement,
   InputLeftElement,
   useToast,
+  useDisclosure,
 } from "@chakra-ui/react"
 import { Carousel } from "react-responsive-carousel"
 import { useState } from "react"
@@ -45,11 +46,13 @@ const ProductDetail = () => {
     Category: "",
   })
 
+  // State Functionality
   const [productId, setProductId] = useState([])
   const [productImg, setProductImg] = useState([])
   const [productStock, setProductStock] = useState([])
   const [cartQty, setCartQty] = useState(null)
 
+  const { isOpen, onOpen, onClose } = useDisclosure()
   const dispatch = useDispatch()
   const toast = useToast()
   const params = useParams()
