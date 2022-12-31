@@ -58,6 +58,7 @@ const Navbar = ({ onChange, onClick, onKeyDown }) => {
   const [searchQuery, setSearchQuery] = useSearchParams()
   const [cartProduct, setCartProduct] = useState([])
   const [cartQty, setCartQty] = useState(0)
+  console.log("img", cartProduct)
 
   const navigate = useNavigate()
   const dispatch = useDispatch()
@@ -133,7 +134,7 @@ const Navbar = ({ onChange, onClick, onKeyDown }) => {
                 maxH="40"
                 borderRadius="lg"
                 width={{ md: 40 }}
-                src={`http://localhost:8000/public/${val.Product?.ProductPictures?.product_picture}`}
+                src={`http://localhost:8000/public/${val.Product?.ProductPictures[0].product_picture}`}
               />
             </Box>
             <Box mt={{ base: 4, md: 0 }} ml={{ md: 6 }}>
