@@ -1,7 +1,9 @@
 import { Box, Button, Container, Flex, HStack, VStack } from "@chakra-ui/react"
 import React, { useState } from "react"
-import sidebarAdmin from "../../components/admin/sidebarAdminDashboard.jsx"
+import SidebarAdmin from "../../components/admin/sidebarAdminDashboard.jsx"
+import UserData from "../../components/admin/userData.jsx"
 import WarehouseUser from "../../components/admin/warehouseUser.jsx"
+import AdminData from "../../components/admin/adminData.jsx"
 
 // =======================================
 // =======================================
@@ -34,7 +36,7 @@ const ManageUser = () => {
     <Container bg="#e0e7eb" maxW="vw" p="0">
       <Flex h="100vh" p="0">
         <VStack h="full" w="30%" minW="220px" bg="#008deb">
-          {sidebarAdmin()}
+          {SidebarAdmin()}
         </VStack>
 
         <VStack h="full" w="full" overflowX="scroll">
@@ -43,6 +45,14 @@ const ManageUser = () => {
           </Flex>
 
           <HStack h="10%">
+            <Button
+              _focus={{ bg: "#005e9d" }}
+              onClick={() => {
+                setActiveComponent("Admin Data")
+              }}
+            >
+              Admin User Data
+            </Button>
             <Button
               _focus={{ bg: "#005e9d" }}
               onClick={() => {
@@ -62,7 +72,8 @@ const ManageUser = () => {
           </HStack>
 
           {{
-            "User Data": <></>,
+            "Admin Data": <AdminData />,
+            "User Data": <UserData />,
             "Warehouse User": <WarehouseUser />,
           }[activeComponent] || <Box />}
         </VStack>
