@@ -120,16 +120,18 @@ const ProductDetail = () => {
       dispatch(addProductToCart(response.data.data))
 
       toast({
-        title: "Product Add to Cart",
+        title: "Berhasil Ditambahkan",
         status: "success",
+        duration: 1000,
       })
       fetchCartByProduct()
       fetchCart()
     } catch (err) {
       console.log(err)
       toast({
-        title: "Error Add Product to Cart",
+        title: "Gagal Menambahkan Barang",
         status: "error",
+        duration: 1000,
         description: err.response.data.message,
       })
     }
@@ -141,7 +143,11 @@ const ProductDetail = () => {
         quantity: qty,
       }
       await axiosInstance.patch(`/carts/addQty/${productId}`, updateQty)
-      toast({ title: "Product Add to Cart", status: "success" })
+      toast({
+        title: "Berhasil Ditambahkan",
+        status: "success",
+        duration: 1000,
+      })
 
       fetchCartByProduct()
       fetchCart()
@@ -151,6 +157,7 @@ const ProductDetail = () => {
       toast({
         title: `Barang sudah ada di keranjang tersisa ${sisaProduk}, hanya menambah Quantity ${cartQty}`,
         status: "error",
+        duration: 1000,
         description: err.response.data.message,
       })
     }
