@@ -118,6 +118,8 @@ const EditPassword = () => {
         maxW="container.lg"
         py="10"
         pb="10"
+        pr="10"
+        pl="10"
       >
         <Box
           backgroundColor="white"

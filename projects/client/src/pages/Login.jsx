@@ -1,7 +1,6 @@
 import {
   Box,
   Button,
-  Center,
   Container,
   Flex,
   FormControl,
@@ -15,9 +14,7 @@ import {
   InputRightElement,
   Link as LinkChakra,
   Stack,
-  Switch,
   Text,
-  useColorMode,
   useToast,
   VStack,
   Wrap,
