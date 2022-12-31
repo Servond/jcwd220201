@@ -187,6 +187,7 @@ const ProductDetail = () => {
     }
   }
 
+  // Depedency BUG
   useEffect(() => {
     fetchCart()
     fetchCartByProduct()
