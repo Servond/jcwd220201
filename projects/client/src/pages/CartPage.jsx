@@ -36,7 +36,7 @@ import { useDispatch, useSelector } from "react-redux"
 import { axiosInstance } from "../api"
 import CartItem from "../components/cart/CartItem"
 import { getSubTotal, getTotalQty, itemCart } from "../redux/features/cartSlice"
-import { Link as LinkRouterDom } from "react-router-dom"
+import { Link, Link as LinkRouterDom } from "react-router-dom"
 import { Rupiah } from "../lib/currency/Rupiah"
 import Navbar from "./layout/Navbar"
 import Footer from "./layout/Footer"
@@ -103,8 +103,7 @@ const CartPage = () => {
 
       fetchCartItem()
       totalHarga()
-      onClose()
-      toast({ tittle: "Produk Dihapus", status: "success" })
+      toast({ title: "Produk Dihapus", status: "success", duration: 1000 })
     } catch (err) {
       console.log(err)
     }
@@ -166,9 +165,9 @@ const CartPage = () => {
             Coba kata kunci lain atau cek produk rekomendasi kami. Terimakasih{" "}
             <span size="lg">🤯</span>
           </AlertDescription>
-          <Button>
-            <a href="/product">Lanjut Belanja</a>
-          </Button>
+          <Link to="/product">
+            <Button>Lanjut Belanja</Button>
+          </Link>
         </Alert>
       </>
     )
@@ -280,7 +279,7 @@ const CartPage = () => {
         <Divider />
         <Footer />
 
-        {/* Delete Product */}
+        {/* Delete All Product */}
         <AlertDialog isOpen={isOpen} onClose={onClose}>
           <AlertDialogOverlay>
             <AlertDialogContent>
