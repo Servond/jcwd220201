@@ -354,11 +354,14 @@ const ProductDetail = () => {
             Silahkan Login atau Register terlebih dahulu untuk bisa beli produk
             ini . Terimakasih 😄
           </ModalBody>
-          <ModalFooter>
+          <ModalFooter gap="3">
             <Link to="/login" replace state={{ from: location }}>
-              <Button colorScheme="teal" onClick={navigateLogin}>
-                OK
+              <Button colorScheme="green" onClick={navigateLogin}>
+                Login
               </Button>
+            </Link>
+            <Link to="/register">
+              <Button colorScheme="teal">Register</Button>
             </Link>
           </ModalFooter>
         </ModalContent>
