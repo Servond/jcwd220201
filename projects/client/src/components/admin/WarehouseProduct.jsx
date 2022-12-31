@@ -375,11 +375,12 @@ const WarehouseProduct = () => {
       <Flex h="100%" w="full" direction="column">
         <Flex w="full" justifyContent="center">
           <HStack mt="3" wrap="wrap" justifyContent="center">
-            <Grid templateColumns="repeat(2, 1fr)" gap="4">
+            <Grid templateColumns="repeat(3, 1fr)" gap="2" ml="40" mr="40">
               <GridItem>
                 <FormControl isInvalid={formik.errors.product_name}>
                   <FormLabel>Nama Produk</FormLabel>
                   <Input
+                    h="20"
                     borderColor="black"
                     name="product_name"
                     onChange={formChangeHandler}
@@ -414,6 +415,7 @@ const WarehouseProduct = () => {
                 <FormControl maxW="100%" isInvalid={formik.errors.price}>
                   <FormLabel>Harga</FormLabel>
                   <Input
+                    h="20"
                     size="md"
                     borderColor="black"
                     name="price"
@@ -428,7 +430,6 @@ const WarehouseProduct = () => {
                 <FormControl maxW="100%" isInvalid={formik.errors.CategoryId}>
                   <FormLabel>Category Id</FormLabel>
                   <Select
-                    borderColor="black"
                     name="CategoryId"
                     onChange={(e) => {
                       formik.setFieldValue("CategoryId", e.value)
@@ -462,6 +463,7 @@ const WarehouseProduct = () => {
                     + Tambahkan Foto
                   </Button>
                   <Input
+                    h="20"
                     accept="image/*"
                     type="file"
                     multiple={true}
