@@ -58,7 +58,6 @@ const Navbar = ({ onChange, onClick, onKeyDown }) => {
   const [searchQuery, setSearchQuery] = useSearchParams()
   const [cartProduct, setCartProduct] = useState([])
   const [cartQty, setCartQty] = useState(0)
-  console.log("img", cartProduct)
 
   const navigate = useNavigate()
   const dispatch = useDispatch()
@@ -152,16 +151,15 @@ const Navbar = ({ onChange, onClick, onKeyDown }) => {
                 display="block"
                 fontSize="lg"
                 lineHeight="normal"
-                fontWeight="semibold"
                 href="#"
               >
-                {Rupiah(val.Product.price)}
+                <Text fontWeight="700">{Rupiah(val.Product.price)}</Text>
               </Link>
               <Text fontWeight="bold" mt={2} color="teal.600">
                 Quantity
               </Text>
-              <Text mt={2} color="gray.500">
-                {val.quantity}
+              <Text mt={2} color="gray.500" fontWeight="700">
+                X{val.quantity}
               </Text>
             </Box>
           </Box>
@@ -176,7 +174,12 @@ const Navbar = ({ onChange, onClick, onKeyDown }) => {
 
   useEffect(() => {
     fetchUserCart()
-  }, [cartProduct, authSelector])
+  }, [])
+
+  // BUG
+  // useEffect(() => {
+  //   fetchUserCart()
+  // }, [cartProduct, authSelector])
 
   useEffect(() => {
     setSearchValue(searchQuery.get("search"))
