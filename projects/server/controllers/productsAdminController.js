@@ -20,12 +20,6 @@ const productAdminController = {
         throw new Error("Category tidak ditemukan")
       }
 
-      // const findWarehouse = await db.Warehouse.findByPk(req.body.WarehouseId)
-
-      // if (!findWarehouse) {
-      //   throw new Error("Warehouse tidak ditemukan")
-      // }
-
       const findProductByName = await db.Product.findOne({
         where: {
           product_name: req.body.product_name || "".toUpperCase(),
@@ -175,17 +169,6 @@ const productAdminController = {
       if (findAdmin.RoleId === 3 || findAdmin.RoleId === 2) {
         return res.status(400).json({
           message: "Admin unauthorized",
-        })
-      }
-      const findProductByName = await db.Product.findOne({
-        where: {
-          product_name: req.body.product_name || "".toUpperCase(),
-        },
-      })
-
-      if (findProductByName) {
-        return res.status(400).json({
-          message: "Nama Produk telah ada",
         })
       }
 

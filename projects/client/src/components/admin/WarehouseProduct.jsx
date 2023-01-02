@@ -37,6 +37,7 @@ import PageButton from "./pageButton"
 import Select from "react-select"
 
 import { Rupiah } from "../../lib/currency/Rupiah"
+import { useSearchParams } from "react-router-dom"
 
 const WarehouseProduct = () => {
   const [products, setproducts] = useState([])
@@ -51,7 +52,6 @@ const WarehouseProduct = () => {
   const [images, setImages] = useState([])
   const inputFileRef = useRef()
   const [categories, setCategories] = useState([])
-  const [warehouse, setWarehouse] = useState([])
   const [preview, setPreview] = useState([])
   const [page, setPage] = useState(1)
   const [limit, setLimit] = useState(6)
@@ -60,6 +60,11 @@ const WarehouseProduct = () => {
   const [sortDir, setSortDir] = useState("DESC")
   const [filter, setFilter] = useState("All")
   const [currentSearch, setCurrentSearch] = useState("")
+
+  const [searchInput, setSearchInput] = useState()
+  const [searchValue, setSearchValue] = useState("")
+
+  const [searchParams, setSearchParams] = useSearchParams()
 
   const toast = useToast()
 
@@ -184,7 +189,7 @@ const WarehouseProduct = () => {
           </Td>
 
           <Image
-            src={`http://localhost:8000/public/${val.product_picture}`}
+            src={`http://localhost:8000/public/${val.ProductPictures[0].product_picture}`}
           ></Image>
 
           <Td border={"1px solid black"} textAlign={"center"}>
@@ -257,22 +262,10 @@ const WarehouseProduct = () => {
     const { name, value } = target
     formikSearch.setFieldValue(name, value)
   }
-  // const searchHandler = () => {
-  //   setCurrentSearch(searchInput)
-
-  //   const queryParams = {}
-  //   queryParams["search"]= searchInput
-  //   setSearchParams(queryParams)
-  // }
-
-  // const handleEnter = (e) => {
-  //   if (e.key === "Enter") {
-  //     setSearchValue(searchInput)
-  //   }
-  // }
 
   const btnResetFilter = () => {
     setCurrentSearch(false)
+    // setSearchParams(false)
     setSortBy(false)
     setFilter(false)
     window.location.reload(false)
@@ -555,7 +548,6 @@ const WarehouseProduct = () => {
                   name="search"
                   bgColor={"white"}
                   onChange={searchHandler}
-                  // onChange={(e) => searchHandler(e)}
                   borderRightRadius="0"
                   value={formikSearch.values.search}
                 />

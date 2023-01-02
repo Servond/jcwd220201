@@ -134,11 +134,6 @@ const EditProduct = (props) => {
     }
   }
 
-  // const formChangeHandler = ({ target }) => {
-  //   const { name, value } = target
-
-  //   formik.setFieldValue(name, value)
-  // }
   return (
     <>
       <ModalOverlay />
