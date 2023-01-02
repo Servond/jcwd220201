@@ -250,10 +250,10 @@ const WarehouseUser = () => {
   }
 
   const userOption = userId.map((val) => {
-    return { value: val.name, label: val.name }
+    return { value: val.id, label: val.name }
   })
   const warehouseOption = warehouse.map((val) => {
-    return { value: val.warehouse_name, label: val.warehouse_name }
+    return { value: val.id, label: val.warehouse_name }
   })
 
   return (
@@ -365,7 +365,19 @@ const WarehouseUser = () => {
                   </Th>
                 </Tr>
               </Thead>
-              <Tbody maxWidth="max-content"> {renderUser()}</Tbody>
+              <Tbody>{renderUser()}</Tbody>
+              {/* <Tbody maxWidth="max-content">
+                {users.map((val) =>
+                  val.User.map((value) => (
+                    <Tr h="auto">
+                      <Td>{val.UserId}</Td>
+                      <Td>{val.WarehouseId}</Td>
+
+                      <Td>{value.User.name || "Need Assign"}</Td>
+                    </Tr>
+                  ))
+                )}
+              </Tbody> */}
             </Table>
           </TableContainer>
         </Container>

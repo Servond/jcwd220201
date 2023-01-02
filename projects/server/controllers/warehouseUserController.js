@@ -70,6 +70,10 @@ const warehouseUserController = {
             limit: Number(_limit),
             offset: (_page - 1) * _limit,
             order: [[_sortBy, _sortDir]],
+            include: [
+              { model: db.User, attributes: ["name"] },
+              { model: db.Warehouse, attributes: ["warehouse_name"] },
+            ],
             where: {
               [Op.or]: [
                 {
@@ -91,6 +95,10 @@ const warehouseUserController = {
           limit: Number(_limit),
           offset: (_page - 1) * _limit,
           order: [[_sortBy, _sortDir]],
+          include: [
+            { model: db.User, attributes: ["name"] },
+            { model: db.Warehouse, attributes: ["warehouse_name"] },
+          ],
           where: {
             [Op.or]: [
               {
@@ -112,6 +120,10 @@ const warehouseUserController = {
         limit: Number(_limit),
         offset: (_page - 1) * _limit,
         order: [["UserId", _sortDir]],
+        include: [
+          { model: db.User, attributes: ["name"] },
+          { model: db.Warehouse, attributes: ["warehouse_name"] },
+        ],
       })
 
       return res.status(200).json({
