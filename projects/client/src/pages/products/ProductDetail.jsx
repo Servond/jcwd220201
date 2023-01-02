@@ -66,7 +66,7 @@ const ProductDetail = () => {
   const toast = useToast()
   const params = useParams()
 
-  const fetchProductDetail = async () => {
+  const fetchProduct = async () => {
     try {
       const response = await axiosInstance.get(`/products/${params.id}`)
 
@@ -188,11 +188,17 @@ const ProductDetail = () => {
   }
 
   // Depedency BUG
+  // useEffect(() => {
+  //   fetchCart()
+  //   fetchCartByProduct()
+  //   fetchProduct()
+  // }, [qty, cartQty, produck])
+
   useEffect(() => {
     fetchCart()
     fetchCartByProduct()
-    fetchProductDetail()
-  }, [qty, cartQty, produck])
+    fetchProduct()
+  }, [qty, cartQty])
 
   return (
     <>

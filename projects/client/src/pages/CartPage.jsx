@@ -117,7 +117,11 @@ const CartPage = () => {
       fetchCartItem()
       totalHarga()
       onClose()
-      toast({ title: "Semua Barang Dihapus", status: "success" })
+      toast({
+        title: "Semua Barang Dihapus",
+        status: "success",
+        duration: 1000,
+      })
     } catch (err) {
       console.log(err)
     }

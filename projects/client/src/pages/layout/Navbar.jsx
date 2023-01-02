@@ -114,7 +114,7 @@ const Navbar = ({ onChange, onClick, onKeyDown }) => {
       let total = 0
 
       for (let i = 0; i < productQty.length; i++) {
-        total = Number(productQty[i])
+        total += Number(productQty[i])
       }
       setCartQty(total)
     } catch (err) {
@@ -172,14 +172,14 @@ const Navbar = ({ onChange, onClick, onKeyDown }) => {
     keepUserLogin()
   }, [])
 
-  // useEffect(() => {
-  //   fetchUserCart()
-  // }, [])
-
-  // BUG
   useEffect(() => {
     fetchUserCart()
-  }, [cartProduct, authSelector])
+  }, [])
+
+  // BUG
+  // useEffect(() => {
+  //   fetchUserCart()
+  // }, [cartProduct])
 
   useEffect(() => {
     setSearchValue(searchQuery.get("search"))
@@ -338,7 +338,6 @@ const Navbar = ({ onChange, onClick, onKeyDown }) => {
                       name={authSelector.profile_picture}
                       src={authSelector.profile_picture}
                     />
-                    {/* {authSelector.profile_picture} */}
                     <Text my="auto" p="8px">
                       {authSelector.name}
                     </Text>
