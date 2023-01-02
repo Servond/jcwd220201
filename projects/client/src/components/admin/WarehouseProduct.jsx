@@ -419,7 +419,6 @@ const WarehouseProduct = () => {
                 <FormControl maxW="100%" isInvalid={formik.errors.price}>
                   <FormLabel>Harga</FormLabel>
                   <Input
-                    size="md"
                     borderColor="black"
                     name="price"
                     onChange={formChangeHandler}
