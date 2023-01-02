@@ -48,10 +48,6 @@ const LoginPage = () => {
           email,
           password,
         })
-        console.log(
-          "res",
-          response.data.data.WarehousesUsers.map((val) => val.WarehouseId)[0]
-        )
 
         localStorage.setItem("auth_token", response.data.token)
         dispatch(
@@ -64,9 +60,6 @@ const LoginPage = () => {
             gender: response.data.data.gender,
             date_of_birth: response.data.data.date_of_birth,
             profile_picture: response.data.data.profile_picture,
-            WarehouseId: response.data.data.WarehousesUsers.map(
-              (val) => val.WarehouseId
-            )[0],
           })
         )
         toast({
@@ -158,7 +151,11 @@ const LoginPage = () => {
                 </FormHelperText>
                 <FormErrorMessage>{formik.errors.password}</FormErrorMessage>
               </FormControl>
-              <Button type="submit" colorScheme="teal">
+              <Button
+                type="submit"
+                colorScheme="teal"
+                onClick={formik.handleSubmit}
+              >
                 Masuk
               </Button>
             </Stack>

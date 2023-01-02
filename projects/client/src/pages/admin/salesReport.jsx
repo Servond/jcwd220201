@@ -19,9 +19,11 @@ import {
 } from "@chakra-ui/react"
 import { useEffect } from "react"
 import { useState } from "react"
+import { useSelector } from "react-redux"
 import { axiosInstance } from "../../api"
 import SidebarAdmin from "../../components/admin/sidebarAdminDashboard"
 import Warehouse from "../../components/admin/warehouse"
+import { Rupiah } from "../../lib/currency/Rupiah"
 
 const SalesReport = () => {
   const [page, setPage] = useState(1)
@@ -38,8 +40,15 @@ const SalesReport = () => {
   const [categories, setCategories] = useState([])
   const [sales, setSales] = useState([])
 
+  const authSelector = useSelector((state) => state.auth)
+
   const fetchReport = async () => {
     try {
+      let url = `/sales/report`
+
+      if (authSelector.WarehouseId) {
+        url += `?WarehouseId=${authSelector.WarehouseId}`
+      }
       const response = await axiosInstance.get(`/sales/report`, {
         params: {
           _page: page,
@@ -48,7 +57,7 @@ const SalesReport = () => {
           CategoryId: filter,
           payment_date: filterMonth,
           product_name: nameSearch,
-          category: catSearch,
+          // category: catSearch,
         },
       })
 
@@ -114,24 +123,40 @@ const SalesReport = () => {
   //     sales.map((val) => val.category)
   //   )
 
-  // return renderSales = () => {
-  //   return sales.map((val) => {
-  //       return (
-  //         <Tr>
-  //             <Td>
-
-  //             </Td>
-  //         </Tr>
-
-  //       )
-  //   })
-  // }
+  const renderSales = () => {
+    return sales.map((val) => {
+      return (
+        <Tr key={val.id}>
+          <Td>{val.payment_date}</Td>
+          <Td>{val.productId}</Td>
+          <Td>{val.category}</Td>
+          <Td>{val.product_name}</Td>
+          <Td>{Rupiah(val.price)}</Td>
+          <Td>{val.quantity}</Td>
+          <Td>{Rupiah(val.total)}</Td>
+          <Td>{val.warehouse_name}</Td>
+        </Tr>
+      )
+    })
+  }
 
   useEffect(() => {
     fetchReport()
+  }, [
+    filterMonth,
+    filterWare,
+    filter,
+    page,
+    sortBy,
+    nameSearch,
+    catSearch,
+    authSelector,
+  ])
+
+  useEffect(() => {
     fethWarehouse()
     getCategory()
-  }, [filterMonth, filterWare, filter, page, sortBy, nameSearch, catSearch])
+  })
 
   return (
     <>
@@ -226,8 +251,13 @@ const SalesReport = () => {
                   ></GridItem>
 
                   <Select>
-                    <option value=""> Select By Warehouse</option>
-                    {sales.WarehouseId ===
+                    <option value="">Select Warehouse</option>
+                    {warehouse.map((val) => (
+                      <option value={val.id}>{val.warehouse_name}</option>
+                    ))}
+
+                    {/* <option value=""> Select Warehouse</option>
+                    {authSelector.WarehouseId ===
                     sales.map((val) => val.WarehouseId)[0]
                       ? sales.map((val) => (
                           <option value={val.WarehouseId}>
@@ -236,7 +266,7 @@ const SalesReport = () => {
                         ))[0]
                       : Warehouse.map((val) => (
                           <option value={val.id}>{val.warehouse_name}</option>
-                        ))}
+                        ))} */}
                   </Select>
 
                   {/* Search */}
@@ -298,8 +328,9 @@ const SalesReport = () => {
                         <Td>
                           {/* RAW QUERY */}
                           <Text>
-                            {val.payment_date.split("T")[0]} /{" "}
-                            {val.payment_date.split("T")[1].split(".000Z")}
+                            {val.payment_date}
+                            {/* {val.payment_date.split("T")[0]} /{" "}
+                            {val.payment_date.split("T")[1].split(".000Z")} */}
                           </Text>
                         </Td>
                         <Td>
@@ -315,26 +346,14 @@ const SalesReport = () => {
                         </Td>
 
                         <Td>
-                          <Text>
-                            {new Intl.NumberFormat("id-ID", {
-                              style: "currency",
-                              currency: "IDR",
-                              minimumFractionDigits: 0,
-                            }).format(val.price)}
-                          </Text>
+                          <Text>{Rupiah(val.price)}</Text>
                         </Td>
                         <Td>
                           <Text>{val.quantity}</Text>
                         </Td>
 
                         <Td>
-                          <Text>
-                            {new Intl.NumberFormat("id-ID", {
-                              style: "currency",
-                              currency: "IDR",
-                              minimumFractionDigits: 0,
-                            }).format(val.total)}
-                          </Text>
+                          <Text>{Rupiah(val.total)}</Text>
                         </Td>
                         <Td>
                           <Text>{val.warehouse_name}</Text>

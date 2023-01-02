@@ -159,11 +159,11 @@ const salesReport = {
       _page = 1,
     } = req.query
 
-    console.log("ct", CategoryId)
-    console.log("wr", WarehouseId)
-    console.log("mnth", payment_date)
-    console.log("pr", product_name)
-    console.log("cname", category)
+    // console.log("ct", CategoryId)
+    // console.log("wr", WarehouseId)
+    // console.log("mnth", payment_date)
+    // console.log("pr", product_name)
+    // console.log("cname", category)
     try {
       const { _sortBy = "" } = req.query
       let sql = `SELECT ord.WarehouseId, pr.CategoryId, pr.id AS productId, ct.category, pr.product_name, pr.description, ord_items.total_price AS price, ord_items.quantity,
@@ -207,7 +207,7 @@ const salesReport = {
       return res.status(200).json({
         message: "Filtered",
         data: findDataReal[0],
-        dataCount: dataCountReal[0].length,
+        dataCount: dataCountReal[0],
       })
     } catch (err) {
       return res.status(500).json({
