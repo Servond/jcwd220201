@@ -50,8 +50,64 @@ const warehouseUserController = {
   },
   getAllWareUser: async (req, res) => {
     try {
-      const { _limit = 6, _page = 1, _sortDir = "DESC" } = req.query
+      const {
+        _limit = 6,
+        _page = 1,
+        _sortDir = "DESC",
+        _sortBy = "UserId",
+        WarehouseId = "",
+        UserId = "",
+      } = req.query
 
+      if (
+        _sortBy === "UserId" ||
+        _sortBy === "WarehouseId" ||
+        UserId ||
+        WarehouseId
+      ) {
+        if (!Number(WarehouseId)) {
+          const findAllWareUser = await db.WarehousesUser.findAndCountAll({
+            limit: Number(_limit),
+            offset: (_page - 1) * _limit,
+            order: [[_sortBy, _sortDir]],
+            where: {
+              [Op.or]: [
+                {
+                  UserId: {
+                    [Op.like]: `%${UserId}`,
+                  },
+                },
+              ],
+            },
+          })
+          return res.status(200).json({
+            message: "get all user",
+            data: findAllWareUser.rows,
+            dataCount: findAllWareUser.count,
+          })
+        }
+
+        const findAllWareUser = await db.WarehousesUser.findAndCountAll({
+          limit: Number(_limit),
+          offset: (_page - 1) * _limit,
+          order: [[_sortBy, _sortDir]],
+          where: {
+            [Op.or]: [
+              {
+                UserId: {
+                  [Op.like]: `%${UserId}`,
+                },
+              },
+            ],
+            WarehouseId: WarehouseId,
+          },
+        })
+        return res.status(200).json({
+          message: "get all user",
+          data: findAllWareUser.rows,
+          dataCount: findAllWareUser.count,
+        })
+      }
       const findAllWareUser = await WarehousesUser.findAndCountAll({
         limit: Number(_limit),
         offset: (_page - 1) * _limit,

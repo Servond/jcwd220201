@@ -10,7 +10,6 @@ import {
   GridItem,
   HStack,
   Modal,
-  Select,
   Table,
   TableContainer,
   Tbody,
@@ -31,6 +30,7 @@ import PageButton from "../../components/admin/pageButton.jsx"
 import { useNavigate } from "react-router-dom"
 import { useSelector } from "react-redux"
 import * as Yup from "yup"
+import Select from "react-select"
 
 const WarehouseUser = () => {
   const [users, setUsers] = useState([])
@@ -41,6 +41,11 @@ const WarehouseUser = () => {
   const [warehouseEdit, setWarehouseEdit] = useState("")
   const [idEdit, setIdEdit] = useState("")
   const [page, setPage] = useState(1)
+
+  const [sortBy, setSortBy] = useState("UserId")
+  const [sortDir, setSortDir] = useState("DESC")
+  const [filter, setFilter] = useState("All")
+  const [currentSearch, setCurrentSearch] = useState("")
 
   const [limit, setLimit] = useState(5)
   const [totalCount, setTotalCount] = useState(0)
@@ -54,6 +59,10 @@ const WarehouseUser = () => {
           _limit: limit,
           _page: page,
           _sortDir: "DESC",
+          _sortDir: sortDir,
+          _sortBy: sortBy,
+          WarehouseId: filter,
+          name: currentSearch,
         },
       })
 
@@ -118,6 +127,25 @@ const WarehouseUser = () => {
     setIdEdit(id)
   }
 
+  const sortUsertHandler = (event) => {
+    const value = event.value
+    setSortBy(value.split(" ")[0])
+    setSortDir(value.split(" ")[1])
+  }
+
+  const filterWarehouseHandler = (event) => {
+    const value = event.value
+
+    setFilter(value)
+  }
+
+  const btnResetFilter = () => {
+    setCurrentSearch(false)
+    setSortBy(false)
+    setFilter(false)
+    window.location.reload(false)
+  }
+
   const renderUser = () => {
     return users.map((val) => {
       return (
@@ -150,7 +178,7 @@ const WarehouseUser = () => {
     fetchWareUser()
     getUser()
     getWarehouse()
-  }, [page])
+  }, [page, sortBy, sortDir, filter])
 
   const formik = useFormik({
     initialValues: {
@@ -221,11 +249,54 @@ const WarehouseUser = () => {
     formik.setFieldValue(name, value)
   }
 
+  const userOption = userId.map((val) => {
+    return { value: val.name, label: val.name }
+  })
+  const warehouseOption = warehouse.map((val) => {
+    return { value: val.warehouse_name, label: val.warehouse_name }
+  })
+
   return (
     <>
       <Flex h="100%" w="full" direction="column">
         <Flex w="full" justifyContent="center">
           <HStack mt="3" wrap="wrap" justifyContent="center">
+            <Grid
+              gap="4"
+              templateColumns={"repeat(3, 1fr)"}
+              mt="10"
+              mb="4"
+              ml="20%"
+            >
+              <Select
+                onChange={filterWarehouseHandler}
+                fontSize={"15px"}
+                bgColor="white"
+                color={"#6D6D6F"}
+                placeholder="Filter"
+                options={warehouseOption}
+              ></Select>
+              <Select
+                onChange={(e) => {
+                  sortUsertHandler(e)
+                }}
+                fontSize={"15px"}
+                bgColor="white"
+                color={"#6D6D6F"}
+                placeholder="Sort By"
+                options={userOption}
+              ></Select>
+
+              <Button
+                onClick={btnResetFilter}
+                p="3"
+                bgColor="white"
+                variant="solid"
+                _hover={{ borderBottom: "2px solid " }}
+              >
+                Reset Filter
+              </Button>
+            </Grid>
             <Grid templateColumns="repeat(2, 1fr)" gap="4">
               <GridItem>
                 <FormControl maxW="100%" isInvalid={formik.errors.UserId}>
@@ -233,15 +304,12 @@ const WarehouseUser = () => {
                   <Select
                     borderColor="black"
                     name="UserId"
-                    onChange={formChange}
-                  >
-                    <option value="">Select UserId</option>
-                    {userId.map((val) => (
-                      <option value={val.id}>
-                        {val.id}. {val.name}
-                      </option>
-                    ))}
-                  </Select>
+                    onChange={(e) => {
+                      formik.setFieldValue("UserId", e.value)
+                    }}
+                    value={{ label: formik.values.UserId }}
+                    options={userOption}
+                  ></Select>
                   <FormErrorMessage>{formik.errors.UserId}</FormErrorMessage>
                 </FormControl>
               </GridItem>
@@ -252,15 +320,12 @@ const WarehouseUser = () => {
                   <Select
                     borderColor="black"
                     name="WarehouseId"
-                    onChange={formChange}
-                  >
-                    <option value="">Select Warehouse Id</option>
-                    {warehouse.map((val) => (
-                      <option value={val.id}>
-                        {val.id}. {val.warehouse_name}
-                      </option>
-                    ))}
-                  </Select>
+                    onChange={(e) => {
+                      formik.setFieldValue("WarehouseId", e.value)
+                    }}
+                    value={{ label: formik.values.WarehouseId }}
+                    options={warehouseOption}
+                  ></Select>
                   <FormErrorMessage>
                     {formik.errors.WarehouseId}
                   </FormErrorMessage>
