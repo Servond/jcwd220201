@@ -29,9 +29,9 @@ import { Rupiah } from "../../lib/currency/Rupiah"
 
 const SalesReport = () => {
   const [page, setPage] = useState(1)
-  const [limit, setLimit] = useState(6)
+  const [limit, setLimit] = useState(1)
   const [totalCount, setTotalCount] = useState(0)
-  const [sortBy, setSortBy] = useState("product_name")
+  const [sortBy, setSortBy] = useState("")
   const [filter, setFilter] = useState("All")
   const [filterMonth, setFilterMonth] = useState("")
   const [filterWare, setFilterWare] = useState("")
@@ -47,19 +47,20 @@ const SalesReport = () => {
   const fetchReport = async () => {
     try {
       const response = await axiosInstance.get(`/sales/report`, {
-        // params: {
-        //   _page: page,
-        //   _limit: limit,
-        //   _sortBy: sortBy,
-        //   CategoryId: filter,
-        //   payment_date: filterMonth,
-        //   product_name: nameSearch,
-        //   // category: catSearch,
-        // },
+        params: {
+          _page: page,
+          _limit: limit,
+          _sortBy: sortBy,
+          CategoryId: filter,
+          payment_date: filterMonth,
+          product_name: nameSearch,
+          WarehouseId: filterWare,
+          // category: catSearch,
+        },
       })
 
       setSales(response.data.data)
-      console.log(response, "SALE")
+      console.log(response, "resp")
     } catch (err) {
       console.log(err)
     }
@@ -115,8 +116,8 @@ const SalesReport = () => {
     setSortBy(value)
   }
 
+  // console.log(sales, "sales")
   const renderSales = () => {
-    console.log(sales, "sales")
     return sales.map((val) => {
       return (
         <Tr key={val.id}>
@@ -153,21 +154,12 @@ const SalesReport = () => {
 
   useEffect(() => {
     fetchReport()
-  }, [
-    filterMonth,
-    filterWare,
-    filter,
-    page,
-    sortBy,
-    nameSearch,
-    catSearch,
-    authSelector,
-  ])
+  }, [filterMonth, filterWare, filter, page, sortBy, nameSearch, catSearch])
 
   useEffect(() => {
     fethWarehouse()
     getCategory()
-  })
+  }, [])
 
   return (
     <>
