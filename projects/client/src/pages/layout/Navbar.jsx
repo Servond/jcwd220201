@@ -46,6 +46,7 @@ import { axiosInstance } from "../../api"
 import { useEffect, useState } from "react"
 import { itemCart } from "../../redux/features/cartSlice"
 import { Rupiah } from "../../lib/currency/Rupiah"
+import Logo from "./Logo"
 
 const Navbar = ({ onChange, onClick, onKeyDown }) => {
   const cartSelector = useSelector((state) => state.cart)
@@ -204,15 +205,16 @@ const Navbar = ({ onChange, onClick, onKeyDown }) => {
           />
           <HStack
             spacing={8}
-            w={{ base: 10, md: "full" }}
+            w={{ base: "25", md: "full" }}
             alignItems={"center"}
           >
             <Box>
-              <LinkRouterDom to="/">
+              {/* <LinkRouterDom to="/">
                 <Heading as="h1" size="lg" letterSpacing={"tighter"}>
                   WIRED!
                 </Heading>
-              </LinkRouterDom>
+              </LinkRouterDom> */}
+              <Logo />
             </Box>
             <HStack
               w="full"
