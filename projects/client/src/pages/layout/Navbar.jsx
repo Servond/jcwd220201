@@ -172,14 +172,14 @@ const Navbar = ({ onChange, onClick, onKeyDown }) => {
     keepUserLogin()
   }, [])
 
-  useEffect(() => {
-    fetchUserCart()
-  }, [])
-
-  // BUG
   // useEffect(() => {
   //   fetchUserCart()
-  // }, [cartProduct, authSelector])
+  // }, [])
+
+  // BUG
+  useEffect(() => {
+    fetchUserCart()
+  }, [cartProduct, authSelector])
 
   useEffect(() => {
     setSearchValue(searchQuery.get("search"))
@@ -277,7 +277,11 @@ const Navbar = ({ onChange, onClick, onKeyDown }) => {
                     </LinkRouterDom>
                   </PopoverTrigger>
                   {cartSelector.cart.length ? (
-                    <PopoverContent>
+                    <PopoverContent
+                      overflow="scroll"
+                      maxH="40vh"
+                      h={{ base: 0, md: "40vh" }}
+                    >
                       <PopoverHeader
                         display="flex"
                         justifyContent="space-between"
@@ -287,13 +291,7 @@ const Navbar = ({ onChange, onClick, onKeyDown }) => {
                           <Text>Lihat Keranjang</Text>
                         </LinkRouterDom>
                       </PopoverHeader>
-                      <PopoverBody>
-                        {renderCartProduct()}
-                        {/* <Image src={product_picture} /> */}
-                        {/* <Text align="center" fontWeight="semibold">
-                        Keranjangmu Masih Kosong nih ?
-                      </Text> */}
-                      </PopoverBody>
+                      <PopoverBody>{renderCartProduct()}</PopoverBody>
                     </PopoverContent>
                   ) : (
                     <PopoverContent>
@@ -458,13 +456,7 @@ const Navbar = ({ onChange, onClick, onKeyDown }) => {
                         <Text>Lihat Keranjang</Text>
                       </LinkRouterDom>
                     </PopoverHeader>
-                    <PopoverBody>
-                      {renderCartProduct()}
-                      {/* <Image src={product_picture} /> */}
-                      {/* <Text align="center" fontWeight="semibold">
-                        Keranjangmu Masih Kosong nih ?
-                      </Text> */}
-                    </PopoverBody>
+                    <PopoverBody>{renderCartProduct()}</PopoverBody>
                   </PopoverContent>
                 </Popover>
               </Box>
