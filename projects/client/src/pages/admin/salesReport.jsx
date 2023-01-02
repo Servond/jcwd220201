@@ -1,9 +1,11 @@
 import {
   Box,
+  Button,
   Container,
   Flex,
   Grid,
   GridItem,
+  HStack,
   Input,
   InputGroup,
   Select,
@@ -21,8 +23,8 @@ import { useEffect } from "react"
 import { useState } from "react"
 import { useSelector } from "react-redux"
 import { axiosInstance } from "../../api"
+import PageButton from "../../components/admin/pageButton"
 import SidebarAdmin from "../../components/admin/sidebarAdminDashboard"
-import Warehouse from "../../components/admin/warehouse"
 import { Rupiah } from "../../lib/currency/Rupiah"
 
 const SalesReport = () => {
@@ -44,21 +46,16 @@ const SalesReport = () => {
 
   const fetchReport = async () => {
     try {
-      let url = `/sales/report`
-
-      if (authSelector.WarehouseId) {
-        url += `?WarehouseId=${authSelector.WarehouseId}`
-      }
       const response = await axiosInstance.get(`/sales/report`, {
-        params: {
-          _page: page,
-          _limit: limit,
-          _sortBy: sortBy,
-          CategoryId: filter,
-          payment_date: filterMonth,
-          product_name: nameSearch,
-          // category: catSearch,
-        },
+        // params: {
+        //   _page: page,
+        //   _limit: limit,
+        //   _sortBy: sortBy,
+        //   CategoryId: filter,
+        //   payment_date: filterMonth,
+        //   product_name: nameSearch,
+        //   // category: catSearch,
+        // },
       })
 
       setSales(response.data.data)
@@ -118,12 +115,8 @@ const SalesReport = () => {
     setSortBy(value)
   }
 
-  //   console.log(
-  //     "sal",
-  //     sales.map((val) => val.category)
-  //   )
-
   const renderSales = () => {
+    console.log(sales, "sales")
     return sales.map((val) => {
       return (
         <Tr key={val.id}>
@@ -136,6 +129,24 @@ const SalesReport = () => {
           <Td>{Rupiah(val.total)}</Td>
           <Td>{val.warehouse_name}</Td>
         </Tr>
+      )
+    })
+  }
+
+  const renderPageButton = () => {
+    const totalPage = Math.ceil(totalCount / limit)
+
+    const pageArray = new Array(totalPage).fill(null).map((val, i) => ({
+      id: i + 1,
+    }))
+
+    return pageArray.map((val) => {
+      return (
+        <PageButton
+          key={val.id.toString()}
+          id={val.id}
+          onClick={() => setPage(val.id)}
+        />
       )
     })
   }
@@ -177,86 +188,87 @@ const SalesReport = () => {
                 Sales Report
               </Box>
             </Flex>
-            <Flex>
-              <Box mt="3vh">
-                <Grid
-                  p="5px"
-                  gap="5"
-                  w="full"
-                  gridTemplateColumns="repeat(5,1fr)"
-                >
-                  {/* Sort */}
-                  <GridItem
+
+            <Flex h="80%" w="full" direction="column">
+              <Flex>
+                <Box mt="3vh">
+                  <Grid
+                    p="5px"
+                    gap="5"
                     w="full"
-                    justifySelf="center"
-                    border="1px solid #dfe1e3"
-                    borderRadius="8px"
-                    onChange={sortHandler}
+                    gridTemplateColumns="repeat(5,1fr)"
                   >
-                    <Select>
-                      <option value="">sort</option>
-                      <option value={"ASC"}>Ascending</option>
-                      <option value={"DESC"}>Descending</option>
-                    </Select>
-                  </GridItem>
+                    {/* Sort */}
+                    <GridItem
+                      w="full"
+                      justifySelf="center"
+                      border="1px solid #dfe1e3"
+                      borderRadius="8px"
+                      onChange={sortHandler}
+                    >
+                      <Select>
+                        <option value="">sort</option>
+                        <option value={"ASC"}>Ascending</option>
+                        <option value={"DESC"}>Descending</option>
+                      </Select>
+                    </GridItem>
 
-                  {/* Month */}
-                  <GridItem
-                    w="full"
-                    justifySelf="center"
-                    border="1px solid #dfe1e3"
-                    borderRadius="8px"
-                    onChange={filterMonthBtn}
-                  >
-                    <Select>
-                      <option value="">---By Month---</option>
-                      <option value={1}>January</option>
-                      <option value={2}>February</option>
-                      <option value={3}>March</option>
-                      <option value={4}>April</option>
-                      <option value={5}>May</option>
-                      <option value={6}>June</option>
-                      <option value={7}>July</option>
-                      <option value={8}>August</option>
-                      <option value={9}>September</option>
-                      <option value={10}>October</option>
-                      <option value={11}>November</option>
-                      <option value={12}>December</option>
-                    </Select>
-                  </GridItem>
+                    {/* Month */}
+                    <GridItem
+                      w="full"
+                      justifySelf="center"
+                      border="1px solid #dfe1e3"
+                      borderRadius="8px"
+                      onChange={filterMonthBtn}
+                    >
+                      <Select>
+                        <option value="">Select Month</option>
+                        <option value={1}>January</option>
+                        <option value={2}>February</option>
+                        <option value={3}>March</option>
+                        <option value={4}>April</option>
+                        <option value={5}>May</option>
+                        <option value={6}>June</option>
+                        <option value={7}>July</option>
+                        <option value={8}>August</option>
+                        <option value={9}>September</option>
+                        <option value={10}>October</option>
+                        <option value={11}>November</option>
+                        <option value={12}>December</option>
+                      </Select>
+                    </GridItem>
 
-                  {/* Category */}
-                  <GridItem
-                    w="full"
-                    justifySelf="center"
-                    border="1px solid #dfe1e3"
-                    borderRadius="8px"
-                    onChange={filterCategoryBtn}
-                  >
-                    <Select>
-                      <option value="">Select Category</option>
-                      {categories.map((val) => (
-                        <option value={val.id}>{val.category}</option>
-                      ))}
-                    </Select>
-                  </GridItem>
+                    {/* Category */}
+                    <GridItem
+                      w="full"
+                      justifySelf="center"
+                      border="1px solid #dfe1e3"
+                      borderRadius="8px"
+                      onChange={filterCategoryBtn}
+                    >
+                      <Select>
+                        <option value="">Select Category</option>
+                        {categories.map((val) => (
+                          <option value={val.id}>{val.category}</option>
+                        ))}
+                      </Select>
+                    </GridItem>
 
-                  {/* Warehouse */}
-                  <GridItem
-                    w="full"
-                    justifySelf="center"
-                    onChange={filterWarehouseBtn}
-                    border="1px solid #dfe1e3"
-                    borderRadius="8px"
-                  ></GridItem>
+                    {/* Warehouse */}
+                    <GridItem
+                      w="full"
+                      justifySelf="center"
+                      onChange={filterWarehouseBtn}
+                      border="1px solid #dfe1e3"
+                      borderRadius="8px"
+                    >
+                      <Select>
+                        <option value="">Select Warehouse</option>
+                        {warehouse.map((val) => (
+                          <option value={val.id}>{val.warehouse_name}</option>
+                        ))}
 
-                  <Select>
-                    <option value="">Select Warehouse</option>
-                    {warehouse.map((val) => (
-                      <option value={val.id}>{val.warehouse_name}</option>
-                    ))}
-
-                    {/* <option value=""> Select Warehouse</option>
+                        {/* <option value=""> Select Warehouse</option>
                     {authSelector.WarehouseId ===
                     sales.map((val) => val.WarehouseId)[0]
                       ? sales.map((val) => (
@@ -267,72 +279,84 @@ const SalesReport = () => {
                       : Warehouse.map((val) => (
                           <option value={val.id}>{val.warehouse_name}</option>
                         ))} */}
-                  </Select>
+                      </Select>
+                    </GridItem>
 
-                  {/* Search */}
-                  <GridItem
-                    w="full"
-                    justifySelf="center"
-                    border="1px solid #dfe1e3"
-                    borderRadius="8px"
-                  >
-                    <InputGroup>
-                      <Input
-                        onChange={searchBtnHandler}
-                        onKeyDown={handleKeyEnter}
-                        value={nameSearch}
-                      />
-                    </InputGroup>
-                  </GridItem>
-                </Grid>
-              </Box>
+                    {/* Search */}
+                    <GridItem
+                      w="full"
+                      justifySelf="center"
+                      border="1px solid #dfe1e3"
+                      borderRadius="8px"
+                    >
+                      <InputGroup>
+                        <Input
+                          onChange={searchBtnHandler}
+                          onKeyDown={handleKeyEnter}
+                          value={nameSearch}
+                        />
+                        <Button
+                          borderLeftRadius={"0"}
+                          bgColor={"white"}
+                          type="submit"
+                          border="1px solid #e2e8f0"
+                          borderLeft={"0px"}
+                        >
+                          search
+                        </Button>
+                      </InputGroup>
+                    </GridItem>
+                  </Grid>
+                </Box>
+              </Flex>
 
-              <TableContainer
-                border="1px solid #dfe1e3"
-                mt="3vh"
-                borderRadius="8px"
-              >
-                <Table variant="simple">
-                  <Thead>
-                    <Tr>
-                      <Th w="100px">
-                        <Text fontSize="10px">Payment_Date</Text>
-                      </Th>
-                      <Th w="100px">
-                        <Text fontSize="10px">ProductId</Text>
-                      </Th>
-                      <Th w="100px">
-                        <Text fontSize="10px">CategoryId</Text>
-                      </Th>
-                      <Th w="200px">
-                        <Text fontSize="10px">product_name</Text>
-                      </Th>
+              <Grid>
+                <TableContainer
+                  border="1px solid #dfe1e3"
+                  mt="3vh"
+                  borderRadius="8px"
+                >
+                  <Table variant="simple">
+                    <Thead>
+                      <Tr>
+                        <Th w="100px">
+                          <Text fontSize="10px">Payment_Date</Text>
+                        </Th>
+                        <Th w="100px">
+                          <Text fontSize="10px">ProductId</Text>
+                        </Th>
+                        <Th w="100px">
+                          <Text fontSize="10px">CategoryId</Text>
+                        </Th>
+                        <Th w="200px">
+                          <Text fontSize="10px">product_name</Text>
+                        </Th>
 
-                      <Th w="100px">
-                        <Text fontSize="10px">price</Text>
-                      </Th>
-                      <Th w="100px">
-                        <Text fontSize="10px">quantity</Text>
-                      </Th>
-                      <Th w="100px">
-                        <Text fontSize="10px">Total</Text>
-                      </Th>
-                      <Th w="100px">
-                        <Text fontSize="10px">Warehouse</Text>
-                      </Th>
-                    </Tr>
-                  </Thead>
-                  <Tbody>
+                        <Th w="100px">
+                          <Text fontSize="10px">price</Text>
+                        </Th>
+                        <Th w="100px">
+                          <Text fontSize="10px">quantity</Text>
+                        </Th>
+                        <Th w="100px">
+                          <Text fontSize="10px">Total</Text>
+                        </Th>
+                        <Th w="100px">
+                          <Text fontSize="10px">Warehouse</Text>
+                        </Th>
+                      </Tr>
+                    </Thead>
+                    {/* <Tbody>
                     {sales.map((val) => (
                       <Tr>
                         <Td>
                           {/* RAW QUERY */}
-                          <Text>
-                            {val.payment_date}
-                            {/* {val.payment_date.split("T")[0]} /{" "}
+                    {/* <Text>
+                    {val.payment_date} */}
+                    {/* {val.payment_date.split("T")[0]} /{" "}
                             {val.payment_date.split("T")[1].split(".000Z")} */}
-                          </Text>
-                        </Td>
+                    {/* </Text> */}
+                    {/* </Td>
                         <Td>
                           <Text>{val.productId}</Text>
                         </Td>
@@ -360,9 +384,19 @@ const SalesReport = () => {
                         </Td>
                       </Tr>
                     ))}
-                  </Tbody>
-                </Table>
-              </TableContainer>
+                  </Tbody> */}
+                    <Tbody maxWidth="max-content"> {renderSales()}</Tbody>
+                  </Table>
+                </TableContainer>
+              </Grid>
+
+              <HStack w="full" alignSelf="flex-end" justifyContent="center">
+                {renderPageButton()}
+                <Box>
+                  Page {page}/{Math.ceil(totalCount / limit)}
+                </Box>
+              </HStack>
+              <Box h="4%" w="full"></Box>
             </Flex>
           </VStack>
         </Flex>
