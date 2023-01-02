@@ -11,8 +11,9 @@ const Logo = () => {
 
   return (
     <Image
-      src="https://assets.tokopedia.net/assets-tokopedia-lite/v2/zeus/kratos/581fca3a.png"
+      src="/assets/logo.png"
       alt="logo"
+      cursor="pointer"
       width={
         isLargerThanMd ? "10rem" : isLargerThanSm ? "8.262rem" : "6.826rem"
       }

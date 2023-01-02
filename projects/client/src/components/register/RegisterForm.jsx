@@ -69,7 +69,7 @@ const RegisterForm = ({ props: { UserContext } }) => {
   }, [formik.touched.email, formik.errors.email]);
 
   return (
-    <Box p="1rem">
+    <Box p="0 1rem">
       <Flex
         direction="column"
         align="center"

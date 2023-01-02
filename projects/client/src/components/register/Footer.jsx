@@ -6,7 +6,7 @@ const Footer = () => {
 
   return (
     <Text
-      color="rgb(96, 96, 96)"
+      color="rgba(49, 53, 59, 0.68)"
       fontSize={
         isLargerThanMd ? "0.812rem" : isLargerThanSm ? "0.67rem" : "0.553rem"
       }
@@ -17,7 +17,7 @@ const Footer = () => {
       display="block"
       textAlign="center"
     >
-      &#169; 2009-2022,PT Wired
+      &copy; 2009-2022,PT Wired
     </Text>
   );
 };
