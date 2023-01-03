@@ -155,8 +155,9 @@ const salesReport = {
       payment_date,
       product_name = "",
       category = "",
-      _limit = 10,
+      _limit = 6,
       _page = 1,
+      _sortDir = "DESC",
     } = req.query
 
     // console.log("ct", CategoryId)
@@ -165,14 +166,14 @@ const salesReport = {
     // console.log("pr", product_name)
     // console.log("cname", category)
     try {
-      const { _sortBy = "" } = req.query
-      let sql = `SELECT ord.WarehouseId, pr.CategoryId, pr.id AS productId, ct.category, pr.product_name, pr.description, ord_items.total_price AS price, ord_items.quantity,
-                    ord_items.total_price * ord_items.quantity AS total, wr.warehouse_name, ord.payment_date
-                    FROM orderitems AS ord_items
-                    JOIN orders AS ord ON ord.id = ord_items.OrderId
-                    JOIN products AS pr ON pr.id = ord_items.ProductId
-                    JOIN categories AS ct ON ct.id = pr.CategoryId
-                    JOIN warehouse as wr ON wr.id = ord.WarehouseId `
+      const { _sortBy = "payment_date" } = req.query
+      let sql = `SELECT ord.WarehouseId, pr.CategoryId, pr.id AS productId, ct.category, pr.product_name, pr.description, ord_items.total_price AS total_price, ord.shipping_cost,
+                  ord_items.total_price + ord.shipping_cost AS total, wr.warehouse_name, ord.payment_date
+                  FROM orderitems AS ord_items
+                  JOIN orders AS ord ON ord.id = ord_items.OrderId
+                  JOIN products AS pr ON pr.id = ord_items.ProductId
+                  JOIN categories AS ct ON ct.id = pr.CategoryId
+                  JOIN warehouse AS wr ON wr.id = ord.WarehouseId `
 
       if (WarehouseId && CategoryId && payment_date) {
         sql += `WHERE WarehouseId=${WarehouseId} AND CategoryId=${CategoryId} AND MONTH(ord.payment_date)=${payment_date} `

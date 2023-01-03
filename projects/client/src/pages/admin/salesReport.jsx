@@ -116,19 +116,20 @@ const SalesReport = () => {
     setSortBy(value)
   }
 
-  // console.log(sales, "sales")
+  console.log(sales, "sales")
   const renderSales = () => {
     return sales.map((val) => {
       return (
         <Tr key={val.id}>
-          <Td>{val.payment_date}</Td>
-          <Td>{val.productId}</Td>
+          <Td>{val.WarehouseId}</Td>
+          <Td>{val.CategoryId}</Td>
           <Td>{val.category}</Td>
           <Td>{val.product_name}</Td>
-          <Td>{Rupiah(val.price)}</Td>
-          <Td>{val.quantity}</Td>
+          <Td>{Rupiah(val.total_price)}</Td>
+          <Td>{val.shipping_cost}</Td>
           <Td>{Rupiah(val.total)}</Td>
           <Td>{val.warehouse_name}</Td>
+          <Td>{val.payment_date}</Td>
         </Tr>
       )
     })
@@ -312,29 +313,31 @@ const SalesReport = () => {
                     <Thead>
                       <Tr>
                         <Th w="100px">
-                          <Text fontSize="10px">Payment_Date</Text>
-                        </Th>
-                        <Th w="100px">
-                          <Text fontSize="10px">ProductId</Text>
+                          <Text fontSize="10px">WarehouseId</Text>
                         </Th>
                         <Th w="100px">
                           <Text fontSize="10px">CategoryId</Text>
                         </Th>
+                        <Th w="100px">
+                          <Text fontSize="10px">Category</Text>
+                        </Th>
                         <Th w="200px">
                           <Text fontSize="10px">product_name</Text>
                         </Th>
-
                         <Th w="100px">
-                          <Text fontSize="10px">price</Text>
+                          <Text fontSize="10px">Total price</Text>
                         </Th>
                         <Th w="100px">
-                          <Text fontSize="10px">quantity</Text>
+                          <Text fontSize="10px">Shipping Cost</Text>
                         </Th>
                         <Th w="100px">
                           <Text fontSize="10px">Total</Text>
                         </Th>
                         <Th w="100px">
                           <Text fontSize="10px">Warehouse</Text>
+                        </Th>
+                        <Th w="100px">
+                          <Text fontSize="10px">Payment_Date</Text>
                         </Th>
                       </Tr>
                     </Thead>
