@@ -23,7 +23,7 @@ const Timer = ({ seconds, callback }) => {
   return (
     <Text color="rgb(82, 86, 94)" fontSize="0.75rem">
       Mohon tunggu dalam{" "}
-      <Text as="span" colorScheme="teal" fontWeight="700">
+      <Text as="span" color="teal" fontWeight="700">
         {timer} detik
       </Text>{" "}
       untuk kirim ulang
