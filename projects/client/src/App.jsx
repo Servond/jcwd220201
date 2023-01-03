@@ -28,7 +28,7 @@ import Stock from "./pages/admin/Stock/Stock"
 import ForgotPassword from "./pages/ForgotPassword"
 import RecoverPassword from "./pages/RecoverPassword"
 import ManageUser from "./pages/admin/manageUser"
-import Order from "./components/order/orderCard"
+import EditPassword from "./components/profile/EditPassword"
 import SalesReport from "./pages/admin/salesReport"
 import OrderPayment from "./components/admin/orderPayment"
 import Checkout from "./pages/Checkout"
@@ -82,7 +82,14 @@ const App = () => {
         </Route>
 
         {/* Cart Page */}
-        <Route path="/cart" element={<CartPage />} />
+        <Route
+          path="/cart"
+          element={
+            <GeneralRoute>
+              <CartPage />
+            </GeneralRoute>
+          }
+        />
 
         {/* Product List */}
         <Route path="/product" element={<ProductList />} />
@@ -98,6 +105,14 @@ const App = () => {
           element={
             <GeneralRoute>
               <EditProfile />
+            </GeneralRoute>
+          }
+        />
+        <Route
+          path="/profile/change-password"
+          element={
+            <GeneralRoute>
+              <EditPassword />
             </GeneralRoute>
           }
         />
@@ -168,7 +183,7 @@ const App = () => {
         />
 
         <Route
-          path={"/order/all-order"}
+          path="/order/all-order"
           element={
             <ProtectedRoute>
               <UserOrder />
