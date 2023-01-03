@@ -15,6 +15,8 @@ import {
   Grid,
   GridItem,
   HStack,
+  Input,
+  InputGroup,
   Modal,
   Table,
   TableContainer,
@@ -74,7 +76,7 @@ const WarehouseUser = () => {
           _sortDir: sortDir,
           _sortBy: sortBy,
           WarehouseId: filter,
-          name: currentSearch,
+          UserId: currentSearch,
         },
       })
 
@@ -151,6 +153,20 @@ const WarehouseUser = () => {
     setFilter(value)
   }
 
+  const formikSearch = useFormik({
+    initialValues: {
+      search: "",
+    },
+    onSubmit: ({ search }) => {
+      setCurrentSearch(search)
+    },
+  })
+
+  const searchHandler = ({ target }) => {
+    const { name, value } = target
+    formikSearch.setFieldValue(name, value)
+  }
+
   const btnResetFilter = () => {
     setCurrentSearch(false)
     setSortBy(false)
@@ -162,7 +178,7 @@ const WarehouseUser = () => {
     fetchWareUser()
     getUser()
     getWarehouse()
-  }, [page, sortBy, sortDir, filter])
+  }, [page, sortBy, sortDir, filter, currentSearch])
 
   const formik = useFormik({
     initialValues: {
@@ -259,8 +275,8 @@ const WarehouseUser = () => {
         <Flex w="full" justifyContent="center">
           <VStack mt="3" wrap="wrap" justifyContent="center">
             <Grid
-              gap="10"
-              templateColumns={"repeat(3, 1fr)"}
+              gap="20"
+              templateColumns={"repeat(4, 1fr)"}
               mt="8"
               mb="4"
               ml="10%"
@@ -283,6 +299,34 @@ const WarehouseUser = () => {
                 placeholder="Sort By"
                 options={sortUser}
               ></Select>
+
+              <form onSubmit={formikSearch.handleSubmit}>
+                <FormControl>
+                  <InputGroup textAlign={"right"}>
+                    <Input
+                      type={"text"}
+                      placeholder="Search By UserId"
+                      name="search"
+                      bgColor={"white"}
+                      h="4vh"
+                      onChange={searchHandler}
+                      borderRightRadius="0"
+                      value={formikSearch.values.search}
+                    />
+
+                    <Button
+                      borderLeftRadius={"0"}
+                      bgColor={"white"}
+                      type="submit"
+                      h="4vh"
+                      border="1px solid #e2e8f0"
+                      borderLeft={"0px"}
+                    >
+                      search
+                    </Button>
+                  </InputGroup>
+                </FormControl>
+              </form>
 
               <Button
                 onClick={btnResetFilter}

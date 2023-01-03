@@ -57,6 +57,7 @@ const warehouseUserController = {
         _sortBy = "UserId",
         WarehouseId = "",
         UserId = "",
+        name = "",
       } = req.query
 
       if (
@@ -78,7 +79,7 @@ const warehouseUserController = {
               [Op.or]: [
                 {
                   UserId: {
-                    [Op.like]: `%${UserId}`,
+                    [Op.like]: `%${UserId}%`,
                   },
                 },
               ],
@@ -103,7 +104,7 @@ const warehouseUserController = {
             [Op.or]: [
               {
                 UserId: {
-                  [Op.like]: `%${UserId}`,
+                  [Op.like]: `%${UserId}%`,
                 },
               },
             ],
