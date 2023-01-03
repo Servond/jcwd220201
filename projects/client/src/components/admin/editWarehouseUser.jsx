@@ -34,16 +34,14 @@ const EditWarehouseUser = (props) => {
 
   const formik = useFormik({
     initialValues: {
-      UserId: "",
       WarehouseId: "",
     },
 
     onSubmit: async (values) => {
       try {
-        const { UserId, WarehouseId } = values
+        const { WarehouseId } = values
 
         let editWareUser = {
-          UserId: userIdEdit,
           WarehouseId: warehouseEdit,
         }
 
@@ -86,23 +84,6 @@ const EditWarehouseUser = (props) => {
               padding={"10px"}
               ringColor={"blue.500"}
             >
-              <FormControl>
-                <FormLabel>
-                  User Id
-                  <Select
-                    value={userIdEdit}
-                    onChange={(e) => setUserIdEdit(e.target.value)}
-                    name="UserId"
-                  >
-                    <option value="">Select UserId</option>
-                    {userId.map((val) => (
-                      <option value={val.id}>
-                        {val.id}. {val.name}
-                      </option>
-                    ))}
-                  </Select>
-                </FormLabel>
-              </FormControl>
               <FormControl>
                 <FormLabel>
                   Warehouse Id

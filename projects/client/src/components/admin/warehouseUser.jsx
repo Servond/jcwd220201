@@ -1,4 +1,10 @@
 import {
+  AlertDialog,
+  AlertDialogBody,
+  AlertDialogContent,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogOverlay,
   Box,
   Button,
   Container,
@@ -17,9 +23,11 @@ import {
   Th,
   Thead,
   Tr,
+  useDisclosure,
   useToast,
+  VStack,
 } from "@chakra-ui/react"
-import { useEffect } from "react"
+import { useEffect, useRef } from "react"
 import { useState } from "react"
 import { axiosInstance } from "../../api"
 import { useFormik } from "formik"
@@ -52,6 +60,10 @@ const WarehouseUser = () => {
   const toast = useToast()
   const authSelector = useSelector((state) => state.auth)
   const navigate = useNavigate()
+
+  const { isOpen, onOpen, onClose } = useDisclosure()
+  const cancelRef = useRef()
+
   const fetchWareUser = async () => {
     try {
       const respons = await axiosInstance.get(`/warehouse-user`, {
@@ -146,34 +158,6 @@ const WarehouseUser = () => {
     window.location.reload(false)
   }
 
-  const renderUser = () => {
-    return users.map((val) => {
-      return (
-        <Tr key={val.id}>
-          <Td textAlign="center" border="1px solid black">
-            {val.UserId}
-          </Td>
-          <Td textAlign="center" border="1px solid black">
-            {val.WarehouseId}
-          </Td>
-          <Td textAlign="center" border="1px solid black" w="50px">
-            <Button
-              alignContent={"left"}
-              onClick={() => userEdit(val.UserId, val.WarehouseId, val.id)}
-              mx="4"
-              colorScheme={"teal"}
-            >
-              <FaRegEdit />
-            </Button>
-            <Button onClick={() => deleteBtn(val.id)} colorScheme="red" mx="4">
-              <RiDeleteBin2Line />
-            </Button>
-          </Td>
-        </Tr>
-      )
-    })
-  }
-
   useEffect(() => {
     fetchWareUser()
     getUser()
@@ -256,23 +240,36 @@ const WarehouseUser = () => {
     return { value: val.id, label: val.warehouse_name }
   })
 
+  const sortUser = [
+    { value: "UserId ASC", label: "A-Z" },
+    { value: "UserId DESC", label: "Z-A" },
+  ]
+
+  const customStyles = {
+    control: (base) => ({
+      ...base,
+      width: "max-content",
+      minWidth: "120%",
+    }),
+  }
+
   return (
     <>
       <Flex h="100%" w="full" direction="column">
         <Flex w="full" justifyContent="center">
-          <HStack mt="3" wrap="wrap" justifyContent="center">
+          <VStack mt="3" wrap="wrap" justifyContent="center">
             <Grid
-              gap="4"
+              gap="10"
               templateColumns={"repeat(3, 1fr)"}
-              mt="10"
+              mt="8"
               mb="4"
-              ml="20%"
+              ml="10%"
             >
               <Select
                 onChange={filterWarehouseHandler}
                 fontSize={"15px"}
                 bgColor="white"
-                color={"#6D6D6F"}
+                styles={customStyles}
                 placeholder="Filter"
                 options={warehouseOption}
               ></Select>
@@ -282,14 +279,16 @@ const WarehouseUser = () => {
                 }}
                 fontSize={"15px"}
                 bgColor="white"
-                color={"#6D6D6F"}
+                styles={customStyles}
                 placeholder="Sort By"
-                options={userOption}
+                options={sortUser}
               ></Select>
 
               <Button
                 onClick={btnResetFilter}
                 p="3"
+                w="12vh"
+                h="4vh"
                 bgColor="white"
                 variant="solid"
                 _hover={{ borderBottom: "2px solid " }}
@@ -297,11 +296,12 @@ const WarehouseUser = () => {
                 Reset Filter
               </Button>
             </Grid>
-            <Grid templateColumns="repeat(2, 1fr)" gap="4">
+            <Grid templateColumns="repeat(2, 1fr)" gap="10">
               <GridItem>
                 <FormControl maxW="100%" isInvalid={formik.errors.UserId}>
                   <FormLabel>User Id</FormLabel>
                   <Select
+                    styles={customStyles}
                     borderColor="black"
                     name="UserId"
                     onChange={(e) => {
@@ -318,6 +318,7 @@ const WarehouseUser = () => {
                 <FormControl maxW="100%" isInvalid={formik.errors.WarehouseId}>
                   <FormLabel>Warehouse Id</FormLabel>
                   <Select
+                    styles={customStyles}
                     borderColor="black"
                     name="WarehouseId"
                     onChange={(e) => {
@@ -332,17 +333,13 @@ const WarehouseUser = () => {
                 </FormControl>
               </GridItem>
             </Grid>
-
-            <Box w="full" h="8%"></Box>
-
             <Button onClick={formik.handleSubmit} my="4" colorScheme="teal">
               Add Warehouse User
             </Button>
-          </HStack>
+          </VStack>
         </Flex>
-        <Box w="full" h="2.5%"></Box>
 
-        <Container maxW="container.sm" py="8" pb="5" px="1">
+        <Container maxW="container.lg" py="8" pb="5" px="1">
           <TableContainer border={"1px solid black"} mt={8} overflowY="unset">
             <Table responsive="md" variant="simple">
               <Thead position={"sticky"} top={-1} backgroundColor={"#718096"}>
@@ -361,23 +358,94 @@ const WarehouseUser = () => {
                     color="black"
                     w="100px"
                   >
+                    Nama admin
+                  </Th>
+                  <Th
+                    border={"1px solid black"}
+                    textAlign={"center"}
+                    color="black"
+                    w="100px"
+                  >
                     WarehouseId
+                  </Th>
+                  <Th
+                    border={"1px solid black"}
+                    textAlign={"center"}
+                    color="black"
+                    w="100px"
+                  >
+                    Nama Warehouse
                   </Th>
                 </Tr>
               </Thead>
-              <Tbody>{renderUser()}</Tbody>
-              {/* <Tbody maxWidth="max-content">
-                {users.map((val) =>
-                  val.User.map((value) => (
-                    <Tr h="auto">
-                      <Td>{val.UserId}</Td>
-                      <Td>{val.WarehouseId}</Td>
+              {/* <Tbody>{renderUser()}</Tbody> */}
+              <Tbody maxWidth="max-content">
+                {users.map((val) => (
+                  <Tr key={val.id}>
+                    <Td textAlign="center" border="1px solid black">
+                      {val.UserId}
+                    </Td>
+                    <Td textAlign="center" border="1px solid black">
+                      {val.User.name}
+                    </Td>
+                    <Td textAlign="center" border="1px solid black">
+                      {val.WarehouseId}
+                    </Td>
 
-                      <Td>{value.User.name || "Need Assign"}</Td>
-                    </Tr>
-                  ))
-                )}
-              </Tbody> */}
+                    <Td textAlign="center" border="1px solid black">
+                      {val.Warehouse.warehouse_name}
+                    </Td>
+                    <Td textAlign="center" border="1px solid black" w="50px">
+                      <Button
+                        alignContent={"left"}
+                        onClick={() =>
+                          userEdit(val.UserId, val.WarehouseId, val.id)
+                        }
+                        mx="4"
+                        colorScheme={"teal"}
+                      >
+                        <FaRegEdit />
+                      </Button>
+                      <Button onClick={onOpen} colorScheme="red" mx="4">
+                        <RiDeleteBin2Line />
+                      </Button>
+                      <AlertDialog
+                        isOpen={isOpen}
+                        onClose={onClose}
+                        leastDestructiveRef={cancelRef}
+                      >
+                        <AlertDialogOverlay>
+                          <AlertDialogContent>
+                            <AlertDialogHeader fontSize="lg" fontStyle="bold">
+                              Hapus Admin
+                            </AlertDialogHeader>
+
+                            <AlertDialogBody>
+                              Apakah Yakin Ingin Menghapus Warehouse Admin??
+                            </AlertDialogBody>
+
+                            <AlertDialogFooter>
+                              <Button
+                                mr="10px"
+                                ref={cancelRef}
+                                onClick={onClose}
+                              >
+                                Cancel
+                              </Button>
+                              <Button
+                                colorScheme="red"
+                                onClick={() => deleteBtn(val.id)}
+                              >
+                                Hapus
+                              </Button>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialogOverlay>
+                      </AlertDialog>
+                    </Td>
+                  </Tr>
+                ))}
+              </Tbody>
             </Table>
           </TableContainer>
         </Container>
