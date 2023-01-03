@@ -132,7 +132,9 @@ const LoginPage = () => {
                 mb="30px"
                 mt="-5"
               >
-                WIRED!
+                {/* WIRED! */}
+
+                <Image src="logo.png"></Image>
               </Heading>
               <Wrap spacing={{ base: 10, sm: 3, md: 5, lg: 20 }}>
                 <WrapItem>
