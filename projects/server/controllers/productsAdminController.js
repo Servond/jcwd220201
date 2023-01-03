@@ -108,7 +108,7 @@ const productAdminController = {
               [Op.or]: [
                 {
                   product_name: {
-                    [Op.like]: `%${product_name}`,
+                    [Op.like]: `%${product_name}%`,
                   },
                 },
               ],
@@ -130,7 +130,7 @@ const productAdminController = {
             [Op.or]: [
               {
                 product_name: {
-                  [Op.like]: `%${product_name}`,
+                  [Op.like]: `%${product_name}%`,
                 },
               },
             ],
