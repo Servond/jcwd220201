@@ -27,12 +27,7 @@ import {
   AlertDialogHeader,
   AlertDialogFooter,
 } from "@chakra-ui/react"
-import {
-  Editable,
-  EditableInput,
-  EditableTextarea,
-  EditablePreview,
-} from "@chakra-ui/react"
+
 import { useEffect } from "react"
 import { useState } from "react"
 import { FiGift } from "react-icons/fi"
@@ -46,6 +41,8 @@ const CartItem = ({
   product_picture,
   CartId,
   productId,
+  CategoryId,
+  category,
   quantity,
   checkAllProduct,
   fetchCartItem,
@@ -180,7 +177,7 @@ const CartItem = ({
             height="120px"
             fit="cover"
             src={product_picture}
-            // alt={name}
+            alt="gambar produk"
             draggable="false"
             loading="lazy"
           />
@@ -191,7 +188,8 @@ const CartItem = ({
                 color={useColorModeValue("gray.600", "gray.400")}
                 fontSize="sm"
               >
-                Kategori
+                {/* Kategori */}
+                {category}
                 {/* {CategoryId} */}
               </Text>
             </Stack>
@@ -270,7 +268,6 @@ const CartItem = ({
               />
             </InputRightElement>
           </InputGroup>
-          {/* <PriceTag price={price} currency={currency} /> */}
         </Flex>
       </Flex>
       <Divider />
