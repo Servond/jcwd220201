@@ -146,6 +146,7 @@ const CartItem = ({
   const inc = getIncrementButtonProps(addQty)
   const dec = getDecrementButtonProps(decQty)
   const input = getInputProps(qtyProduct)
+  console.log("inp", input)
   const qty = Number(input.value)
   useEffect(() => {
     fetchCartById()
@@ -206,31 +207,66 @@ const CartItem = ({
             md: "flex",
           }}
         >
-          <InputGroup w="40%">
+          {/* <InputGroup w="40%">
             <InputLeftElement>
-              <MinusIcon
-                fontSize="10"
-                {...dec}
-                color={qtyProduct > 1 ? "#0095DA" : "#c0cada"}
-                onClick={decQty}
-              />
+              <Button
+                variant="unstyled"
+                onClick={addQty}
+                isDisabled={productStock <= qty}
+              >
+                <AddIcon
+                  fontSize="10"
+                  {...inc}
+                  color={productStock <= qtyProduct ? "#c0cada" : "#0095DA"}
+                  onClick={addQty}
+                />
+              </Button>
             </InputLeftElement>
             <Input width="10em" textAlign="center" _hover={"none"} {...input} />
+            <Text>{qtyProduct}</Text>
             <InputRightElement>
-              <AddIcon
-                fontSize="10"
-                {...inc}
-                color={productStock <= qtyProduct ? "#c0cada" : "#0095DA"}
+              <Button variant="unstyled" onClick={decQty}>
+                <MinusIcon
+                  fontSize="10"
+                  {...dec}
+                  color={qtyProduct > 1 ? "#0095DA" : "#c0cada"}
+                  onClick={decQty}
+                />
+              </Button>
+            </InputRightElement>
+          </InputGroup> */}
+          <InputGroup w="40%">
+            <InputLeftElement>
+              <Button
+                variant="unstyled"
                 onClick={addQty}
-              />
+                isDisabled={productStock <= qty}
+              >
+                <AddIcon
+                  fontSize="10"
+                  {...inc}
+                  color={productStock <= qtyProduct ? "#c0cada" : "#0095DA"}
+                  onClick={addQty}
+                />
+              </Button>
+            </InputLeftElement>
+
+            <Text>{qtyProduct}</Text>
+            <InputRightElement>
+              <Button variant="unstyled" onClick={decQty}>
+                <MinusIcon
+                  fontSize="10"
+                  {...dec}
+                  color={qtyProduct > 1 ? "#0095DA" : "#c0cada"}
+                  onClick={decQty}
+                />
+              </Button>
             </InputRightElement>
           </InputGroup>
 
           <HStack spacing="1">
             <Text>{Rupiah(price)}</Text>
           </HStack>
-
-          {/* <PriceTag price={price} currency={currency} /> */}
 
           <CloseButton onClick={btnDelete} />
         </Flex>
