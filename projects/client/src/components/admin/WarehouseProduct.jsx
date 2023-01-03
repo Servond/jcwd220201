@@ -1,4 +1,8 @@
 import {
+  Alert,
+  AlertDescription,
+  AlertIcon,
+  AlertTitle,
   Box,
   Button,
   Container,
@@ -62,11 +66,6 @@ const WarehouseProduct = () => {
   const [filter, setFilter] = useState("All")
   const [currentSearch, setCurrentSearch] = useState("")
 
-  const [searchInput, setSearchInput] = useState()
-  const [searchValue, setSearchValue] = useState("")
-
-  const [searchParams, setSearchParams] = useSearchParams()
-
   const toast = useToast()
 
   const fetchProduct = async () => {
@@ -98,7 +97,6 @@ const WarehouseProduct = () => {
       const responseImg = await axiosInstance.get(`/product-admin/image`)
 
       setImages(responseImg.data.data)
-      console.log(images, "img")
     } catch (err) {
       console.log(err)
     }
@@ -109,7 +107,6 @@ const WarehouseProduct = () => {
       const responCat = await axiosInstance.get(`/categories`)
 
       setCategories(responCat.data.data)
-      console.log(categories, "cat")
     } catch (err) {
       console.log(err)
     }
@@ -162,8 +159,13 @@ const WarehouseProduct = () => {
   //   })
   // }
 
+  // console.log(
+  //   "map",
+  //   products.map((val) => val.ProductPicture((item) => item.product_picture))
+  // )
+
   const renderProduct = () => {
-    console.log(products, "product")
+    // console.log(products, "product")
     return products.map((val) => {
       return (
         <Tr key={val.id} border={"1px solid black"} textAlign={"center"}>
@@ -272,7 +274,6 @@ const WarehouseProduct = () => {
 
   const btnResetFilter = () => {
     setCurrentSearch(false)
-    // setSearchParams(false)
     setSortBy(false)
     setFilter(false)
     window.location.reload(false)
@@ -655,7 +656,28 @@ const WarehouseProduct = () => {
             Page {page}/{Math.ceil(totalCount / limit)}
           </Box>
         </HStack>
+
         <Box h="4%" w="full"></Box>
+        {!products.length ? (
+          <Alert
+            status="error"
+            variant="subtle"
+            flexDir="column"
+            alignItems="center"
+            justifyContent="center"
+            textAlign="center"
+            alignSelf="center"
+            h="200px"
+            w="80%"
+          >
+            <AlertIcon boxSize="20px" mr="0" />
+            <AlertTitle>Oops, produk nggak ditemukan !</AlertTitle>
+            <AlertDescription>
+              Coba kata kunci lain. Terimakasih
+              <span size="lg">🤯</span>
+            </AlertDescription>
+          </Alert>
+        ) : null}
       </Flex>
 
       <Modal isOpen={openModal} onClose={() => setOpenModal(false)}>
