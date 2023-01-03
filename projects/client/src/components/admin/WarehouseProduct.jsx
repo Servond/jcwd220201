@@ -149,23 +149,12 @@ const WarehouseProduct = () => {
     setIdEdit(id)
   }
 
-  // const renderImage = () => {
-  //   return images.map((item) => {
-  //     return (
-  //       <Td>
-
-  //       </Td>
-  //     )
-  //   })
-  // }
-
-  // console.log(
-  //   "map",
-  //   products.map((val) => val.ProductPicture((item) => item.product_picture))
-  // )
+  console.log(
+    "map",
+    products.map((val) => val.images)
+  )
 
   const renderProduct = () => {
-    // console.log(products, "product")
     return products.map((val) => {
       return (
         <Tr key={val.id} border={"1px solid black"} textAlign={"center"}>
