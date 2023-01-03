@@ -27,15 +27,8 @@ import {
   AlertDialogHeader,
   AlertDialogFooter,
 } from "@chakra-ui/react"
-import {
-  Editable,
-  EditableInput,
-  EditableTextarea,
-  EditablePreview,
-} from "@chakra-ui/react"
 import { useEffect } from "react"
 import { useState } from "react"
-import { FiGift } from "react-icons/fi"
 import { useSelector } from "react-redux"
 import { Link } from "react-router-dom"
 import { axiosInstance } from "../../api"
@@ -150,6 +143,7 @@ const CartItem = ({
   const dec = getDecrementButtonProps(decQty)
   const input = getInputProps(qtyProduct)
   const qty = Number(input.value)
+
   useEffect(() => {
     fetchCartById()
     fetchCartByProduct()
@@ -210,30 +204,28 @@ const CartItem = ({
         >
           <InputGroup w="40%">
             <InputLeftElement>
+            {/* <Button onClick={addQty} variant="unstyled" isDisabled={productStock <= qtyProduct} {...inc}> */}
               <AddIcon
                 fontSize="10"
-                {...inc}
                 color={productStock <= qtyProduct ? "#c0cada" : "#0095DA"}
-                onClick={addQty}
+                {...inc}
+                
               />
+            {/* </Button> */}
             </InputLeftElement>
             <Input width="10em" textAlign="center" _hover={"none"} {...input} isDisabled={productStock === 0 ? true : false}/>
             <InputRightElement>
+            <Button variant="unstyled" {...dec}>
             <MinusIcon
                 fontSize="10"
-                {...dec}
                 color={qtyProduct > 1 ? "#0095DA" : "#c0cada"}
-                onClick={decQty}
               />
+            </Button>
             </InputRightElement>
           </InputGroup>
-
           <HStack spacing="1">
             <Text>{Rupiah(price)}</Text>
           </HStack>
-
-          {/* <PriceTag price={price} currency={currency} /> */}
-
           <CloseButton onClick={btnDelete} />
         </Flex>
 
