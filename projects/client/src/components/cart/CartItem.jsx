@@ -210,20 +210,20 @@ const CartItem = ({
         >
           <InputGroup w="40%">
             <InputLeftElement>
-              <MinusIcon
-                fontSize="10"
-                {...dec}
-                color={qtyProduct > 1 ? "#0095DA" : "#c0cada"}
-                onClick={decQty}
-              />
-            </InputLeftElement>
-            <Input width="10em" textAlign="center" _hover={"none"} {...input} />
-            <InputRightElement>
               <AddIcon
                 fontSize="10"
                 {...inc}
                 color={productStock <= qtyProduct ? "#c0cada" : "#0095DA"}
                 onClick={addQty}
+              />
+            </InputLeftElement>
+            <Input width="10em" textAlign="center" _hover={"none"} {...input} isDisabled={productStock === 0 ? true : false}/>
+            <InputRightElement>
+            <MinusIcon
+                fontSize="10"
+                {...dec}
+                color={qtyProduct > 1 ? "#0095DA" : "#c0cada"}
+                onClick={decQty}
               />
             </InputRightElement>
           </InputGroup>

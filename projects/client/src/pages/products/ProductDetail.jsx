@@ -291,10 +291,11 @@ const ProductDetail = () => {
             <HStack alignSelf="center" maxW="320px">
               <InputGroup>
                 <InputLeftElement>
+                <Button isDisabled={productStock <= qty} {...inc}>
                   <AddIcon
-                    {...inc}
                     color={productStock <= qty ? "#c0cada" : "#0095DA"}
                   />
+                </Button>
                 </InputLeftElement>
                 <Input
                   width="10em"
@@ -304,7 +305,9 @@ const ProductDetail = () => {
                   isDisabled={productStock === 0 ? true : false}
                 />
                 <InputRightElement>
+                <Button>
                   <MinusIcon {...dec} color={qty > 1 ? "#0095DA" : "#c0cada"} />
+                </Button>
                 </InputRightElement>
               </InputGroup>
             </HStack>
