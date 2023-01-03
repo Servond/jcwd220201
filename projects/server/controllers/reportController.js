@@ -172,7 +172,7 @@ const salesReport = {
                     JOIN orders AS ord ON ord.id = ord_items.OrderId
                     JOIN products AS pr ON pr.id = ord_items.ProductId
                     JOIN categories AS ct ON ct.id = pr.CategoryId
-                    JOIN warehouse as wr ON wr.id = ord.WarehouseId`
+                    JOIN warehouse as wr ON wr.id = ord.WarehouseId `
 
       if (WarehouseId && CategoryId && payment_date) {
         sql += `WHERE WarehouseId=${WarehouseId} AND CategoryId=${CategoryId} AND MONTH(ord.payment_date)=${payment_date} `
@@ -207,7 +207,7 @@ const salesReport = {
       return res.status(200).json({
         message: "Filtered",
         data: findDataReal[0],
-        dataCount: dataCountReal[0].length,
+        dataCount: dataCountReal[0],
       })
     } catch (err) {
       return res.status(500).json({
