@@ -241,25 +241,25 @@ const WarehouseProduct = () => {
     setFilter(value)
   }
 
-  // const formikSearch = useFormik({
-  //   initialValues: {
-  //     search: "",
-  //   },
-  //   onSubmit: ({ search }) => {
-  //     setCurrentSearch(search)
-  //   },
-  // })
+  const formikSearch = useFormik({
+    initialValues: {
+      search: "",
+    },
+    onSubmit: ({ search }) => {
+      setCurrentSearch(search)
+    },
+  })
 
-  // const searchHandler = ({ target }) => {
-  //   const { name, value } = target
-  //   formikSearch.setFieldValue(name, value)
-  // }
-
-  const search = (products) => {
-    return products.filter((item) =>
-      item.product_name.toLowerCase().includes(currentSearch)
-    )
+  const searchHandler = ({ target }) => {
+    const { name, value } = target
+    formikSearch.setFieldValue(name, value)
   }
+
+  // const search = (products) => {
+  //   return products.filter((item) =>
+  //     item.product_name.toLowerCase().includes(currentSearch)
+  //   )
+  // }
 
   const btnResetFilter = () => {
     setCurrentSearch(false)
@@ -535,32 +535,32 @@ const WarehouseProduct = () => {
             options={nameOption}
           ></Select>
 
-          {/* <form onSubmit={formikSearch.handleSubmit}> */}
-          <FormControl>
-            <InputGroup textAlign={"right"}>
-              <Input
-                type={"text"}
-                placeholder="Search"
-                name="search"
-                bgColor={"white"}
-                onChange={(e) => setCurrentSearch(e.target.value)}
-                // onChange={searchHandler}
-                borderRightRadius="0"
-                // value={formikSearch.values.search}
-              />
+          <form onSubmit={formikSearch.handleSubmit}>
+            <FormControl>
+              <InputGroup textAlign={"right"}>
+                <Input
+                  type={"text"}
+                  placeholder="Search"
+                  name="search"
+                  bgColor={"white"}
+                  // onChange={(e) => setCurrentSearch(e.target.value)}
+                  onChange={searchHandler}
+                  borderRightRadius="0"
+                  value={formikSearch.values.search}
+                />
 
-              <Button
-                borderLeftRadius={"0"}
-                bgColor={"white"}
-                type="submit"
-                border="1px solid #e2e8f0"
-                borderLeft={"0px"}
-              >
-                search
-              </Button>
-            </InputGroup>
-          </FormControl>
-          {/* </form> */}
+                <Button
+                  borderLeftRadius={"0"}
+                  bgColor={"white"}
+                  type="submit"
+                  border="1px solid #e2e8f0"
+                  borderLeft={"0px"}
+                >
+                  search
+                </Button>
+              </InputGroup>
+            </FormControl>
+          </form>
         </Grid>
         <Box ml="50%">
           <Button
