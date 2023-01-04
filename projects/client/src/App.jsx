@@ -199,7 +199,7 @@ const App = () => {
             </ProtectedRoute>
           }
         />
-        <Route path="/payment-list" element={<OrderPayment />} />
+
         <Route
           path="/admin/sales-report"
           element={
