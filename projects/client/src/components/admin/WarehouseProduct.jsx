@@ -255,12 +255,6 @@ const WarehouseProduct = () => {
     formikSearch.setFieldValue(name, value)
   }
 
-  // const search = (products) => {
-  //   return products.filter((item) =>
-  //     item.product_name.toLowerCase().includes(currentSearch)
-  //   )
-  // }
-
   const btnResetFilter = () => {
     setCurrentSearch(false)
     setSortBy(false)
@@ -340,7 +334,12 @@ const WarehouseProduct = () => {
       price: Yup.string().required(),
       CategoryId: Yup.string().required(),
       weight: Yup.string().required("2 kg"),
-      product_picture: Yup.string().required(),
+      product_picture: Yup.string()
+        .required()
+        .test("fileSize", "The file is too large", (value) => {
+          if (!value.length) return true // attachment is optional
+          return value[0].size <= 1000000
+        }),
     }),
     validateOnChange: false,
   })
@@ -435,6 +434,8 @@ const WarehouseProduct = () => {
                     }}
                     value={{ label: formik.values.CategoryId }}
                     options={categoryOption}
+                    fontSize={"15px"}
+                    color={"black"}
                   ></Select>
                   <FormErrorMessage>
                     {formik.errors.CategoryId}

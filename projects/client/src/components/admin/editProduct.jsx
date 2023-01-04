@@ -51,6 +51,8 @@ const EditProduct = (props) => {
     fetchImage,
     idEdit,
     setOpenModal,
+    preview,
+    setPreview,
   } = props
 
   const formik = useFormik({
@@ -63,14 +65,7 @@ const EditProduct = (props) => {
       weight: "",
     },
 
-    onSubmit: async ({
-      product_name,
-      description,
-      price,
-      CategoryId,
-      product_picture,
-      weight,
-    }) => {
+    onSubmit: async () => {
       try {
         let editProduct = {
           product_name: nameEdit,

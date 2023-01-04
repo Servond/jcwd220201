@@ -56,13 +56,8 @@ const productAdminController = {
 
         await db.ProductPicture.bulkCreate(newProductImg)
 
-        const ProductStock = await db.ProductStock.create({
-          stock: 0,
-          ProductId: createProduct.id,
-        })
-
         const foundProductById = await db.Product.findByPk(createProduct.id, {
-          include: [{ model: db.ProductPicture }, { model: db.ProductStock }],
+          include: [{ model: db.ProductPicture }],
         })
 
         return res.status(200).json({
