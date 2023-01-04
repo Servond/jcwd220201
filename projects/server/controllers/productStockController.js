@@ -72,7 +72,7 @@ const productStockController = {
       //   }
 
       //   const page = parseInt(req.query.page) || 0
-      //   const limit = parseInt(req.query.limit) || 3
+      //   const limit = parseInt(req.query.limit) || 1
       //   const search = req.query.search_query || ""
       //   const offset = limit * page
       //   const totalRows = await Warehouse.count({
@@ -171,7 +171,7 @@ const productStockController = {
     //   }
 
     //   const page = parseInt(req.query.page) || 0
-    //   const limit = parseInt(req.query.limit) || 2
+    //   const limit = parseInt(req.query.limit) || 1
     //   const search = req.query.search_query || ""
     //   const offset = limit * page
     //   const totalRows = await ProductStock.count({

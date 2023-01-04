@@ -47,7 +47,7 @@ const Stock = () => {
 
   // Pagination & Search
   // const [page, setPage] = useState(0)
-  // const [limit, setLimit] = useState(3)
+  // const [limit, setLimit] = useState(1)
   // const [pages, setPages] = useState(0)
   // const [rows, setRows] = useState(0)
   const [product, setProduct] = useState([])
@@ -70,7 +70,6 @@ const Stock = () => {
   //     const response = await axiosInstance.get(
   //       `/admin/stock/all-warehouse?page=${page}&limit=${limit}`
   //     )
-  //     console.log("res", response)
 
   //     setWarehouse(response.data.result)
   //     setPage(response.data.page)
@@ -167,6 +166,10 @@ const Stock = () => {
     fetchAllWarehouse()
     fetchProduct()
   }, [])
+  // useEffect(() => {
+  //   fetchAllWarehouse()
+  //   fetchProduct()
+  // }, [page])
   return (
     <>
       <Container bg="#e0e7eb" maxW="vw" p="0">
