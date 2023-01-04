@@ -187,8 +187,9 @@ const SidebarAdmin = () => {
               Manage User Order
             </Button>
           </NavLink>
+
           <NavLink
-            // to="/admin/warehouseData" ISI INI YA TEMAN2
+            to="/admin/payment"
             style={({ isActive }) => ({
               backgroundColor: isActive ? "#005e9d" : "#008deb",
             })}
@@ -201,7 +202,7 @@ const SidebarAdmin = () => {
               borderRadius="0px"
               _hover={{ bg: "#005e9d" }}
             >
-              Manage Stock Mutation
+              Payment Order
             </Button>
           </NavLink>
 
@@ -226,7 +227,7 @@ const SidebarAdmin = () => {
 
         <ButtonGroup flexDirection="column" spacing="0" variant="unstyled">
           <NavLink
-            // to="/admin/warehouseData" ISI INI YA TEMAN2
+            to="/admin/sales-report"
             style={({ isActive }) => ({
               backgroundColor: isActive ? "#005e9d" : "#008deb",
             })}

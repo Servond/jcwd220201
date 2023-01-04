@@ -6,30 +6,25 @@ import {
   HStack,
   Image,
   Stack,
-  Select,
   Text,
   useColorModeValue,
   Icon,
-  InputGroup,
-  InputLeftElement,
-  Input,
-  InputRightElement,
   Checkbox,
   Divider,
-  useNumberInput,
   useDisclosure,
   Button,
   useToast,
+  AlertDialog,
+  AlertDialogOverlay,
+  AlertDialogBody,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogFooter,
 } from "@chakra-ui/react"
-import {
-  Editable,
-  EditableInput,
-  EditableTextarea,
-  EditablePreview,
-} from "@chakra-ui/react"
+
 import { useEffect } from "react"
 import { useState } from "react"
-import { FiGift } from "react-icons/fi"
+import { useSelector } from "react-redux"
 import { Link } from "react-router-dom"
 import { axiosInstance } from "../../api"
 import { Rupiah } from "../../lib/currency/Rupiah"
@@ -39,6 +34,8 @@ const CartItem = ({
   product_picture,
   CartId,
   productId,
+  CategoryId,
+  category,
   quantity,
   checkAllProduct,
   fetchCartItem,
@@ -49,9 +46,11 @@ const CartItem = ({
   const [checkProduct, setCheckProduct] = useState(false)
   const [qtyProduct, setQtyProduct] = useState(quantity)
   const { isOpen, onOpen, onClose } = useDisclosure()
+  const cartSelector = useSelector((state) => state.cart)
   const toast = useToast()
 
   const btnDelete = () => {
+    onClose()
     onDelete()
   }
   const fetchCartById = async () => {
@@ -130,17 +129,7 @@ const CartItem = ({
       console.log(err)
     }
   }
-  const { getInputProps, getIncrementButtonProps, getDecrementButtonProps } =
-    useNumberInput({
-      step: 1,
-      defaultValue: qtyProduct,
-      min: 1,
-      max: qtyProduct,
-    })
-  const inc = getIncrementButtonProps(addQty)
-  const dec = getDecrementButtonProps(decQty)
-  const input = getInputProps(qtyProduct)
-  const qty = Number(input.value)
+
   useEffect(() => {
     fetchCartById()
     fetchCartByProduct()
@@ -171,7 +160,7 @@ const CartItem = ({
             height="120px"
             fit="cover"
             src={product_picture}
-            // alt={name}
+            alt="gambar produk"
             draggable="false"
             loading="lazy"
           />
@@ -182,7 +171,8 @@ const CartItem = ({
                 color={useColorModeValue("gray.600", "gray.400")}
                 fontSize="sm"
               >
-                Kategori
+                {/* Kategori */}
+                {category}
                 {/* {CategoryId} */}
               </Text>
             </Stack>
@@ -199,31 +189,35 @@ const CartItem = ({
             md: "flex",
           }}
         >
-          <InputGroup w="40%">
-            <InputLeftElement>
-              <MinusIcon
-                fontSize="10"
-                {...dec}
-                color={qtyProduct > 1 ? "#0095DA" : "#c0cada"}
-                onClick={decQty}
-              />
-            </InputLeftElement>
-            <Input width="10em" textAlign="center" _hover={"none"} {...input} />
-            <InputRightElement>
-              <AddIcon
-                fontSize="10"
-                {...inc}
-                color={productStock <= qtyProduct ? "#c0cada" : "#0095DA"}
-                onClick={addQty}
-              />
-            </InputRightElement>
-          </InputGroup>
+          <Box
+            display="flex"
+            borderRadius="10px"
+            boxShadow="base"
+            justifyContent="space-between"
+          >
+            <Button
+              variant="unstyled"
+              onClick={addQty}
+              isDisabled={productStock <= qtyProduct}
+              color={productStock <= qtyProduct ? "#c0cada" : "#0095DA"}
+            >
+              <AddIcon fontSize="10" />
+            </Button>
+
+            <Text mt="2">{qtyProduct}</Text>
+
+            <Button
+              variant="unstyled"
+              onClick={decQty}
+              color={qtyProduct > 1 ? "#0095DA" : "#c0cada"}
+            >
+              <MinusIcon fontSize="10" />
+            </Button>
+          </Box>
 
           <HStack spacing="1">
             <Text>{Rupiah(price)}</Text>
           </HStack>
-
-          {/* <PriceTag price={price} currency={currency} /> */}
 
           <CloseButton onClick={btnDelete} />
         </Flex>
@@ -239,23 +233,59 @@ const CartItem = ({
             md: "none",
           }}
         >
-          <Link fontSize="sm" textDecor="underline">
+          <Link fontSize="sm" textDecor="underline" onClick={btnDelete}>
             Hapus Produk
           </Link>
-          <Select
-            maxW="64px"
-            aria-label="Select quantity"
-            focusBorderColor={useColorModeValue("blue.500", "blue.200")}
+          <Box
+            display="flex"
+            borderRadius="10px"
+            boxShadow="base"
+            justifyContent="space-between"
           >
-            <option value="1">1</option>
-            <option value="2">2</option>
-            <option value="3">3</option>
-            <option value="4">4</option>
-          </Select>
-          {/* <PriceTag price={price} currency={currency} /> */}
+            <Button
+              variant="unstyled"
+              onClick={addQty}
+              isDisabled={productStock <= qtyProduct}
+              color={productStock <= qtyProduct ? "#c0cada" : "#0095DA"}
+            >
+              <AddIcon fontSize="10" />
+            </Button>
+
+            <Text mt="2">{qtyProduct}</Text>
+
+            <Button
+              variant="unstyled"
+              onClick={decQty}
+              color={qtyProduct > 1 ? "#0095DA" : "#c0cada"}
+            >
+              <MinusIcon fontSize="10" />
+            </Button>
+          </Box>
         </Flex>
       </Flex>
       <Divider />
+
+      {/* Delete Per Product */}
+      <AlertDialog isOpen={isOpen} onClose={onClose}>
+        <AlertDialogOverlay>
+          <AlertDialogContent>
+            <AlertDialogHeader fontSize="lg" fontWeight="bold">
+              Hapus Barang dari Keranjag
+            </AlertDialogHeader>
+
+            <AlertDialogBody>
+              Barang yang kamu pilih akan dihapus dari keranjang.
+            </AlertDialogBody>
+
+            <AlertDialogFooter>
+              <Button onClick={onClose}>Kembali</Button>
+              <Button colorScheme="red" onClick={btnDelete} ml={3}>
+                Hapus
+              </Button>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialogOverlay>
+      </AlertDialog>
     </>
   )
 }

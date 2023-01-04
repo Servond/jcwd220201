@@ -35,6 +35,8 @@ app.use(express.json())
 
 const productsAdminRoute = require("../routes/productsAdminRoute")
 const warehouseUserRoute = require("../routes/warehouseUserRoute")
+const reportProductRoute = require("../routes/reportProductRoute")
+
 const paymentRoute = require("../routes/paymentRoute")
 // Register middleware
 app.use("/api/register", registerRoute)
@@ -53,6 +55,7 @@ const {
   citiesRoute,
   provincesRoute,
   categoriesRoute,
+  adminUserRoute,
 } = require("../routes")
 
 app.use("/public", express.static("public"))
@@ -66,10 +69,12 @@ app.use("/products", productsRoute)
 app.use("/categories", categoriesRoute)
 app.use("/carts", cartRoute)
 app.use("/product-admin", productsAdminRoute)
-app.use("/admin/stock", productStockRoute)
 app.use("/warehouse-user", warehouseUserRoute)
+app.use("/sales", reportProductRoute)
+app.use("/admin/stock", productStockRoute)
 app.use("/payment", paymentRoute)
 app.use("/order/", userOrderRoute)
+app.use("/admin-user", adminUserRoute)
 
 app.get("/api", (req, res) => {
   res.send(`Hello, this is my API`)
