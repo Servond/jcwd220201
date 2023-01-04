@@ -29,7 +29,6 @@ const EditWarehouseUser = (props) => {
     idEdit,
     setOpenModal,
     warehouse,
-    userId,
   } = props
 
   const formik = useFormik({

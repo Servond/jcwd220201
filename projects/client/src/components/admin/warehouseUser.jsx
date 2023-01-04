@@ -1,10 +1,15 @@
 import {
+  Alert,
+  AlertDescription,
   AlertDialog,
   AlertDialogBody,
+  AlertDialogCloseButton,
   AlertDialogContent,
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogOverlay,
+  AlertIcon,
+  AlertTitle,
   Box,
   Button,
   Container,
@@ -18,6 +23,12 @@ import {
   Input,
   InputGroup,
   Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
   Table,
   TableContainer,
   Tbody,
@@ -62,9 +73,11 @@ const WarehouseUser = () => {
   const toast = useToast()
   const authSelector = useSelector((state) => state.auth)
   const navigate = useNavigate()
+  const [disabled, setDisabled] = useState(false)
 
   const { isOpen, onOpen, onClose } = useDisclosure()
   const cancelRef = useRef()
+  const btnRef = useRef()
 
   const fetchWareUser = async () => {
     try {
@@ -76,7 +89,7 @@ const WarehouseUser = () => {
           _sortDir: sortDir,
           _sortBy: sortBy,
           WarehouseId: filter,
-          UserId: currentSearch,
+          name: currentSearch,
         },
       })
 
@@ -119,9 +132,11 @@ const WarehouseUser = () => {
   const deleteBtn = async (id) => {
     try {
       const resDelete = await axiosInstance.delete(`/warehouse-user/${id}`)
+
       fetchWareUser()
       getUser()
       getWarehouse()
+
       toast({
         title: "User telah dihapus",
       })
@@ -264,8 +279,8 @@ const WarehouseUser = () => {
   const customStyles = {
     control: (base) => ({
       ...base,
-      width: "max-content",
-      minWidth: "120%",
+      width: "min-content",
+      minWidth: "25vh",
     }),
   }
 
@@ -275,7 +290,8 @@ const WarehouseUser = () => {
         <Flex w="full" justifyContent="center">
           <VStack mt="3" wrap="wrap" justifyContent="center">
             <Grid
-              gap="20"
+              gap="-4"
+              w={"-moz-min-content"}
               templateColumns={"repeat(4, 1fr)"}
               mt="8"
               mb="4"
@@ -286,7 +302,7 @@ const WarehouseUser = () => {
                 fontSize={"15px"}
                 bgColor="white"
                 styles={customStyles}
-                placeholder="Filter"
+                placeholder="Filter By Warehouse"
                 options={warehouseOption}
               ></Select>
               <Select
@@ -296,7 +312,7 @@ const WarehouseUser = () => {
                 fontSize={"15px"}
                 bgColor="white"
                 styles={customStyles}
-                placeholder="Sort By"
+                placeholder="Sort By UserId"
                 options={sortUser}
               ></Select>
 
@@ -305,7 +321,7 @@ const WarehouseUser = () => {
                   <InputGroup textAlign={"right"}>
                     <Input
                       type={"text"}
-                      placeholder="Search By UserId"
+                      placeholder="Search By Name"
                       name="search"
                       bgColor={"white"}
                       h="4vh"
@@ -333,6 +349,7 @@ const WarehouseUser = () => {
                 p="3"
                 w="12vh"
                 h="4vh"
+                ml="6"
                 bgColor="white"
                 variant="solid"
                 _hover={{ borderBottom: "2px solid " }}
@@ -450,19 +467,28 @@ const WarehouseUser = () => {
                       >
                         <FaRegEdit />
                       </Button>
-                      <Button onClick={onOpen} colorScheme="red" mx="4">
+                      <Button
+                        ref={btnRef}
+                        onClick={onOpen}
+                        colorScheme="red"
+                        mx="4"
+                      >
                         <RiDeleteBin2Line />
                       </Button>
                       <AlertDialog
                         isOpen={isOpen}
                         onClose={onClose}
                         leastDestructiveRef={cancelRef}
+                        motionPreset="slideInBottom"
+                        isCentered
+                        finalFocusRef={btnRef}
                       >
                         <AlertDialogOverlay>
                           <AlertDialogContent>
                             <AlertDialogHeader fontSize="lg" fontStyle="bold">
                               Hapus Admin
                             </AlertDialogHeader>
+                            <AlertDialogCloseButton />
 
                             <AlertDialogBody>
                               Apakah Yakin Ingin Menghapus Warehouse Admin??
@@ -493,6 +519,23 @@ const WarehouseUser = () => {
             </Table>
           </TableContainer>
         </Container>
+        {!users.length ? (
+          <Alert
+            status="error"
+            variant="subtle"
+            flexDir="column"
+            alignItems="center"
+            justifyContent="center"
+            textAlign="center"
+            alignSelf="center"
+            h="200px"
+            w="70%"
+          >
+            <AlertIcon boxSize="20px" mr="0" />
+            <AlertTitle>Oops, produk tidak ditemukan !</AlertTitle>
+            <AlertDescription>Coba kata kunci lain</AlertDescription>
+          </Alert>
+        ) : null}
 
         <HStack w="full" alignSelf="flex-end" justifyContent="center">
           {renderPageButton()}
@@ -500,6 +543,7 @@ const WarehouseUser = () => {
             Page {page}/{Math.ceil(totalCount / limit)}
           </Box>
         </HStack>
+
         <Box h="4%" w="full"></Box>
       </Flex>
 

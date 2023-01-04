@@ -72,18 +72,21 @@ const warehouseUserController = {
             offset: (_page - 1) * _limit,
             order: [[_sortBy, _sortDir]],
             include: [
-              { model: db.User, attributes: ["name"] },
+              {
+                model: db.User,
+                attributes: ["name"],
+                where: {
+                  [Op.or]: [
+                    {
+                      name: {
+                        [Op.like]: `%${name}%`,
+                      },
+                    },
+                  ],
+                },
+              },
               { model: db.Warehouse, attributes: ["warehouse_name"] },
             ],
-            where: {
-              [Op.or]: [
-                {
-                  UserId: {
-                    [Op.like]: `%${UserId}%`,
-                  },
-                },
-              ],
-            },
           })
           return res.status(200).json({
             message: "get all user",
@@ -144,11 +147,14 @@ const warehouseUserController = {
     try {
       const { id } = req.params
 
-      await db.WarehousesUser.update(req.body, {
-        where: {
-          id: id,
-        },
-      })
+      await db.WarehousesUser.update(
+        { WarehouseId: req.body.WarehouseId },
+        {
+          where: {
+            id: id,
+          },
+        }
+      )
 
       return res.status(200).json({
         message: "Warehouse user telah update",
