@@ -28,6 +28,7 @@ import {
   PopoverBody,
   Image,
   Divider,
+  useMediaQuery,
 } from "@chakra-ui/react"
 import { HamburgerIcon, CloseIcon, SearchIcon } from "@chakra-ui/icons"
 import { IoMdCart } from "react-icons/io"
@@ -46,6 +47,7 @@ import { axiosInstance } from "../../api"
 import { useEffect, useState } from "react"
 import { itemCart } from "../../redux/features/cartSlice"
 import { Rupiah } from "../../lib/currency/Rupiah"
+import Logo from "./Logo"
 
 const Navbar = ({ onChange, onClick, onKeyDown }) => {
   const cartSelector = useSelector((state) => state.cart)
@@ -61,6 +63,9 @@ const Navbar = ({ onChange, onClick, onKeyDown }) => {
 
   const navigate = useNavigate()
   const dispatch = useDispatch()
+
+  const [isLargerThanSm] = useMediaQuery("(min-width: 20rem)")
+  const [isLargerThanMd] = useMediaQuery("(min-width: 30rem)")
 
   const keepUserLogin = async () => {
     try {
@@ -114,7 +119,7 @@ const Navbar = ({ onChange, onClick, onKeyDown }) => {
       let total = 0
 
       for (let i = 0; i < productQty.length; i++) {
-        total = Number(productQty[i])
+        total += Number(productQty[i])
       }
       setCartQty(total)
     } catch (err) {
@@ -133,7 +138,7 @@ const Navbar = ({ onChange, onClick, onKeyDown }) => {
                 maxH="40"
                 borderRadius="lg"
                 width={{ md: 40 }}
-                src={`http://localhost:8000/public/${val.Product?.ProductPictures?.product_picture}`}
+                src={`http://localhost:8000/public/${val.Product?.ProductPictures[0].product_picture}`}
               />
             </Box>
             <Box mt={{ base: 4, md: 0 }} ml={{ md: 6 }}>
@@ -151,16 +156,15 @@ const Navbar = ({ onChange, onClick, onKeyDown }) => {
                 display="block"
                 fontSize="lg"
                 lineHeight="normal"
-                fontWeight="semibold"
                 href="#"
               >
-                {Rupiah(val.Product.price)}
+                <Text fontWeight="700">{Rupiah(val.Product.price)}</Text>
               </Link>
               <Text fontWeight="bold" mt={2} color="teal.600">
                 Quantity
               </Text>
-              <Text mt={2} color="gray.500">
-                {val.quantity}
+              <Text mt={2} color="gray.500" fontWeight="700">
+                X{val.quantity}
               </Text>
             </Box>
           </Box>
@@ -175,7 +179,12 @@ const Navbar = ({ onChange, onClick, onKeyDown }) => {
 
   useEffect(() => {
     fetchUserCart()
-  }, [cartProduct, authSelector])
+  }, [])
+
+  // BUG
+  // useEffect(() => {
+  //   fetchUserCart()
+  // }, [cartProduct])
 
   useEffect(() => {
     setSearchValue(searchQuery.get("search"))
@@ -200,15 +209,26 @@ const Navbar = ({ onChange, onClick, onKeyDown }) => {
           />
           <HStack
             spacing={8}
-            w={{ base: 10, md: "full" }}
+            w={{ base: "25", md: "full" }}
             alignItems={"center"}
           >
             <Box>
-              <LinkRouterDom to="/">
-                <Heading as="h1" size="lg" letterSpacing={"tighter"}>
-                  WIRED!
-                </Heading>
-              </LinkRouterDom>
+              {/* <Logo /> */}
+              <Image
+                src="logo.png"
+                alt="logo"
+                width={
+                  isLargerThanMd
+                    ? "10rem"
+                    : isLargerThanSm
+                    ? "8.262rem"
+                    : "6.826rem"
+                }
+                maxW="100%"
+                py="1.25rem"
+                cursor="pointer"
+                onClick={() => navigate("/")}
+              />
             </Box>
             <HStack
               w="full"
@@ -273,7 +293,11 @@ const Navbar = ({ onChange, onClick, onKeyDown }) => {
                     </LinkRouterDom>
                   </PopoverTrigger>
                   {cartSelector.cart.length ? (
-                    <PopoverContent>
+                    <PopoverContent
+                      overflow="scroll"
+                      maxH="40vh"
+                      h={{ base: 0, md: "40vh" }}
+                    >
                       <PopoverHeader
                         display="flex"
                         justifyContent="space-between"
@@ -283,13 +307,7 @@ const Navbar = ({ onChange, onClick, onKeyDown }) => {
                           <Text>Lihat Keranjang</Text>
                         </LinkRouterDom>
                       </PopoverHeader>
-                      <PopoverBody>
-                        {renderCartProduct()}
-                        {/* <Image src={product_picture} /> */}
-                        {/* <Text align="center" fontWeight="semibold">
-                        Keranjangmu Masih Kosong nih ?
-                      </Text> */}
-                      </PopoverBody>
+                      <PopoverBody>{renderCartProduct()}</PopoverBody>
                     </PopoverContent>
                   ) : (
                     <PopoverContent>
@@ -336,7 +354,6 @@ const Navbar = ({ onChange, onClick, onKeyDown }) => {
                       name={authSelector.profile_picture}
                       src={authSelector.profile_picture}
                     />
-                    {/* {authSelector.profile_picture} */}
                     <Text my="auto" p="8px">
                       {authSelector.name}
                     </Text>
@@ -454,13 +471,7 @@ const Navbar = ({ onChange, onClick, onKeyDown }) => {
                         <Text>Lihat Keranjang</Text>
                       </LinkRouterDom>
                     </PopoverHeader>
-                    <PopoverBody>
-                      {renderCartProduct()}
-                      {/* <Image src={product_picture} /> */}
-                      {/* <Text align="center" fontWeight="semibold">
-                        Keranjangmu Masih Kosong nih ?
-                      </Text> */}
-                    </PopoverBody>
+                    <PopoverBody>{renderCartProduct()}</PopoverBody>
                   </PopoverContent>
                 </Popover>
               </Box>

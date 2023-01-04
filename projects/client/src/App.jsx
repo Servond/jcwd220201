@@ -82,7 +82,14 @@ const App = () => {
         </Route>
 
         {/* Cart Page */}
-        <Route path="/cart" element={<CartPage />} />
+        <Route
+          path="/cart"
+          element={
+            <GeneralRoute>
+              <CartPage />
+            </GeneralRoute>
+          }
+        />
 
         {/* Product List */}
         <Route path="/product" element={<ProductList />} />
@@ -192,6 +199,7 @@ const App = () => {
             </ProtectedRoute>
           }
         />
+
         <Route
           path="/admin/sales-report"
           element={
