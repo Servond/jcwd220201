@@ -91,13 +91,60 @@ const OrderPayment = () => {
     return payment.map((val) => {
       return val.OrderItems.map((value) => (
         <Tr key={val.id}>
-          <Td textAlign={"center"}>{value.Product.product_name}</Td>
-          <Td textAlign={"center"}>{val.payment_date}</Td>
-          <Td textAlign={"center"}>{val.total_price}</Td>
-          <Td textAlign={"center"}>{val.StatusId}</Td>
-          <Td textAlign={"center"}>{val.UserId}</Td>
-          <Td textAlign={"center"}>{val.shipping_cost}</Td>
-          <Td>
+          <Td
+            textAlign={"center"}
+            border={"1px solid black"}
+            whiteSpace="pre-wrap"
+            width="50%"
+          >
+            {value.Product.product_name}
+          </Td>
+          <Td
+            border={"1px solid black"}
+            textAlign={"center"}
+            whiteSpace="pre-wrap"
+            width="50%"
+          >
+            {val.payment_date}
+          </Td>
+          <Td
+            border={"1px solid black"}
+            textAlign={"center"}
+            whiteSpace="pre-wrap"
+            width="50%"
+          >
+            {val.total_price}
+          </Td>
+          <Td
+            border={"1px solid black"}
+            textAlign={"center"}
+            whiteSpace="pre-wrap"
+            width="50%"
+          >
+            {val.StatusId}
+          </Td>
+          <Td
+            border={"1px solid black"}
+            textAlign={"center"}
+            whiteSpace="pre-wrap"
+            width="50%"
+          >
+            {val.UserId}
+          </Td>
+          <Td
+            border={"1px solid black"}
+            textAlign={"center"}
+            whiteSpace="pre-wrap"
+            width="50%"
+          >
+            {val.shipping_cost}
+          </Td>
+          <Td
+            border={"1px solid black"}
+            textAlign={"center"}
+            whiteSpace="pre-wrap"
+            width="50%"
+          >
             <Button
               alignContent={"left"}
               onClick={() => confirmOrder(val.id)}
@@ -167,7 +214,7 @@ const OrderPayment = () => {
               </Box>
             </Flex>
             <Flex>
-              <Container maxW="container.lg" py="8" pb="5" px="1">
+              <Container maxW="container.md" py="8" pb="5" px="1">
                 <TableContainer
                   border={"1px solid black"}
                   w="1800px"
