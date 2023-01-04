@@ -31,7 +31,7 @@ import {
   ModalFooter,
 } from "@chakra-ui/react"
 import { Carousel } from "react-responsive-carousel"
-import { useState } from "react"
+import { Fragment, useState } from "react"
 import { Link, useLocation, useParams } from "react-router-dom"
 import "react-responsive-carousel/lib/styles/carousel.min.css"
 // import "../products/ProductDetail.css"
@@ -201,7 +201,7 @@ const ProductDetail = () => {
   }, [qty, cartQty])
 
   return (
-    <>
+    <Fragment>
       <Navbar />
       <Container maxW="7xl">
         <SimpleGrid
@@ -383,7 +383,7 @@ const ProductDetail = () => {
           </ModalFooter>
         </ModalContent>
       </Modal>
-    </>
+    </Fragment>
   )
 }
 
