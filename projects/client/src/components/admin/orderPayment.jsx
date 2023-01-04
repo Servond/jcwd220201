@@ -34,11 +34,32 @@ const OrderPayment = () => {
   const { isOpen, onOpen, onClose } = useDisclosure()
   const cancelRef = useRef()
 
+  const [page, setPage] = useState(1)
+
+  const [sortBy, setSortBy] = useState("UserId")
+  const [sortDir, setSortDir] = useState("ASC")
+  const [filter, setFilter] = useState("All")
+  const [currentSearch, setCurrentSearch] = useState("")
+
+  const [limit, setLimit] = useState(5)
+  const [totalCount, setTotalCount] = useState(0)
+
   const fetchOrder = async () => {
     try {
-      const resp = await axiosInstance.get(`/payment`)
+      const resp = await axiosInstance.get(`/payment`, {
+        params: {
+          _limit: limit,
+          _page: page,
+          _sortDir: "DESC",
+          _sortDir: sortDir,
+          _sortBy: sortBy,
+          StatusId: filter,
+          name: currentSearch,
+        },
+      })
 
       setPayment(resp.data.data)
+      setTotalCount(resp.data.data)
 
       console.log(resp, "resp")
     } catch (err) {
@@ -81,70 +102,89 @@ const OrderPayment = () => {
     }
   }
 
+  const sortUsertHandler = (event) => {
+    const value = event.value
+    setSortBy(value.split(" ")[0])
+    setSortDir(value.split(" ")[1])
+  }
+
+  const filterWarehouseHandler = (event) => {
+    const value = event.value
+
+    setFilter(value)
+  }
+
+  const formikSearch = useFormik({
+    initialValues: {
+      search: "",
+    },
+    onSubmit: ({ search }) => {
+      setCurrentSearch(search)
+    },
+  })
+
+  const searchHandler = ({ target }) => {
+    const { name, value } = target
+    formikSearch.setFieldValue(name, value)
+  }
+
+  const btnResetFilter = () => {
+    setCurrentSearch(false)
+    setSortBy(false)
+    setFilter(false)
+    window.location.reload(false)
+  }
+
+  useEffect(() => {
+    fetchOrder()
+  }, [page, sortBy, sortDir, filter, currentSearch])
+
+  const renderPageButton = () => {
+    const totalPage = Math.ceil(totalCount / limit)
+
+    const pageArray = new Array(totalPage).fill(null).map((val, i) => ({
+      id: i + 1,
+    }))
+
+    return pageArray.map((val) => {
+      return (
+        <PageButton
+          key={val.id.toString()}
+          id={val.id}
+          onClick={() => setPage(val.id)}
+        />
+      )
+    })
+  }
+
   console.log(
     "pay",
     payment.map((val) => val.OrderItems.map((value) => value.Product))
   )
 
   const renderOrder = () => {
-    // console.log(payment, "pay")
     return payment.map((val) => {
       return val.OrderItems.map((value) => (
         <Tr key={val.id}>
-          <Td
-            textAlign={"center"}
-            border={"1px solid black"}
-            whiteSpace="pre-wrap"
-            width="50%"
-          >
+          <Td textAlign={"center"} border={"1px solid black"}>
             {value.Product.product_name}
           </Td>
-          <Td
-            border={"1px solid black"}
-            textAlign={"center"}
-            whiteSpace="pre-wrap"
-            width="50%"
-          >
+          <Td border={"1px solid black"} textAlign={"center"}>
             {val.payment_date}
           </Td>
-          <Td
-            border={"1px solid black"}
-            textAlign={"center"}
-            whiteSpace="pre-wrap"
-            width="50%"
-          >
+          <Td border={"1px solid black"} textAlign={"center"}>
             {val.total_price}
           </Td>
-          <Td
-            border={"1px solid black"}
-            textAlign={"center"}
-            whiteSpace="pre-wrap"
-            width="50%"
-          >
+          <Td border={"1px solid black"} textAlign={"center"}>
             {val.StatusId}
           </Td>
-          <Td
-            border={"1px solid black"}
-            textAlign={"center"}
-            whiteSpace="pre-wrap"
-            width="50%"
-          >
+          <Td border={"1px solid black"} textAlign={"center"}>
             {val.UserId}
           </Td>
-          <Td
-            border={"1px solid black"}
-            textAlign={"center"}
-            whiteSpace="pre-wrap"
-            width="50%"
-          >
+          <Td border={"1px solid black"} textAlign={"center"}>
             {val.shipping_cost}
           </Td>
-          <Td
-            border={"1px solid black"}
-            textAlign={"center"}
-            whiteSpace="pre-wrap"
-            width="50%"
-          >
+          <Td border={"1px solid black"} textAlign={"center"} w="20%">
             <Button
               alignContent={"left"}
               onClick={() => confirmOrder(val.id)}
@@ -214,7 +254,7 @@ const OrderPayment = () => {
               </Box>
             </Flex>
             <Flex>
-              <Container maxW="container.md" py="8" pb="5" px="1">
+              <Container maxW="container.xl" py="8" pb="5" px="8">
                 <TableContainer
                   border={"1px solid black"}
                   w="1800px"
