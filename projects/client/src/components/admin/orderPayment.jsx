@@ -1,4 +1,6 @@
 import {
+  Alert,
+  AlertDescription,
   AlertDialog,
   AlertDialogBody,
   AlertDialogCloseButton,
@@ -6,6 +8,8 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogOverlay,
+  AlertIcon,
+  AlertTitle,
   Box,
   Button,
   Container,
@@ -15,8 +19,6 @@ import {
   HStack,
   Input,
   InputGroup,
-  Modal,
-  Select,
   Table,
   TableContainer,
   Tbody,
@@ -34,6 +36,7 @@ import { useFormik } from "formik"
 import { axiosInstance } from "../../api"
 import SidebarAdmin from "./sidebarAdminDashboard"
 import PageButton from "./pageButton"
+import Select from "react-select"
 
 const OrderPayment = () => {
   const [payment, setPayment] = useState([])
@@ -50,7 +53,7 @@ const OrderPayment = () => {
   const [currentSearch, setCurrentSearch] = useState("")
   const [warehouse2, setWarehouse2] = useState([])
 
-  const [limit, setLimit] = useState(5)
+  const [limit, setLimit] = useState(6)
   const [totalCount, setTotalCount] = useState(0)
 
   const fetchOrder = async () => {
@@ -118,24 +121,6 @@ const OrderPayment = () => {
       })
     }
   }
-
-  // const renderPageButton = () => {
-  //   const totalPage = Math.ceil(totalCount / limit)
-
-  //   const pageArray = new Array(totalPage).fill(null).map((val, i) => ({
-  //     id: i + 1,
-  //   }))
-
-  //   return pageArray.map((val) => {
-  //     return (
-  //       <PageButton
-  //         key={val.id.toString()}
-  //         id={val.id}
-  //         onClick={() => setPage(val.id)}
-  //       />
-  //     )
-  //   })
-  // }
 
   console.log(
     "pay",
@@ -209,6 +194,24 @@ const OrderPayment = () => {
       ))
     })
   }
+
+  // const renderPageButton = () => {
+  //   const totalPage = Math.ceil(totalCount / limit)
+
+  //   const pageArray = new Array(totalPage).fill(null).map((val, i) => ({
+  //     id: i + 1,
+  //   }))
+
+  //   return pageArray.map((val) => {
+  //     return (
+  //       <PageButton
+  //         key={val.id.toString()}
+  //         id={val.id}
+  //         onClick={() => setPage(val.id)}
+  //       />
+  //     )
+  //   })
+  // }
 
   const sortUsertHandler = (event) => {
     const value = event.value
@@ -426,6 +429,24 @@ const OrderPayment = () => {
                   </Table>
                 </TableContainer>
               </Container>
+
+              {!payment.length ? (
+                <Alert
+                  status="error"
+                  variant="subtle"
+                  flexDir="column"
+                  alignItems="center"
+                  justifyContent="center"
+                  textAlign="center"
+                  alignSelf="center"
+                  h="200px"
+                  w="70%"
+                >
+                  <AlertIcon boxSize="20px" mr="0" />
+                  <AlertTitle>Oops, produk tidak ditemukan !</AlertTitle>
+                  <AlertDescription>Coba kata kunci lain</AlertDescription>
+                </Alert>
+              ) : null}
 
               {/* <HStack w="full" alignSelf="flex-end" justifyContent="center">
                 {renderPageButton()}

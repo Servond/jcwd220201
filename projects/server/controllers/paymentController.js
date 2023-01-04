@@ -23,7 +23,7 @@ const paymentController = {
       if (
         _sortBy === "UserId" ||
         _sortBy === "WarehouseId" ||
-        _sortBy === "Statusd" ||
+        _sortBy === "StatusId" ||
         UserId ||
         WarehouseId ||
         StatusId
@@ -63,6 +63,7 @@ const paymentController = {
                 ],
               },
             ],
+            WarehouseId: WarehouseId,
           })
           return res.status(200).json({
             message: "get all user",
@@ -71,7 +72,7 @@ const paymentController = {
           })
         }
 
-        const findPayment = await db.WarehousesUser.findAndCountAll({
+        const findPayment = await db.Order.findAndCountAll({
           limit: Number(_limit),
           offset: (_page - 1) * _limit,
           order: [[_sortBy, _sortDir]],
@@ -106,7 +107,7 @@ const paymentController = {
         })
       }
 
-      const findPayment = await WarehousesUser.findAndCountAll({
+      const findPayment = await db.Order.findAndCountAll({
         limit: Number(_limit),
         offset: (_page - 1) * _limit,
         order: [["UserId", _sortDir]],
