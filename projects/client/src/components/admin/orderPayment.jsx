@@ -1,6 +1,7 @@
 import {
   AlertDialog,
   AlertDialogBody,
+  AlertDialogCloseButton,
   AlertDialogContent,
   AlertDialogFooter,
   AlertDialogHeader,
@@ -80,11 +81,17 @@ const OrderPayment = () => {
     }
   }
 
+  console.log(
+    "pay",
+    payment.map((val) => val.OrderItems.map((value) => value.Product))
+  )
+
   const renderOrder = () => {
     // console.log(payment, "pay")
     return payment.map((val) => {
-      return (
+      return val.OrderItems.map((value) => (
         <Tr key={val.id}>
+          <Td textAlign={"center"}>{value.Product.product_name}</Td>
           <Td textAlign={"center"}>{val.payment_date}</Td>
           <Td textAlign={"center"}>{val.total_price}</Td>
           <Td textAlign={"center"}>{val.StatusId}</Td>
@@ -108,6 +115,7 @@ const OrderPayment = () => {
                   <AlertDialogHeader fontSize="lg" fontStyle="bold">
                     Pembatalan Pembayaran
                   </AlertDialogHeader>
+                  <AlertDialogCloseButton />
 
                   <AlertDialogBody>
                     Apakah pembayaran ini ingin dibatalkan?
@@ -131,7 +139,7 @@ const OrderPayment = () => {
             </AlertDialog>
           </Td>
         </Tr>
-      )
+      ))
     })
   }
 
@@ -169,6 +177,14 @@ const OrderPayment = () => {
                   <Table responsive="md" variant="simple">
                     <Thead position={"sticky"} top={-1}>
                       <Tr border={"1px solid black"} maxW="50px">
+                        <Th
+                          border={"1px solid black"}
+                          textAlign={"center"}
+                          color="black"
+                          w="100px"
+                        >
+                          Name
+                        </Th>
                         <Th
                           border={"1px solid black"}
                           textAlign={"center"}
