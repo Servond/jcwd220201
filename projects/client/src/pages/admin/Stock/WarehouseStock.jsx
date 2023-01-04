@@ -56,6 +56,7 @@ const WarehouseStock = ({}) => {
   // Produck Data & Category
   const [data, setData] = useState([])
   console.log("data", data)
+
   // const [category, setCategory] = useState([])
 
   // const [page, setPage] = useState(0)
@@ -189,9 +190,13 @@ const WarehouseStock = ({}) => {
     )
   }
 
+  // useEffect(() => {
+  //   fetchProductWarehouse()
+  // }, [page])
+
   useEffect(() => {
     fetchProductWarehouse()
-  }, [page])
+  }, [])
   return (
     <>
       <Container bg="#e0e7eb" maxW="vw" p="0">

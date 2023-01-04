@@ -127,21 +127,6 @@ const Stock = () => {
                     </Tr>
                   ))
                 )}
-                {/* {warehouse.map((val) => (
-                  <Tr h="auto">
-                    <Td
-                      cursor="pointer"
-                      _hover={{ color: "teal.400" }}
-                      onClick={() => toWarehouse(val.warehouse_name)}
-                    >
-                      {val.warehouse_name || "Not found"}
-                    </Td>
-                    <Td>{val.address}</Td>
-                    <Td>{val.city}</Td>
-                    <Td>{val.province}</Td>
-                    <Td>{val.User?.name || "Need Assign"}</Td>
-                  </Tr>
-                ))} */}
               </Tbody>
             </Table>
             {/* <ReactPaginate
