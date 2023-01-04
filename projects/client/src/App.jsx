@@ -28,13 +28,17 @@ import Stock from "./pages/admin/Stock/Stock"
 import ForgotPassword from "./pages/ForgotPassword"
 import RecoverPassword from "./pages/RecoverPassword"
 import ManageUser from "./pages/admin/manageUser"
+import EditPassword from "./components/profile/EditPassword"
+import SalesReport from "./pages/admin/salesReport"
+import OrderPayment from "./components/admin/orderPayment"
 import Checkout from "./pages/Checkout"
+import UserOrder from "./pages/admin/User Order/UserOrder"
+import Transactions from "./pages/Transactions"
 
 const App = () => {
   const [authCheck, setAuthCheck] = useState(false)
 
   const authSelector = useSelector((state) => state.auth)
-  // console.log("1", authSelector)
 
   const dispatch = useDispatch()
 
@@ -78,7 +82,14 @@ const App = () => {
         </Route>
 
         {/* Cart Page */}
-        <Route path="/cart" element={<CartPage />} />
+        <Route
+          path="/cart"
+          element={
+            <GeneralRoute>
+              <CartPage />
+            </GeneralRoute>
+          }
+        />
 
         {/* Product List */}
         <Route path="/product" element={<ProductList />} />
@@ -94,6 +105,14 @@ const App = () => {
           element={
             <GeneralRoute>
               <EditProfile />
+            </GeneralRoute>
+          }
+        />
+        <Route
+          path="/profile/change-password"
+          element={
+            <GeneralRoute>
+              <EditPassword />
             </GeneralRoute>
           }
         />
@@ -164,10 +183,36 @@ const App = () => {
         />
 
         <Route
+          path="/order/all-order"
+          element={
+            <ProtectedRoute>
+              <UserOrder />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
           path="/admin/user"
           element={
             <ProtectedRoute>
               <ManageUser />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/admin/sales-report"
+          element={
+            <ProtectedRoute>
+              <SalesReport />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/payment"
+          element={
+            <ProtectedRoute>
+              <OrderPayment />
             </ProtectedRoute>
           }
         />
@@ -191,6 +236,16 @@ const App = () => {
           element={
             <GeneralRoute>
               <Checkout />
+            </GeneralRoute>
+          }
+        />
+
+        {/* Transactions Route */}
+        <Route
+          path="/transactions"
+          element={
+            <GeneralRoute>
+              <Transactions />
             </GeneralRoute>
           }
         />
