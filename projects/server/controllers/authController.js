@@ -59,13 +59,15 @@ const authController = {
       if (req.file) {
         req.body.profile_picture = `http://localhost:8000/public/${req.file.filename}`
       }
-      const { password } = req.body
-
-      // edit with hashed password
-      const hashedPassword = bcrypt.hashSync(password, 5)
 
       await User.update(
-        { password: hashedPassword },
+        {
+          name: req.body.name,
+          gender: req.body.gender,
+          phone: req.body.phone,
+          date_of_birth: req.body.date_of_birth,
+          profile_picture: req.body.profile_picture,
+        },
         {
           where: {
             id: req.user.id,
@@ -82,7 +84,7 @@ const authController = {
     } catch (err) {
       console.log(err)
       return res.status(500).json({
-        message: "Server error",
+        message: err.message,
       })
     }
   },
@@ -105,11 +107,12 @@ const authController = {
 
       return res.status(200).json({
         message: "Edited user data",
+        data: findUserById,
       })
     } catch (err) {
       console.log(err)
       return res.status(500).json({
-        message: "Server error",
+        message: err.message,
       })
     }
   },
