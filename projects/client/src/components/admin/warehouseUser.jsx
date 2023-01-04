@@ -23,12 +23,6 @@ import {
   Input,
   InputGroup,
   Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  ModalOverlay,
   Table,
   TableContainer,
   Tbody,
@@ -73,7 +67,6 @@ const WarehouseUser = () => {
   const toast = useToast()
   const authSelector = useSelector((state) => state.auth)
   const navigate = useNavigate()
-  const [disabled, setDisabled] = useState(false)
 
   const { isOpen, onOpen, onClose } = useDisclosure()
   const cancelRef = useRef()
@@ -258,12 +251,6 @@ const WarehouseUser = () => {
     })
   }
 
-  const formChange = ({ target }) => {
-    const { name, value } = target
-
-    formik.setFieldValue(name, value)
-  }
-
   const userOption = userId.map((val) => {
     return { value: val.id, label: val.name }
   })
@@ -439,7 +426,7 @@ const WarehouseUser = () => {
                   </Th>
                 </Tr>
               </Thead>
-              {/* <Tbody>{renderUser()}</Tbody> */}
+
               <Tbody maxWidth="max-content">
                 {users.map((val) => (
                   <Tr key={val.id}>

@@ -4,7 +4,6 @@ import {
   Container,
   FormControl,
   FormLabel,
-  Input,
   ModalBody,
   ModalCloseButton,
   ModalContent,
@@ -20,8 +19,6 @@ import { axiosInstance } from "../../api"
 const EditWarehouseUser = (props) => {
   const toast = useToast()
   const {
-    userIdEdit,
-    setUserIdEdit,
     warehouseEdit,
     setWarehouseEdit,
     fetchWareUser,
@@ -36,10 +33,8 @@ const EditWarehouseUser = (props) => {
       WarehouseId: "",
     },
 
-    onSubmit: async (values) => {
+    onSubmit: async () => {
       try {
-        const { WarehouseId } = values
-
         let editWareUser = {
           WarehouseId: warehouseEdit,
         }
