@@ -216,6 +216,22 @@ const salesReport = {
       })
     }
   },
+  getReport: async (req, res) => {
+    try {
+      const {
+        _limit = 6,
+        _page = 1,
+        _sortDir = "DESC",
+        _sortBy = "UserId",
+        WarehouseId = "",
+        CategoryId = "",
+        name = "",
+        category = "",
+      } = req.query
+    } catch (err) {
+      console.log(err)
+    }
+  },
 }
 
 module.exports = salesReport
