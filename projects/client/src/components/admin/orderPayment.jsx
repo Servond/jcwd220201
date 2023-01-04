@@ -10,7 +10,13 @@ import {
   Button,
   Container,
   Flex,
+  FormControl,
+  Grid,
+  HStack,
+  Input,
+  InputGroup,
   Modal,
+  Select,
   Table,
   TableContainer,
   Tbody,
@@ -24,8 +30,10 @@ import {
 } from "@chakra-ui/react"
 import { useEffect, useRef } from "react"
 import { useState } from "react"
+import { useFormik } from "formik"
 import { axiosInstance } from "../../api"
 import SidebarAdmin from "./sidebarAdminDashboard"
+import PageButton from "./pageButton"
 
 const OrderPayment = () => {
   const [payment, setPayment] = useState([])
@@ -40,6 +48,7 @@ const OrderPayment = () => {
   const [sortDir, setSortDir] = useState("ASC")
   const [filter, setFilter] = useState("All")
   const [currentSearch, setCurrentSearch] = useState("")
+  const [warehouse2, setWarehouse2] = useState([])
 
   const [limit, setLimit] = useState(5)
   const [totalCount, setTotalCount] = useState(0)
@@ -50,18 +59,26 @@ const OrderPayment = () => {
         params: {
           _limit: limit,
           _page: page,
-          _sortDir: "DESC",
           _sortDir: sortDir,
           _sortBy: sortBy,
-          StatusId: filter,
-          name: currentSearch,
+          WarehouseId: filter,
+          product_name: currentSearch,
         },
       })
 
       setPayment(resp.data.data)
       setTotalCount(resp.data.data)
+    } catch (err) {
+      console.log(err)
+    }
+  }
 
-      console.log(resp, "resp")
+  const getWarehouse = async () => {
+    try {
+      const respon = await axiosInstance.get(`/warehouses`)
+
+      setWarehouse2(respon.data.data)
+      console.log(respon.data.data, "resp")
     } catch (err) {
       console.log(err)
     }
@@ -102,64 +119,27 @@ const OrderPayment = () => {
     }
   }
 
-  const sortUsertHandler = (event) => {
-    const value = event.value
-    setSortBy(value.split(" ")[0])
-    setSortDir(value.split(" ")[1])
-  }
+  // const renderPageButton = () => {
+  //   const totalPage = Math.ceil(totalCount / limit)
 
-  const filterWarehouseHandler = (event) => {
-    const value = event.value
+  //   const pageArray = new Array(totalPage).fill(null).map((val, i) => ({
+  //     id: i + 1,
+  //   }))
 
-    setFilter(value)
-  }
-
-  const formikSearch = useFormik({
-    initialValues: {
-      search: "",
-    },
-    onSubmit: ({ search }) => {
-      setCurrentSearch(search)
-    },
-  })
-
-  const searchHandler = ({ target }) => {
-    const { name, value } = target
-    formikSearch.setFieldValue(name, value)
-  }
-
-  const btnResetFilter = () => {
-    setCurrentSearch(false)
-    setSortBy(false)
-    setFilter(false)
-    window.location.reload(false)
-  }
-
-  useEffect(() => {
-    fetchOrder()
-  }, [page, sortBy, sortDir, filter, currentSearch])
-
-  const renderPageButton = () => {
-    const totalPage = Math.ceil(totalCount / limit)
-
-    const pageArray = new Array(totalPage).fill(null).map((val, i) => ({
-      id: i + 1,
-    }))
-
-    return pageArray.map((val) => {
-      return (
-        <PageButton
-          key={val.id.toString()}
-          id={val.id}
-          onClick={() => setPage(val.id)}
-        />
-      )
-    })
-  }
+  //   return pageArray.map((val) => {
+  //     return (
+  //       <PageButton
+  //         key={val.id.toString()}
+  //         id={val.id}
+  //         onClick={() => setPage(val.id)}
+  //       />
+  //     )
+  //   })
+  // }
 
   console.log(
     "pay",
-    payment.map((val) => val.OrderItems.map((value) => value.Product))
+    payment.map((val) => val.WarehouseId)
   )
 
   const renderOrder = () => {
@@ -182,7 +162,7 @@ const OrderPayment = () => {
             {val.UserId}
           </Td>
           <Td border={"1px solid black"} textAlign={"center"}>
-            {val.shipping_cost}
+            {val.WarehouseId}
           </Td>
           <Td border={"1px solid black"} textAlign={"center"} w="20%">
             <Button
@@ -230,9 +210,66 @@ const OrderPayment = () => {
     })
   }
 
+  const sortUsertHandler = (event) => {
+    const value = event.value
+    setSortBy(value.split(" ")[0])
+    setSortDir(value.split(" ")[1])
+  }
+
+  const filterWarehouse = (event) => {
+    const value = event.value
+
+    setFilter(value)
+  }
+
+  const warehouseoption = warehouse2.map((val) => {
+    return { value: val.id, label: val.warehouse_name }
+  })
+
+  const formikSearch = useFormik({
+    initialValues: {
+      search: "",
+    },
+    onSubmit: ({ search }) => {
+      setCurrentSearch(search)
+    },
+  })
+
+  const searchHandler = ({ target }) => {
+    const { name, value } = target
+    formikSearch.setFieldValue(name, value)
+  }
+
+  const btnResetFilter = () => {
+    setCurrentSearch(false)
+    setSortBy(false)
+    setFilter(false)
+    window.location.reload(false)
+  }
+
   useEffect(() => {
     fetchOrder()
-  }, [])
+    getWarehouse()
+  }, [page, sortBy, sortDir, filter, currentSearch])
+
+  console.log(warehouseoption, "ware")
+
+  const sortUser = [
+    { value: "UserId ASC", label: "A-Z" },
+    { value: "UserId DESC", label: "Z-A" },
+  ]
+
+  const customStyles = {
+    control: (base) => ({
+      ...base,
+      width: "min-content",
+      minWidth: "25vh",
+    }),
+  }
+
+  // useEffect(() => {
+  //   fetchOrder()
+  // }, [])
 
   return (
     <>
@@ -252,6 +289,75 @@ const OrderPayment = () => {
               >
                 Order Payment Status
               </Box>
+              <Grid
+                gap="-4"
+                w={"-moz-min-content"}
+                templateColumns={"repeat(4, 1fr)"}
+                mt="8"
+                mb="4"
+                ml="10%"
+              >
+                <Select
+                  onChange={filterWarehouse}
+                  fontSize={"15px"}
+                  bgColor="white"
+                  styles={customStyles}
+                  placeholder="Filter By Warehouse"
+                  options={warehouseoption}
+                ></Select>
+
+                <Select
+                  onChange={(e) => {
+                    sortUsertHandler(e)
+                  }}
+                  fontSize={"15px"}
+                  bgColor="white"
+                  styles={customStyles}
+                  placeholder="Sort By UserId"
+                  options={sortUser}
+                ></Select>
+
+                <form onSubmit={formikSearch.handleSubmit}>
+                  <FormControl>
+                    <InputGroup textAlign={"right"}>
+                      <Input
+                        type={"text"}
+                        placeholder="Search By Name"
+                        name="search"
+                        bgColor={"white"}
+                        h="4vh"
+                        onChange={searchHandler}
+                        borderRightRadius="0"
+                        value={formikSearch.values.search}
+                      />
+
+                      <Button
+                        borderLeftRadius={"0"}
+                        bgColor={"white"}
+                        type="submit"
+                        h="4vh"
+                        border="1px solid #e2e8f0"
+                        borderLeft={"0px"}
+                      >
+                        search
+                      </Button>
+                    </InputGroup>
+                  </FormControl>
+                </form>
+
+                <Button
+                  onClick={btnResetFilter}
+                  p="3"
+                  w="12vh"
+                  h="4vh"
+                  ml="6"
+                  bgColor="white"
+                  variant="solid"
+                  _hover={{ borderBottom: "2px solid " }}
+                >
+                  Reset Filter
+                </Button>
+              </Grid>
             </Flex>
             <Flex>
               <Container maxW="container.xl" py="8" pb="5" px="8">
@@ -312,7 +418,7 @@ const OrderPayment = () => {
                           color="black"
                           w="100px"
                         >
-                          shipping cost
+                          warehouse id
                         </Th>
                       </Tr>
                     </Thead>
@@ -320,6 +426,14 @@ const OrderPayment = () => {
                   </Table>
                 </TableContainer>
               </Container>
+
+              {/* <HStack w="full" alignSelf="flex-end" justifyContent="center">
+                {renderPageButton()}
+                <Box>
+                  Page {page}/{Math.ceil(totalCount / limit)}
+                </Box>
+              </HStack> */}
+              <Box h="4%" w="full"></Box>
             </Flex>
           </VStack>
         </Flex>

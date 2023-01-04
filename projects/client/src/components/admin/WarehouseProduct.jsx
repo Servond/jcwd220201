@@ -1,4 +1,8 @@
 import {
+  Alert,
+  AlertDescription,
+  AlertIcon,
+  AlertTitle,
   Box,
   Button,
   Container,
@@ -14,7 +18,7 @@ import {
   Input,
   InputGroup,
   Modal,
-  Select,
+  Tab,
   Table,
   TableContainer,
   Tbody,
@@ -35,8 +39,10 @@ import { RiDeleteBin5Fill } from "react-icons/ri"
 import * as Yup from "yup"
 import EditProduct from "./editProduct"
 import PageButton from "./pageButton"
+import Select from "react-select"
 
 import { Rupiah } from "../../lib/currency/Rupiah"
+import { useSearchParams } from "react-router-dom"
 
 const WarehouseProduct = () => {
   const [products, setproducts] = useState([])
@@ -78,6 +84,7 @@ const WarehouseProduct = () => {
       setTotalCount(response.data.dataCount)
 
       setproducts(response.data.data)
+      formik.handleReset()
       const temporary = response.data.data.filter((item) => item.id === idEdit)
       setImageEdit(temporary[0].ProductPictures)
     } catch (err) {
@@ -142,8 +149,12 @@ const WarehouseProduct = () => {
     setIdEdit(id)
   }
 
+  console.log(
+    "map",
+    products.map((val) => val.images)
+  )
+
   const renderProduct = () => {
-    console.log(products, "product")
     return products.map((val) => {
       return (
         <Tr key={val.id} border={"1px solid black"} textAlign={"center"}>
@@ -219,15 +230,14 @@ const WarehouseProduct = () => {
     })
   }
 
-  const sortProductHandler = ({ target }) => {
-    const { value } = target
+  const sortProductHandler = (event) => {
+    const value = event.value
     setSortBy(value.split(" ")[0])
     setSortDir(value.split(" ")[1])
   }
 
-  const filterProductHandler = ({ target }) => {
-    const { value } = target
-
+  const filterProductHandler = (event) => {
+    const value = event.value
     setFilter(value)
   }
 
@@ -289,6 +299,7 @@ const WarehouseProduct = () => {
         formData.append("price", price)
         formData.append("CategoryId", CategoryId)
         formData.append("weight", weight)
+
         Object.values(product_picture).forEach((product_picture) => {
           formData.append("product_picture", product_picture)
         })
@@ -323,7 +334,12 @@ const WarehouseProduct = () => {
       price: Yup.string().required(),
       CategoryId: Yup.string().required(),
       weight: Yup.string().required("2 kg"),
-      product_picture: Yup.string().required(),
+      product_picture: Yup.string()
+        .required()
+        .test("fileSize", "The file is too large", (value) => {
+          if (!value.length) return true // attachment is optional
+          return value[0].size <= 1000000
+        }),
     }),
     validateOnChange: false,
   })
@@ -345,12 +361,21 @@ const WarehouseProduct = () => {
     }
   }
 
+  const categoryOption = categories.map((val) => {
+    return { value: val.id, label: val.category }
+  })
+
+  const nameOption = [
+    { value: "product_name ASC", label: "Name A-Z" },
+    { value: "product_name DESC", label: "Name Z-A" },
+  ]
+
   return (
     <>
       <Flex h="100%" w="full" direction="column">
         <Flex w="full" justifyContent="center">
           <HStack mt="3" wrap="wrap" justifyContent="center">
-            <Grid templateColumns="repeat(3, 1fr)" gap="4">
+            <Grid templateColumns="repeat(3, 1fr)" gap="2" ml="60" mr="60">
               <GridItem>
                 <FormControl isInvalid={formik.errors.product_name}>
                   <FormLabel>Nama Produk</FormLabel>
@@ -358,6 +383,7 @@ const WarehouseProduct = () => {
                     borderColor="black"
                     name="product_name"
                     onChange={formChangeHandler}
+                    value={formik.values.product_name}
                   />
                   <FormErrorMessage>
                     {formik.errors.product_name}
@@ -373,10 +399,12 @@ const WarehouseProduct = () => {
                 >
                   <FormLabel>Deskripsi</FormLabel>
                   <Textarea
+                    minH="unset"
                     minRows="1"
                     borderColor="black"
                     name="description"
                     onChange={formChangeHandler}
+                    value={formik.values.description}
                   />
                   <FormErrorMessage>
                     {formik.errors.description}
@@ -390,6 +418,7 @@ const WarehouseProduct = () => {
                     borderColor="black"
                     name="price"
                     onChange={formChangeHandler}
+                    value={formik.values.price}
                   />
                   <FormErrorMessage>{formik.errors.price}</FormErrorMessage>
                 </FormControl>
@@ -399,15 +428,15 @@ const WarehouseProduct = () => {
                 <FormControl maxW="100%" isInvalid={formik.errors.CategoryId}>
                   <FormLabel>Category Id</FormLabel>
                   <Select
-                    borderColor="black"
                     name="CategoryId"
-                    onChange={formChangeHandler}
-                  >
-                    <option value="">Select Category</option>
-                    {categories.map((val) => (
-                      <option value={val.id}>{val.category}</option>
-                    ))}
-                  </Select>
+                    onChange={(e) => {
+                      formik.setFieldValue("CategoryId", e.value)
+                    }}
+                    value={{ label: formik.values.CategoryId }}
+                    options={categoryOption}
+                    fontSize={"15px"}
+                    color={"black"}
+                  ></Select>
                   <FormErrorMessage>
                     {formik.errors.CategoryId}
                   </FormErrorMessage>
@@ -421,6 +450,7 @@ const WarehouseProduct = () => {
                     borderColor="black"
                     name="weight"
                     onChange={formChangeHandler}
+                    value={formik.values.weight}
                   />
                   <FormErrorMessage>{formik.errors.weight}</FormErrorMessage>
                 </FormControl>
@@ -466,7 +496,7 @@ const WarehouseProduct = () => {
             <Box w="full" h="8%"></Box>
 
             <Button
-              disabled={formik.isSubmitting}
+              // disabled={formik.isSubmitting ? true : false}
               onClick={formik.handleSubmit}
               my="4"
               colorScheme="teal"
@@ -490,29 +520,21 @@ const WarehouseProduct = () => {
             bgColor="white"
             color={"#6D6D6F"}
             placeholder="Filter"
-          >
-            <option value="">Select Category</option>
-            {categories.map((val) => (
-              <option value={val.id}>
-                {val.id}. {val.category}
-              </option>
-            ))}
-          </Select>
+            options={categoryOption}
+          ></Select>
 
           <Select
-            onChange={sortProductHandler}
+            onChange={(e) => {
+              sortProductHandler(e)
+            }}
             fontSize={"15px"}
             fontWeight="normal"
             fontFamily="serif"
             bgColor="white"
             color={"#6D6D6F"}
             placeholder="Sort By"
-          >
-            <option value="product_name ASC" selected>
-              Name A-Z
-            </option>
-            <option value="product_name DESC">Name Z-A</option>
-          </Select>
+            options={nameOption}
+          ></Select>
 
           <form onSubmit={formikSearch.handleSubmit}>
             <FormControl>
@@ -522,6 +544,7 @@ const WarehouseProduct = () => {
                   placeholder="Search"
                   name="search"
                   bgColor={"white"}
+                  // onChange={(e) => setCurrentSearch(e.target.value)}
                   onChange={searchHandler}
                   borderRightRadius="0"
                   value={formikSearch.values.search}
@@ -557,7 +580,7 @@ const WarehouseProduct = () => {
             border={"1px solid black"}
             w="1800px"
             mt={8}
-            overflowY="unset"
+            overflowY="scroll"
           >
             <Table responsive="md" variant="simple">
               <Thead position={"sticky"} top={-1} backgroundColor={"#718096"}>
@@ -623,7 +646,28 @@ const WarehouseProduct = () => {
             Page {page}/{Math.ceil(totalCount / limit)}
           </Box>
         </HStack>
+
         <Box h="4%" w="full"></Box>
+        {!products.length ? (
+          <Alert
+            status="error"
+            variant="subtle"
+            flexDir="column"
+            alignItems="center"
+            justifyContent="center"
+            textAlign="center"
+            alignSelf="center"
+            h="200px"
+            w="80%"
+          >
+            <AlertIcon boxSize="20px" mr="0" />
+            <AlertTitle>Oops, produk nggak ditemukan !</AlertTitle>
+            <AlertDescription>
+              Coba kata kunci lain. Terimakasih
+              <span size="lg">🤯</span>
+            </AlertDescription>
+          </Alert>
+        ) : null}
       </Flex>
 
       <Modal isOpen={openModal} onClose={() => setOpenModal(false)}>

@@ -4,42 +4,157 @@ const emailer = require("../lib/emailer")
 const moment = require("moment")
 
 const handlebars = require("handlebars")
+const { Op } = require("sequelize")
 
 const paymentController = {
   getPayment: async (req, res) => {
     try {
-      let allOrder = await db.Order.findAll({
-        attributes: [
-          "id",
-          "payment_date",
-          "total_price",
-          "StatusId",
-          "UserId",
-          "shipping_cost",
-        ],
-        include: [
-          {
-            model: db.OrderItem,
-            include: [{ model: db.Product, attributes: ["product_name"] }],
-          },
-          {
-            model: db.Courier,
-          },
-          {
-            model: db.User,
-          },
+      const {
+        _limit = 6,
+        _page = 1,
+        _sortDir = "ASC",
+        _sortBy = "UserId",
+        WarehouseId = "",
+        UserId = "",
+        StatusId = "",
+        product_name = "",
+      } = req.query
 
-          {
-            model: db.Status,
-          },
+      if (
+        _sortBy === "UserId" ||
+        _sortBy === "WarehouseId" ||
+        _sortBy === "Statusd" ||
+        UserId ||
+        WarehouseId ||
+        StatusId
+      ) {
+        if (!Number(WarehouseId)) {
+          const findPayment = await db.Order.findAndCountAll({
+            attributes: [
+              "id",
+              "payment_date",
+              "total_price",
+              "StatusId",
+              "UserId",
+              "WarehouseId",
+            ],
+            limit: Number(_limit),
+            offset: (_page - 1) * _limit,
+            order: [[_sortBy, _sortDir]],
+            include: [
+              { model: db.Warehouse, attributes: ["Warehouse_name"] },
+              {
+                model: db.OrderItem,
+                attributes: ["ProductId"],
+                include: [
+                  {
+                    model: db.Product,
+                    attributes: ["product_name"],
+                    where: {
+                      [Op.or]: [
+                        {
+                          product_name: {
+                            [Op.like]: `%${product_name}%`,
+                          },
+                        },
+                      ],
+                    },
+                  },
+                ],
+              },
+            ],
+          })
+          return res.status(200).json({
+            message: "get all user",
+            data: findPayment.rows,
+            dataCount: findPayment.count,
+          })
+        }
+
+        const findPayment = await db.WarehousesUser.findAndCountAll({
+          limit: Number(_limit),
+          offset: (_page - 1) * _limit,
+          order: [[_sortBy, _sortDir]],
+          include: [
+            { model: db.Warehouse, attributes: ["Warehouse_name"] },
+            {
+              model: db.OrderItem,
+              attributes: ["ProductId"],
+              include: [
+                {
+                  model: db.Product,
+                  attributes: ["product_name"],
+                  where: {
+                    [Op.or]: [
+                      {
+                        product_name: {
+                          [Op.like]: `%${product_name}%`,
+                        },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          ],
+          WarehouseId: WarehouseId,
+        })
+        return res.status(200).json({
+          message: "get all user",
+          data: findPayment.rows,
+          dataCount: findPayment.count,
+        })
+      }
+
+      const findPayment = await WarehousesUser.findAndCountAll({
+        limit: Number(_limit),
+        offset: (_page - 1) * _limit,
+        order: [["UserId", _sortDir]],
+        include: [
+          { model: db.OrderItem, attributes: ["ProductId"] },
+          { model: db.Warehouse, attributes: ["Warehouse_name"] },
+          { model: db.Product, attributes: ["product_name"] },
         ],
-        order: [["id", "ASC"]],
       })
 
       return res.status(200).json({
-        message: "Get all user order payment",
-        data: allOrder,
+        message: "Get All Warehouse User",
+        data: findPayment.rows,
+        dataCount: findPayment.count,
       })
+
+      // let allOrder = await db.Order.findAll({
+      //   attributes: [
+      //     "id",
+      //     "payment_date",
+      //     "total_price",
+      //     "StatusId",
+      //     "UserId",
+      //     "WarehouseId",
+      //   ],
+      //   include: [
+      //     {
+      //       model: db.OrderItem,
+      //       include: [{ model: db.Product, attributes: ["product_name"] }],
+      //     },
+      //     {
+      //       model: db.Courier,
+      //     },
+      //     {
+      //       model: db.User,
+      //     },
+
+      //     {
+      //       model: db.Status,
+      //     },
+      //   ],
+      //   order: [["id", "ASC"]],
+      // })
+
+      // return res.status(200).json({
+      //   message: "Get all user order payment",
+      //   data: allOrder,
+      // })
     } catch (err) {
       console.log(err)
       return res.status(500).json({
