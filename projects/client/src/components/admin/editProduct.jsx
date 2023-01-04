@@ -29,7 +29,8 @@ import axios from "axios"
 const EditProduct = (props) => {
   const inputFileRef = useRef()
   const toast = useToast()
-  const [preview, setPreview] = useState("")
+  const { id } = useParams()
+  const [file, setFile] = useState("")
 
   const {
     nameEdit,
@@ -129,7 +130,6 @@ const EditProduct = (props) => {
         `/product-admin/image/${idEdit}`,
         newImg
       )
-      setPreview(newImg)
     } catch (err) {
       console.log(err)
     }
