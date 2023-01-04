@@ -10,6 +10,6 @@ router.get("/lowrevenue", salesReport.lowRevenue)
 router.get("/order", salesReport.getAllTransactions)
 router.get("/orderitem", salesReport.getOrderItem)
 router.get("/report", salesReport.getReportWithQuery)
-// router.get("/report/2", salesReport.getReport)
+router.get("/report/2", salesReport.getReport)
 
 module.exports = router

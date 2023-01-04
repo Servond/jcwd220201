@@ -29,7 +29,7 @@ import { Rupiah } from "../../lib/currency/Rupiah"
 
 const SalesReport = () => {
   const [page, setPage] = useState(1)
-  const [limit, setLimit] = useState(1)
+  const [limit, setLimit] = useState(6)
   const [totalCount, setTotalCount] = useState(0)
   const [sortBy, setSortBy] = useState("")
   const [filter, setFilter] = useState("All")
@@ -46,7 +46,7 @@ const SalesReport = () => {
 
   const fetchReport = async () => {
     try {
-      const response = await axiosInstance.get(`/sales/report`, {
+      const response = await axiosInstance.get(`/sales/report/2`, {
         params: {
           _page: page,
           _limit: limit,
@@ -116,24 +116,45 @@ const SalesReport = () => {
     setSortBy(value)
   }
 
-  console.log(sales, "sales")
-  const renderSales = () => {
-    return sales.map((val) => {
-      return (
-        <Tr key={val.id}>
-          <Td>{val.WarehouseId}</Td>
-          <Td>{val.CategoryId}</Td>
-          <Td>{val.category}</Td>
-          <Td>{val.product_name}</Td>
-          <Td>{Rupiah(val.total_price)}</Td>
-          <Td>{val.shipping_cost}</Td>
-          <Td>{Rupiah(val.total)}</Td>
-          <Td>{val.warehouse_name}</Td>
-          <Td>{val.payment_date}</Td>
-        </Tr>
-      )
-    })
-  }
+  console.log(
+    "sales",
+    sales.map((val) =>
+      val.OrderItems.map((value) => value.Product.product_name)
+    )
+  )
+  console.log(
+    "proId",
+    sales.map((val) => val.OrderItems.map((value) => value.ProductId))
+  )
+  console.log(
+    "cat",
+    sales.map((val) =>
+      val.OrderItems.map((value) => value.Product.Category.category)
+    )
+  )
+
+  console.log(
+    "ware",
+    sales.map((val) => val.Warehouse.warehouse_name)
+  )
+
+  // const renderSales = () => {
+  //   return sales.map((val) => {
+  //     return (
+  //       <Tr key={val.id}>
+  //         <Td>{val.WarehouseId}</Td>
+  //         <Td>{val.CategoryId}</Td>
+  //         <Td>{val.category}</Td>
+  //         <Td>{val.product_name}</Td>
+  //         <Td>{Rupiah(val.total_price)}</Td>
+  //         <Td>{val.shipping_cost}</Td>
+  //         <Td>{Rupiah(val.total)}</Td>
+  //         <Td>{val.warehouse_name}</Td>
+  //         <Td>{val.payment_date}</Td>
+  //       </Tr>
+  //     )
+  //   })
+  // }
 
   const renderPageButton = () => {
     const totalPage = Math.ceil(totalCount / limit)
@@ -303,25 +324,28 @@ const SalesReport = () => {
                 </Box>
               </Flex>
 
-              <Grid>
+              <Container maxW="container.xl">
                 <TableContainer
-                  border="1px solid #dfe1e3"
-                  mt="3vh"
-                  borderRadius="8px"
+                  border={"1px solid black"}
+                  mt={8}
+                  overflowY="unset"
                 >
-                  <Table variant="simple">
-                    <Thead>
+                  <Table responsive="md" variant="simple">
+                    <Thead
+                      position={"sticky"}
+                      top={-1}
+                      backgroundColor={"#718096"}
+                      textColor="black"
+                    >
                       <Tr>
                         <Th w="100px">
                           <Text fontSize="10px">WarehouseId</Text>
                         </Th>
-                        <Th w="100px">
-                          <Text fontSize="10px">CategoryId</Text>
-                        </Th>
+
                         <Th w="100px">
                           <Text fontSize="10px">Category</Text>
                         </Th>
-                        <Th w="200px">
+                        <Th w="100px">
                           <Text fontSize="10px">product_name</Text>
                         </Th>
                         <Th w="100px">
@@ -330,60 +354,30 @@ const SalesReport = () => {
                         <Th w="100px">
                           <Text fontSize="10px">Shipping Cost</Text>
                         </Th>
-                        <Th w="100px">
-                          <Text fontSize="10px">Total</Text>
-                        </Th>
-                        <Th w="100px">
-                          <Text fontSize="10px">Warehouse</Text>
-                        </Th>
+
                         <Th w="100px">
                           <Text fontSize="10px">Payment_Date</Text>
                         </Th>
                       </Tr>
                     </Thead>
-                    {/* <Tbody>
-                    {sales.map((val) => (
-                      <Tr>
-                        <Td>
-                          {/* RAW QUERY */}
-                    {/* <Text>
-                    {val.payment_date} */}
-                    {/* {val.payment_date.split("T")[0]} /{" "}
-                            {val.payment_date.split("T")[1].split(".000Z")} */}
-                    {/* </Text> */}
-                    {/* </Td>
-                        <Td>
-                          <Text>{val.productId}</Text>
-                        </Td>
-                        <Td>
-                          <Text>{val.category}</Text>
-                        </Td>
-                        <Td maxW="200px">
-                          <Text overflow="hidden" textOverflow="ellipsis">
-                            {val.product_name}
-                          </Text>
-                        </Td>
-
-                        <Td>
-                          <Text>{Rupiah(val.price)}</Text>
-                        </Td>
-                        <Td>
-                          <Text>{val.quantity}</Text>
-                        </Td>
-
-                        <Td>
-                          <Text>{Rupiah(val.total)}</Text>
-                        </Td>
-                        <Td>
-                          <Text>{val.warehouse_name}</Text>
-                        </Td>
-                      </Tr>
-                    ))}
-                  </Tbody> */}
-                    <Tbody maxWidth="max-content"> {renderSales()}</Tbody>
+                    <Tbody>
+                      {sales.map((val) =>
+                        val.OrderItems.map((value) => (
+                          <Tr>
+                            <Td>{val.Warehouse.warehouse_name}</Td>
+                            <Td>{value.Product.Category.category}</Td>
+                            <Td>{value.Product.product_name}</Td>
+                            <Td>{Rupiah(val.total_price)}</Td>
+                            <Td>{Rupiah(val.shipping_cost)}</Td>
+                            <Td>{val.payment_date}</Td>
+                          </Tr>
+                        ))
+                      )}
+                    </Tbody>
+                    {/* <Tbody maxWidth="max-content"> {renderSales()}</Tbody> */}
                   </Table>
                 </TableContainer>
-              </Grid>
+              </Container>
 
               <HStack w="full" alignSelf="flex-end" justifyContent="center">
                 {renderPageButton()}

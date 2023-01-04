@@ -216,111 +216,137 @@ const salesReport = {
       })
     }
   },
-  // getReport: async (req, res) => {
-  //   try {
-  //     const {
-  //       _limit = 6,
-  //       _page = 1,
-  //       _sortDir = "DESC",
-  //       _sortBy = "WarehouseId",
-  //       WarehouseId = "",
-  //       CategoryId = "",
-  //       product_name = "",
-  //       category = "",
-  //     } = req.query
+  getReport: async (req, res) => {
+    try {
+      const {
+        _limit = 6,
+        _page = 1,
+        _sortDir = "DESC",
+        _sortBy = "WarehouseId",
+        WarehouseId = "",
+        CategoryId = "",
+        product_name = "",
+        payment_date = "",
+      } = req.query
 
-  //     if (
-  //       _sortBy === "CategoryId" ||
-  //       _sortBy === "WarehouseId" ||
-  //       CategoryId ||
-  //       WarehouseId
-  //     ) {
-  //       if (!Number(WarehouseId)) {
-  //         const findReport = await db.Order.findAndCountAll({
-  //           attributes: ["payment_date", "total_price", "WarehouseId"],
-  //           limit: Number(_limit),
-  //           offset: (_page - 1) * _limit,
-  //           order: [[_sortBy, _sortDir]],
-  //           include: [
-  //             {
-  //               model: db.Product,
-  //               attributes: ["product_name", "CategoryId"],
-  //               where: {
-  //                 [Op.or]: [
-  //                   {
-  //                     product_name: {
-  //                       [Op.like]: `%${product_name}%`,
-  //                     },
-  //                   },
-  //                 ],
-  //               },
-  //             },
-  //             { model: db.Warehouse, attributes: ["warehouse_name"] },
-  //             { model: db.Category, attributes: ["category"] },
-  //           ],
-  //         })
-  //         return res.status(200).json({
-  //           message: "get all user",
-  //           data: findReport.rows,
-  //           dataCount: findReport.count,
-  //         })
-  //       }
+      if (
+        _sortBy === "CategoryId" ||
+        _sortBy === "WarehouseId" ||
+        CategoryId ||
+        WarehouseId
+      ) {
+        if (!Number(WarehouseId)) {
+          const findReport = await db.Order.findAndCountAll({
+            attributes: [
+              "payment_date",
+              "total_price",
+              "WarehouseId",
+              "shipping_cost",
+            ],
+            limit: Number(_limit),
+            offset: (_page - 1) * _limit,
+            order: [[_sortBy, _sortDir]],
+            include: [
+              { model: db.Warehouse, attributes: ["warehouse_name"] },
 
-  //       if (Number(WarehouseId)) {
-  //         const findReport = await db.Order.findAndCountAll({
-  //           attributes: ["payment_date", "total_price", "WarehouseId"],
-  //           limit: Number(_limit),
-  //           offset: (_page - 1) * _limit,
-  //           order: [[_sortBy, _sortDir]],
-  //           include: [
-  //             {
-  //               model: db.Product,
-  //               attributes: ["product_name", "CategoryId"],
-  //               where: {
-  //                 [Op.or]: [
-  //                   {
-  //                     product_name: {
-  //                       [Op.like]: `%${product_name}%`,
-  //                     },
-  //                   },
-  //                 ],
-  //               },
-  //             },
-  //             { model: db.Warehouse, attributes: ["warehouse_name"] },
-  //             { model: db.Category, attributes: ["category"] },
-  //           ],
-  //           WarehouseId: WarehouseId,
-  //         })
-  //         return res.status(200).json({
-  //           message: "get all user",
-  //           data: findReport.rows,
-  //           dataCount: findReport.count,
-  //         })
-  //       }
-  //       const findReport = await db.Order.findAndCountAll({
-  //         limit: Number(_limit),
-  //         offset: (_page - 1) * _limit,
-  //         order: [["WarehouseId", _sortDir]],
-  //         include: [
-  //           { model: db.Product, attributes: ["product_name"] },
-  //           { model: db.Warehouse, attributes: ["warehouse_name"] },
-  //           { model: db.Category, attributes: ["category"] },
-  //         ],
-  //       })
+              {
+                model: db.OrderItem,
+                attributes: ["ProductId"],
+                include: [
+                  {
+                    model: db.Product,
+                    attributes: ["product_name", "CategoryId"],
+                    where: {
+                      [Op.or]: [
+                        {
+                          product_name: {
+                            [Op.like]: `%${product_name}%`,
+                          },
+                        },
+                      ],
+                    },
+                    include: [{ model: db.Category, attributes: ["category"] }],
+                  },
+                ],
+              },
+            ],
+          })
+          return res.status(200).json({
+            message: "get all user",
+            data: findReport.rows,
+            dataCount: findReport.count,
+          })
+        }
 
-  //       return res.status(200).json({
-  //         message: "Get All Warehouse User",
-  //         data: findReport.rows,
-  //         dataCount: findReport.count,
-  //       })
-  //     }
-  //   } catch (err) {
-  //     console.log(err)
-  //     return res.status(500).json({
-  //       message: err.message,
-  //     })
-  //   }
-  // },
+        if (Number(WarehouseId)) {
+          const findReport = await db.Order.findAndCountAll({
+            attributes: [
+              "payment_date",
+              "total_price",
+              "WarehouseId",
+              "shipping_cost",
+            ],
+            limit: Number(_limit),
+            offset: (_page - 1) * _limit,
+            order: [[_sortBy, _sortDir]],
+            include: [
+              { model: db.Warehouse, attributes: ["warehouse_name"] },
+
+              {
+                model: db.OrderItem,
+                attributes: ["ProductId"],
+                include: [
+                  {
+                    model: db.Product,
+                    attributes: ["product_name", "CategoryId"],
+                    where: {
+                      [Op.or]: [
+                        {
+                          product_name: {
+                            [Op.like]: `%${product_name}%`,
+                          },
+                        },
+                      ],
+                    },
+                    include: [{ model: db.Category, attributes: ["category"] }],
+                  },
+                ],
+              },
+            ],
+            WarehouseId: WarehouseId,
+            CategoryId: CategoryId,
+            payment_date: payment_date,
+          })
+          return res.status(200).json({
+            message: "get all user",
+            data: findReport.rows,
+            dataCount: findReport.count,
+          })
+        }
+        const findReport = await db.Order.findAndCountAll({
+          limit: Number(_limit),
+          offset: (_page - 1) * _limit,
+          order: [["WarehouseId", _sortDir]],
+          include: [
+            { model: db.Product, attributes: ["product_name"] },
+            { model: db.Warehouse, attributes: ["warehouse_name"] },
+            { model: db.Category, attributes: ["category"] },
+          ],
+        })
+
+        return res.status(200).json({
+          message: "Get All Warehouse User",
+          data: findReport.rows,
+          dataCount: findReport.count,
+        })
+      }
+    } catch (err) {
+      console.log(err)
+      return res.status(500).json({
+        message: err.message,
+      })
+    }
+  },
 }
 
 module.exports = salesReport
