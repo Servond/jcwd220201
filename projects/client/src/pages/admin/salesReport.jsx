@@ -49,17 +49,17 @@ const SalesReport = () => {
   const fetchReport = async () => {
     try {
       const response = await axiosInstance.get(`/sales/report/2`, {
-        params: {
-          _page: page,
-          _limit: limit,
-          _sortBy: sortBy,
-          _sortDir: sortDir,
-          CategoryId: filter,
-          payment_date: filterMonth,
-          product_name: nameSearch,
-          WarehouseId: filterWare,
-          // category: catSearch,
-        },
+        // params: {
+        //   _page: page,
+        //   _limit: limit,
+        //   _sortBy: sortBy,
+        //   _sortDir: sortDir,
+        //   CategoryId: filter,
+        //   payment_date: filterMonth,
+        //   product_name: nameSearch,
+        //   WarehouseId: filterWare,
+        //   // category: catSearch,
+        // },
       })
 
       setTotalCount(response.data.dataCount)
@@ -337,6 +337,19 @@ const SalesReport = () => {
                         options={warehouseOption}
                       ></Select>
                     </GridItem>
+
+                    {/* Reset */}
+                    <Box ml="50%">
+                      <Button
+                        onClick={btnResetFilter}
+                        p="3"
+                        bgColor="white"
+                        variant="solid"
+                        _hover={{ borderBottom: "2px solid " }}
+                      >
+                        Reset Filter
+                      </Button>
+                    </Box>
 
                     {/* Search */}
                     <GridItem
