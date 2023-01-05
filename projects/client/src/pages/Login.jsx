@@ -29,6 +29,7 @@ import {
   useNavigate,
   Link as LinkRouterDom,
   useLocation,
+  Link,
 } from "react-router-dom"
 import * as Yup from "yup"
 import { axiosInstance } from "../api"
@@ -134,10 +135,11 @@ const LoginPage = () => {
                 mb="30px"
                 mt="-5"
               >
-                {/* WIRED! */}
-                <Center>
-                  <Image boxSize="30%" src="logo.png"></Image>
-                </Center>
+                <Link to="/">
+                  <Center>
+                    <Image boxSize="30%" src="logo.png"></Image>
+                  </Center>
+                </Link>
               </Heading>
               <Wrap spacing={{ base: 10, sm: 3, md: 5, lg: 20 }}>
                 <WrapItem>

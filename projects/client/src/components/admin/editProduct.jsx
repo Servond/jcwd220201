@@ -13,24 +13,22 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
+  Stack,
   Select,
   Textarea,
   useToast,
 } from "@chakra-ui/react"
+
 import { useFormik } from "formik"
 import { useState } from "react"
 import { useRef } from "react"
-import { useParams } from "react-router-dom"
 import { axiosInstance } from "../../api"
-import { MdDelete, MdDeleteForever } from "react-icons/md"
-
-import axios from "axios"
+import { MdDeleteForever } from "react-icons/md"
 import { useEffect } from "react"
 
 const EditProduct = (props) => {
   const inputFileRef = useRef()
   const toast = useToast()
-  const { id } = useParams()
   const [image, setImage] = useState("")
 
   const {
@@ -52,8 +50,6 @@ const EditProduct = (props) => {
     fetchImage,
     idEdit,
     setOpenModal,
-    preview,
-    setPreview,
   } = props
 
   const formik = useFormik({
@@ -81,11 +77,12 @@ const EditProduct = (props) => {
           `/product-admin/${idEdit}`,
           editProduct
         )
+
         formik.setFieldValue(imageEdit, [])
         setOpenModal(false)
         fetchProduct()
         getCategories()
-        // fetchImage()
+
         toast({
           title: "Produk telah diedit",
           description: response.data.message,
@@ -133,7 +130,7 @@ const EditProduct = (props) => {
     }
   }
 
-  // useEffect(() => {}, [image])
+  useEffect(() => {}, [image])
 
   return (
     <>
@@ -182,11 +179,11 @@ const EditProduct = (props) => {
               </FormControl>
               <FormControl>
                 <FormLabel>
-                  Category_id
+                  Category Id
                   <Select
                     value={catEdit}
                     onChange={(e) => setCatEdit(e.target.value)}
-                    name="category_id"
+                    name="CategoryId"
                   >
                     <option value="">Select Category</option>
                     {categories.map((val) => (
@@ -210,28 +207,31 @@ const EditProduct = (props) => {
                   display="none"
                   onChange={(e) => handleImageEdit(e.target.files[0])}
                 />
-                <Flex overflowY="scroll" h="20vh">
+                <Stack ml="5" overflowY="scroll" h="30vh" mt="2">
                   {imageEdit ? (
                     <>
                       {imageEdit.map((item) => (
                         <>
                           {item.product_picture ? (
                             <>
-                              <Image
-                                boxSize="100px"
-                                src={`http://localhost:8000/public/${item.product_picture}`}
-                              ></Image>
-                              <Button
-                                boxSize="10"
-                                w="6vh"
-                                colorScheme="red"
-                                alignSelf="center"
-                                onClick={() => {
-                                  deleteBtn(item.id)
-                                }}
-                              >
-                                <MdDeleteForever />
-                              </Button>
+                              <Flex>
+                                <Image
+                                  boxSize="100px"
+                                  src={`http://localhost:8000/public/${item.product_picture}`}
+                                ></Image>
+                                <Button
+                                  boxSize="30px"
+                                  w="6vh"
+                                  ml="4"
+                                  colorScheme="red"
+                                  alignSelf="center"
+                                  onClick={() => {
+                                    deleteBtn(item.id)
+                                  }}
+                                >
+                                  <MdDeleteForever size="40" />
+                                </Button>
+                              </Flex>
                             </>
                           ) : (
                             <>
@@ -258,7 +258,7 @@ const EditProduct = (props) => {
                       ))}
                     </>
                   ) : null}
-                </Flex>
+                </Stack>
               </FormControl>
               <FormControl>
                 <FormLabel>

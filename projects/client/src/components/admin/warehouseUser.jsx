@@ -130,6 +130,8 @@ const WarehouseUser = () => {
       getUser()
       getWarehouse()
 
+      onClose()
+
       toast({
         title: "User telah dihapus",
       })

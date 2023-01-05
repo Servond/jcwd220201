@@ -1,11 +1,17 @@
 import {
   Alert,
   AlertDescription,
+  AlertDialog,
+  AlertDialogBody,
+  AlertDialogCloseButton,
+  AlertDialogContent,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogOverlay,
   AlertIcon,
   AlertTitle,
   Box,
   Button,
-  Container,
   Flex,
   FormControl,
   FormErrorMessage,
@@ -18,7 +24,6 @@ import {
   Input,
   InputGroup,
   Modal,
-  Tab,
   Table,
   TableContainer,
   Tbody,
@@ -28,8 +33,9 @@ import {
   Th,
   Thead,
   Tr,
+  useAriaHidden,
+  useDisclosure,
   useToast,
-  VStack,
 } from "@chakra-ui/react"
 import { useFormik } from "formik"
 import { useEffect, useRef, useState } from "react"
@@ -41,9 +47,7 @@ import EditProduct from "./editProduct"
 import PageButton from "./pageButton"
 import Select from "react-select"
 import { Carousel } from "react-responsive-carousel"
-
 import { Rupiah } from "../../lib/currency/Rupiah"
-import { useSearchParams } from "react-router-dom"
 
 const WarehouseProduct = () => {
   const [products, setproducts] = useState([])
@@ -66,6 +70,9 @@ const WarehouseProduct = () => {
   const [sortDir, setSortDir] = useState("DESC")
   const [filter, setFilter] = useState("All")
   const [currentSearch, setCurrentSearch] = useState("")
+  const { isOpen, onOpen, onClose } = useDisclosure()
+  const cancelRef = useRef()
+  const btnRef = useRef()
 
   const toast = useToast()
 
@@ -118,6 +125,7 @@ const WarehouseProduct = () => {
       await axiosInstance.delete(`/product-admin/${id}`)
       fetchProduct()
       fetchImage()
+      onClose()
       toast({
         title: "Produk telah dihapus",
       })
@@ -150,39 +158,31 @@ const WarehouseProduct = () => {
     setIdEdit(id)
   }
 
-  // console.log("PRODUCT", products)
-  console.log(
-    "map",
-    products.map((val) =>
-      val.ProductPictures.map((value) => value.product_picture)
-    )
-  )
   const renderProduct = () => {
     return products.map((val) => {
       return (
         <Tr key={val.id} border={"1px solid black"} textAlign={"center"}>
-          <Td border={"1px solid black"} textAlign={"center"}>
+          <Td width="20%" border={"1px solid black"} textAlign={"center"}>
             {val.product_name}
           </Td>
           <Td
             border={"1px solid black"}
             textAlign={"center"}
             whiteSpace="pre-wrap"
-            width="50%"
+            width="34%"
           >
-            {" "}
             <Text textAlign="justify">{val.description} </Text>
           </Td>
-          <Td border={"1px solid black"} textAlign={"center"}>
+          <Td width="20%" border={"1px solid black"} textAlign={"center"}>
             {Rupiah(val.price)}
           </Td>
-          <Td border={"1px solid black"} textAlign={"center"}>
+          <Td width="2vh" border={"1px solid black"} textAlign={"center"}>
             {val.CategoryId}
           </Td>
-          <Td border={"1px solid black"} textAlign={"center"}>
+          <Td width="4vh" border={"1px solid black"} textAlign={"center"}>
             {val.weight}
           </Td>
-          <Carousel showStatus={false} autoPlay={true}>
+          <Carousel width="20vh" autoPlay={true}>
             {val.ProductPictures.map((value) => (
               <Image
                 src={`http://localhost:8000/public/${value.product_picture}`}
@@ -190,7 +190,7 @@ const WarehouseProduct = () => {
             ))}
           </Carousel>
 
-          <Td border={"1px solid black"} textAlign={"center"}>
+          <Td width="20%" border={"1px solid black"} textAlign={"center"}>
             <Button
               alignContent={"left"}
               onClick={() =>
@@ -209,9 +209,39 @@ const WarehouseProduct = () => {
             >
               <BiEdit />
             </Button>
-            <Button onClick={() => deleteBtn(val.id)} colorScheme="red" mx="3">
+            <Button ref={btnRef} onClick={onOpen} colorScheme="red" mx="4">
               <RiDeleteBin5Fill />
             </Button>
+            <AlertDialog
+              isOpen={isOpen}
+              onClose={onClose}
+              leastDestructiveRef={cancelRef}
+              motionPreset="slideInBottom"
+              isCentered
+              finalFocusRef={btnRef}
+            >
+              <AlertDialogOverlay>
+                <AlertDialogContent>
+                  <AlertDialogHeader fontSize="lg" fontStyle="bold">
+                    Hapus Produk
+                  </AlertDialogHeader>
+                  <AlertDialogCloseButton />
+
+                  <AlertDialogBody>
+                    Apakah Yakin Ingin Menghapus Produk?
+                  </AlertDialogBody>
+
+                  <AlertDialogFooter>
+                    <Button mr="10px" ref={cancelRef} onClick={onClose}>
+                      Cancel
+                    </Button>
+                    <Button colorScheme="red" onClick={() => deleteBtn(val.id)}>
+                      Hapus
+                    </Button>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialogOverlay>
+            </AlertDialog>
           </Td>
         </Tr>
       )
@@ -340,12 +370,7 @@ const WarehouseProduct = () => {
       price: Yup.string().required(),
       CategoryId: Yup.string().required(),
       weight: Yup.string().required("2 kg"),
-      // product_picture: Yup.string()
-      //   .required()
-      //   .test("fileSize", "The file is too large", (value) => {
-      //     if (!value.length) return true // attachment is optional
-      //     return value[0].size <= 1000000
-      //   }),
+      product_picture: Yup.string().required(),
     }),
     validateOnChange: false,
   })
@@ -376,20 +401,33 @@ const WarehouseProduct = () => {
     { value: "product_name DESC", label: "Name Z-A" },
   ]
 
+  const customStyles = {
+    control: (base) => ({
+      ...base,
+      width: "min-content",
+      minWidth: "30vh",
+      minHeight: "6vh",
+      borderColor: "black",
+    }),
+  }
+
   return (
     <>
-      <Flex h="100%" w="full" direction="column">
+      <Flex h="100%" direction="column">
         <Flex w="full" justifyContent="center">
           <HStack mt="3" wrap="wrap" justifyContent="center">
-            <Grid templateColumns="repeat(3, 1fr)" gap="2" ml="60" mr="60">
+            <Grid templateColumns="repeat(3, 1fr)" gap="-6" ml="60" mr="60">
               <GridItem>
                 <FormControl isInvalid={formik.errors.product_name}>
                   <FormLabel>Nama Produk</FormLabel>
                   <Input
+                    h="6vh"
+                    w="30vh"
                     borderColor="black"
                     name="product_name"
                     onChange={formChangeHandler}
                     value={formik.values.product_name}
+                    backgroundColor="white"
                   />
                   <FormErrorMessage>
                     {formik.errors.product_name}
@@ -398,19 +436,18 @@ const WarehouseProduct = () => {
               </GridItem>
 
               <GridItem>
-                <FormControl
-                  maxW="100%"
-                  minColumn="1"
-                  isInvalid={formik.errors.description}
-                >
+                <FormControl>
                   <FormLabel>Deskripsi</FormLabel>
                   <Textarea
+                    h="6vh"
+                    w="30vh"
                     minH="unset"
                     minRows="1"
                     borderColor="black"
                     name="description"
                     onChange={formChangeHandler}
                     value={formik.values.description}
+                    backgroundColor="white"
                   />
                   <FormErrorMessage>
                     {formik.errors.description}
@@ -418,20 +455,23 @@ const WarehouseProduct = () => {
                 </FormControl>
               </GridItem>
               <GridItem>
-                <FormControl maxW="100%" isInvalid={formik.errors.price}>
+                <FormControl isInvalid={formik.errors.price}>
                   <FormLabel>Harga</FormLabel>
                   <Input
+                    h="6vh"
+                    w="30vh"
                     borderColor="black"
                     name="price"
                     onChange={formChangeHandler}
                     value={formik.values.price}
+                    backgroundColor="white"
                   />
                   <FormErrorMessage>{formik.errors.price}</FormErrorMessage>
                 </FormControl>
               </GridItem>
 
               <GridItem>
-                <FormControl maxW="100%" isInvalid={formik.errors.CategoryId}>
+                <FormControl isInvalid={formik.errors.CategoryId}>
                   <FormLabel>Category Id</FormLabel>
                   <Select
                     name="CategoryId"
@@ -442,6 +482,7 @@ const WarehouseProduct = () => {
                     options={categoryOption}
                     fontSize={"15px"}
                     color={"black"}
+                    styles={customStyles}
                   ></Select>
                   <FormErrorMessage>
                     {formik.errors.CategoryId}
@@ -450,22 +491,29 @@ const WarehouseProduct = () => {
               </GridItem>
 
               <GridItem>
-                <FormControl maxW="100%" isInvalid={formik.errors.weight}>
+                <FormControl isInvalid={formik.errors.weight}>
                   <FormLabel>Berat</FormLabel>
                   <Input
+                    h="6vh"
+                    w="30vh"
                     borderColor="black"
                     name="weight"
                     onChange={formChangeHandler}
                     value={formik.values.weight}
+                    backgroundColor="white"
                   />
                   <FormErrorMessage>{formik.errors.weight}</FormErrorMessage>
                 </FormControl>
               </GridItem>
 
               <GridItem>
-                <FormControl maxW="100%">
+                <FormControl>
                   <FormLabel>Foto Produk</FormLabel>
-                  <Button w="full" onClick={() => inputFileRef.current.click()}>
+                  <Button
+                    h="6vh"
+                    w="30vh"
+                    onClick={() => inputFileRef.current.click()}
+                  >
                     + Tambahkan Foto
                   </Button>
                   <Input
@@ -522,6 +570,7 @@ const WarehouseProduct = () => {
             color={"#6D6D6F"}
             placeholder="Filter"
             options={categoryOption}
+            position="sticky"
           ></Select>
 
           <Select
@@ -545,7 +594,6 @@ const WarehouseProduct = () => {
                   placeholder="Search"
                   name="search"
                   bgColor={"white"}
-                  // onChange={(e) => setCurrentSearch(e.target.value)}
                   onChange={searchHandler}
                   borderRightRadius="0"
                   value={formikSearch.values.search}
@@ -564,7 +612,7 @@ const WarehouseProduct = () => {
             </FormControl>
           </form>
         </Grid>
-        <Box ml="50%">
+        <Box ml="47%">
           <Button
             onClick={btnResetFilter}
             p="3"
@@ -576,72 +624,81 @@ const WarehouseProduct = () => {
           </Button>
         </Box>
 
-        <Container maxW="container.xl" py="8" pb="5" px="1">
-          <TableContainer
-            border={"1px solid black"}
-            w="1800px"
-            mt={8}
-            overflowY="scroll"
-          >
-            <Table responsive="md" variant="simple">
-              <Thead position={"sticky"} top={-1} backgroundColor={"#718096"}>
-                <Tr border={"1px solid black"} maxW="50px">
-                  <Th
-                    border={"1px solid black"}
-                    textAlign={"center"}
-                    color="black"
-                    w="100px"
-                  >
-                    Nama Produk
-                  </Th>
-                  <Th
-                    border={"1px solid black"}
-                    textAlign={"center"}
-                    color="black"
-                    w="300px"
-                  >
-                    Deskripsi
-                  </Th>
-                  <Th
-                    border={"1px solid black"}
-                    textAlign={"center"}
-                    color="black"
-                    w="100px"
-                  >
-                    Harga
-                  </Th>
-                  <Th
-                    border={"1px solid black"}
-                    textAlign={"center"}
-                    color="black"
-                    w="100px"
-                  >
-                    Category Id
-                  </Th>
-                  <Th
-                    border={"1px solid black"}
-                    textAlign={"center"}
-                    color="black"
-                    w="100px"
-                  >
-                    Berat
-                  </Th>
-                  <Th
-                    border={"1px solid black"}
-                    textAlign={"center"}
-                    color="black"
-                    w="100px"
-                  >
-                    Foto Produk
-                  </Th>
-                </Tr>
-              </Thead>
-              <Tbody maxWidth="max-content"> {renderProduct()}</Tbody>
-            </Table>
-          </TableContainer>
-        </Container>
+        <Box py="-2" pb="5" px="1" mt="2">
+          {/* <TableContainer border={"1px solid black"} w="1800px" mt={8}> */}
+          <Table responsive="md" variant="simple">
+            <Thead
+              // overflow="scroll"
+              zIndex="2"
+              position={"sticky"}
+              top={-1}
+              backgroundColor={"#718096"}
+            >
+              <Tr border={"1px solid black"} maxW="50px">
+                <Th
+                  border={"1px solid black"}
+                  textAlign={"center"}
+                  color="black"
+                  w="100px"
+                >
+                  Nama Produk
+                </Th>
+                <Th
+                  border={"1px solid black"}
+                  textAlign={"center"}
+                  color="black"
+                  w="100px"
+                >
+                  Deskripsi
+                </Th>
+                <Th
+                  border={"1px solid black"}
+                  textAlign={"center"}
+                  color="black"
+                  w="100px"
+                >
+                  Harga
+                </Th>
+                <Th
+                  border={"1px solid black"}
+                  textAlign={"center"}
+                  color="black"
+                  w="100px"
+                >
+                  Category Id
+                </Th>
+                <Th
+                  border={"1px solid black"}
+                  textAlign={"center"}
+                  color="black"
+                  w="100px"
+                >
+                  Berat
+                </Th>
+                <Th
+                  border={"1px solid black"}
+                  textAlign={"center"}
+                  color="black"
+                  w="100px"
+                >
+                  Foto Produk
+                </Th>
+                <Th
+                  border={"1px solid black"}
+                  textAlign={"center"}
+                  color="black"
+                  w="100px"
+                ></Th>
+              </Tr>
+            </Thead>
+            <Tbody backgroundColor="white" maxWidth="max-content">
+              {renderProduct()}
+            </Tbody>
+          </Table>
+          {/* </TableContainer> */}
+        </Box>
 
-        <HStack w="full" alignSelf="flex-end" justifyContent="center">
+        <HStack mt="3" w="full" alignSelf="flex-end" justifyContent="center">
           {renderPageButton()}
           <Box>
             Page {page}/{Math.ceil(totalCount / limit)}
@@ -694,6 +751,7 @@ const WarehouseProduct = () => {
           preview={preview}
           setPreview={setPreview}
           categories={categories}
+          categoryOption={categoryOption}
         />
       </Modal>
     </>
