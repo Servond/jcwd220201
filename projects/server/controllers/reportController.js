@@ -152,7 +152,7 @@ const salesReport = {
     const CategoryId = req.query.CategoryId
     const WarehouseId = req.query.WarehouseId
     const {
-      payment_date,
+      payment_date = "",
       product_name = "",
       category = "",
       _limit = 6,
@@ -166,7 +166,7 @@ const salesReport = {
     // console.log("pr", product_name)
     // console.log("cname", category)
     try {
-      const { _sortBy = "payment_date" } = req.query
+      const { _sortBy = "" } = req.query
       let sql = `SELECT ord.WarehouseId, pr.CategoryId, pr.id AS productId, ct.category, pr.product_name, pr.description, ord_items.total_price AS total_price, ord.shipping_cost,
                   ord_items.total_price + ord.shipping_cost AS total, wr.warehouse_name, ord.payment_date
                   FROM orderitems AS ord_items
@@ -245,7 +245,7 @@ const salesReport = {
             ],
             limit: Number(_limit),
             offset: (_page - 1) * _limit,
-            order: [[_sortBy, _sortDir]],
+            order: [["WarehouseId", _sortDir]],
             include: [
               { model: db.Warehouse, attributes: ["warehouse_name"] },
 
@@ -288,7 +288,7 @@ const salesReport = {
             ],
             limit: Number(_limit),
             offset: (_page - 1) * _limit,
-            order: [[_sortBy, _sortDir]],
+            order: [["WarehouseId", _sortDir]],
             include: [
               { model: db.Warehouse, attributes: ["warehouse_name"] },
 
@@ -335,7 +335,7 @@ const salesReport = {
         })
 
         return res.status(200).json({
-          message: "Get All Warehouse User",
+          message: "Get All report",
           data: findReport.rows,
           dataCount: findReport.count,
         })

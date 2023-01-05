@@ -157,7 +157,6 @@ const WarehouseUser = () => {
 
   const filterWarehouseHandler = (event) => {
     const value = event.value
-
     setFilter(value)
   }
 

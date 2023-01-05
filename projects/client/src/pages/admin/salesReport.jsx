@@ -8,7 +8,6 @@ import {
   HStack,
   Input,
   InputGroup,
-  Select,
   Table,
   TableContainer,
   Tbody,
@@ -26,12 +25,15 @@ import { axiosInstance } from "../../api"
 import PageButton from "../../components/admin/pageButton"
 import SidebarAdmin from "../../components/admin/sidebarAdminDashboard"
 import { Rupiah } from "../../lib/currency/Rupiah"
+import Select from "react-select"
+import { useFormik } from "formik"
 
 const SalesReport = () => {
   const [page, setPage] = useState(1)
   const [limit, setLimit] = useState(6)
   const [totalCount, setTotalCount] = useState(0)
   const [sortBy, setSortBy] = useState("")
+  const [sortDir, setSortDir] = useState("DESC")
   const [filter, setFilter] = useState("All")
   const [filterMonth, setFilterMonth] = useState("")
   const [filterWare, setFilterWare] = useState("")
@@ -51,6 +53,7 @@ const SalesReport = () => {
           _page: page,
           _limit: limit,
           _sortBy: sortBy,
+          _sortDir: sortDir,
           CategoryId: filter,
           payment_date: filterMonth,
           product_name: nameSearch,
@@ -59,6 +62,7 @@ const SalesReport = () => {
         },
       })
 
+      setTotalCount(response.data.dataCount)
       setSales(response.data.data)
       console.log(response, "resp")
     } catch (err) {
@@ -86,18 +90,24 @@ const SalesReport = () => {
     }
   }
 
-  const filterWarehouseBtn = ({ target }) => {
-    const { value } = target
+  const sortUsertHandler = (event) => {
+    const value = event.value
+    setSortBy(value.split(" ")[0])
+    setSortDir(value.split(" ")[1])
+  }
+
+  const filterWarehouseBtn = (event) => {
+    const value = event.value
     setFilterWare(value)
   }
 
-  const filterCategoryBtn = ({ target }) => {
-    const { value } = target
+  const filterCategoryBtn = (event) => {
+    const value = event.value
     setFilter(value)
   }
 
-  const filterMonthBtn = ({ target }) => {
-    const { value } = target
+  const filterMonthBtn = (event) => {
+    const value = event.value
     setFilterMonth(value)
   }
 
@@ -109,6 +119,27 @@ const SalesReport = () => {
     if (e.key === "Enter") {
       setNameSearch(nameSearch)
     }
+  }
+
+  const formikSearch = useFormik({
+    initialValues: {
+      search: "",
+    },
+    onSubmit: ({ search }) => {
+      setNameSearch(search)
+    },
+  })
+
+  const searchHandler = ({ target }) => {
+    const { name, value } = target
+    formikSearch.setFieldValue(name, value)
+  }
+
+  const btnResetFilter = () => {
+    setCurrentSearch(false)
+    setSortBy(false)
+    setFilter(false)
+    window.location.reload(false)
   }
 
   const sortHandler = ({ target }) => {
@@ -176,12 +207,16 @@ const SalesReport = () => {
 
   useEffect(() => {
     fetchReport()
-  }, [filterMonth, filterWare, filter, page, sortBy, nameSearch, catSearch])
+  }, [filterMonth, filterWare, filter, page, sortBy, nameSearch])
 
   useEffect(() => {
     fethWarehouse()
     getCategory()
   }, [])
+
+  const warehouseOption = warehouse.map((val) => {
+    return { value: val.id, label: val.warehouse_name }
+  })
 
   return (
     <>
@@ -210,7 +245,7 @@ const SalesReport = () => {
                     p="5px"
                     gap="5"
                     w="full"
-                    gridTemplateColumns="repeat(5,1fr)"
+                    gridTemplateColumns="repeat(3,1fr)"
                   >
                     {/* Sort */}
                     <GridItem
@@ -276,12 +311,13 @@ const SalesReport = () => {
                       border="1px solid #dfe1e3"
                       borderRadius="8px"
                     >
-                      <Select>
-                        <option value="">Select Warehouse</option>
-                        {warehouse.map((val) => (
-                          <option value={val.id}>{val.warehouse_name}</option>
-                        ))}
-
+                      <Select
+                        onChange={filterWarehouseBtn}
+                        fontSize={"15px"}
+                        bgColor="white"
+                        placeholder="Filter By Warehouse"
+                        options={warehouseOption}
+                      >
                         {/* <option value=""> Select Warehouse</option>
                     {authSelector.WarehouseId ===
                     sales.map((val) => val.WarehouseId)[0]
