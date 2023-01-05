@@ -340,12 +340,12 @@ const WarehouseProduct = () => {
       price: Yup.string().required(),
       CategoryId: Yup.string().required(),
       weight: Yup.string().required("2 kg"),
-      product_picture: Yup.string()
-        .required()
-        .test("fileSize", "The file is too large", (value) => {
-          if (!value.length) return true // attachment is optional
-          return value[0].size <= 1000000
-        }),
+      // product_picture: Yup.string()
+      //   .required()
+      //   .test("fileSize", "The file is too large", (value) => {
+      //     if (!value.length) return true // attachment is optional
+      //     return value[0].size <= 1000000
+      //   }),
     }),
     validateOnChange: false,
   })
@@ -501,12 +501,7 @@ const WarehouseProduct = () => {
 
             <Box w="full" h="8%"></Box>
 
-            <Button
-              // disabled={formik.isSubmitting ? true : false}
-              onClick={formik.handleSubmit}
-              my="4"
-              colorScheme="teal"
-            >
+            <Button onClick={formik.handleSubmit} my="4" colorScheme="teal">
               Add Product
             </Button>
           </HStack>

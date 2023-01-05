@@ -108,7 +108,7 @@ const EditProduct = (props) => {
       fetchProduct()
       fetchImage()
       toast({
-        title: "Produk berhasil dihapus",
+        title: "Foto Produk berhasil dihapus",
         status: "success",
       })
     } catch (err) {
@@ -132,9 +132,8 @@ const EditProduct = (props) => {
       console.log(err)
     }
   }
-  console.log("image", image)
 
-  useEffect(() => {}, [image])
+  // useEffect(() => {}, [image])
 
   return (
     <>
@@ -210,7 +209,6 @@ const EditProduct = (props) => {
                   ref={inputFileRef}
                   display="none"
                   onChange={(e) => handleImageEdit(e.target.files[0])}
-                  onClick={image}
                 />
                 <Flex overflowY="scroll" h="20vh">
                   {imageEdit ? (
