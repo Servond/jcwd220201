@@ -54,7 +54,7 @@ const Stock = () => {
 
   // Render Warehouse
   const [warehouse, setWarehouse] = useState([])
-
+  console.log("ware", warehouse)
   const fetchAllWarehouse = async () => {
     try {
       const response = await axiosInstance.get(`/admin/stock/all-warehouse`)
