@@ -33,6 +33,7 @@ import OrderPayment from "./components/admin/orderPayment";
 import Checkout from "./pages/Checkout";
 import UserOrder from "./pages/admin/User Order/UserOrder";
 import Transactions from "./pages/Transactions";
+import LoggedInRoute from "./components/LoggedInRoute";
 
 const App = () => {
   const [authCheck, setAuthCheck] = useState(false);
@@ -201,7 +202,14 @@ const App = () => {
         />
 
         {/* Register Route */}
-        <Route path="/register" element={<Register />} />
+        <Route
+          path="/register"
+          element={
+            <LoggedInRoute>
+              <Register />
+            </LoggedInRoute>
+          }
+        />
 
         {/* Address Route */}
         <Route

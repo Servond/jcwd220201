@@ -4,6 +4,7 @@ const {
   Courier,
   Order,
   OrderItem,
+  Product,
   ProductStock,
   StockRequest,
   StockRequestItem,
