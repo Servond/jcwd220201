@@ -18,7 +18,6 @@ import EditAddressForm from "./EditAddressForm";
 import makeDefault from "../../lib/address/makeDefault";
 import fetchAddresses from "../../lib/address/fetchAddresses";
 import { useState } from "react";
-import { useEffect } from "react";
 
 const AddressCard = (props) => {
   const { variant, ...rest } = props;
@@ -44,7 +43,7 @@ const AddressCard = (props) => {
   const { label, recipient, phone, address, id, is_default } = rest.data;
 
   return (
-    <Box __css={styles} {...rest}>
+    <Box __css={styles} {...rest} mt={variant === "selected" ? 0 : "1rem"}>
       <Flex
         color="rgba(49, 53, 59, 0.96)"
         direction="column"

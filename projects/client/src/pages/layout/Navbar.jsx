@@ -28,9 +28,10 @@ import {
   PopoverBody,
   Image,
   Divider,
-} from "@chakra-ui/react";
-import { HamburgerIcon, CloseIcon, SearchIcon } from "@chakra-ui/icons";
-import { IoMdCart } from "react-icons/io";
+  useMediaQuery,
+} from "@chakra-ui/react"
+import { HamburgerIcon, CloseIcon, SearchIcon } from "@chakra-ui/icons"
+import { IoMdCart } from "react-icons/io"
 import {
   Link,
   Link as LinkRouterDom,
@@ -39,88 +40,92 @@ import {
   useLocation,
   createSearchParams,
   useSearchParams,
-} from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import { logout, login } from "../../redux/features/authSlice";
-import { axiosInstance } from "../../api";
-import { useEffect, useState } from "react";
-import { itemCart } from "../../redux/features/cartSlice";
-import { Rupiah } from "../../lib/currency/Rupiah";
+} from "react-router-dom"
+import { useDispatch, useSelector } from "react-redux"
+import { logout, login } from "../../redux/features/authSlice"
+import { axiosInstance } from "../../api"
+import { useEffect, useState } from "react"
+import { itemCart } from "../../redux/features/cartSlice"
+import { Rupiah } from "../../lib/currency/Rupiah"
+import Logo from "./Logo"
 
 const Navbar = ({ onChange, onClick, onKeyDown }) => {
-  const cartSelector = useSelector((state) => state.cart);
-  const authSelector = useSelector((state) => state.auth);
+  const cartSelector = useSelector((state) => state.cart)
+  const authSelector = useSelector((state) => state.auth)
 
-  const [authCheck, setAuthCheck] = useState(false);
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [authCheck, setAuthCheck] = useState(false)
+  const { isOpen, onOpen, onClose } = useDisclosure()
 
-  const [searchValue, setSearchValue] = useState("");
-  const [searchQuery, setSearchQuery] = useSearchParams();
-  const [cartProduct, setCartProduct] = useState([]);
-  const [cartQty, setCartQty] = useState(0);
+  const [searchValue, setSearchValue] = useState("")
+  const [searchQuery, setSearchQuery] = useSearchParams()
+  const [cartProduct, setCartProduct] = useState([])
+  const [cartQty, setCartQty] = useState(0)
 
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
+  const navigate = useNavigate()
+  const dispatch = useDispatch()
+
+  const [isLargerThanSm] = useMediaQuery("(min-width: 20rem)")
+  const [isLargerThanMd] = useMediaQuery("(min-width: 30rem)")
 
   const keepUserLogin = async () => {
     try {
-      const auth_token = localStorage.getItem("auth_token");
+      const auth_token = localStorage.getItem("auth_token")
 
       if (!auth_token) {
-        setAuthCheck(true);
-        return;
+        setAuthCheck(true)
+        return
       }
 
-      const response = await axiosInstance.get("/auth/refresh-token");
+      const response = await axiosInstance.get("/auth/refresh-token")
 
-      dispatch(login(response.data.data));
-      localStorage.setItem("auth_token", response.data.token);
-      setAuthCheck(true);
+      dispatch(login(response.data.data))
+      localStorage.setItem("auth_token", response.data.token)
+      setAuthCheck(true)
     } catch (err) {
-      console.log(err);
-      setAuthCheck(true);
+      console.log(err)
+      setAuthCheck(true)
     }
-  };
+  }
 
   const btnLogout = () => {
-    localStorage.removeItem("auth_token");
-    dispatch(logout());
-    navigate("/");
-  };
+    localStorage.removeItem("auth_token")
+    dispatch(logout())
+    navigate("/")
+  }
 
   const handleOnChange = (e) => {
-    setSearchValue(e.target.value);
-    onChange(e);
-  };
+    setSearchValue(e.target.value)
+    onChange(e)
+  }
 
   const handleOnKeyDown = (e) => {
     if (e.key === "Enter") {
       navigate({
         pathname: "/product",
         search: createSearchParams({ search: searchValue }).toString(),
-      });
-      onKeyDown(e);
+      })
+      onKeyDown(e)
     }
-  };
+  }
 
   const fetchUserCart = async () => {
     try {
-      const response = await axiosInstance.get("/carts/me");
+      const response = await axiosInstance.get("/carts/me")
 
-      dispatch(itemCart(response.data.data));
-      setCartProduct(response.data.data);
-      const productQty = response.data.data.map((val) => val.quantity);
+      dispatch(itemCart(response.data.data))
+      setCartProduct(response.data.data)
+      const productQty = response.data.data.map((val) => val.quantity)
 
-      let total = 0;
+      let total = 0
 
       for (let i = 0; i < productQty.length; i++) {
-        total = Number(productQty[i]);
+        total += Number(productQty[i])
       }
-      setCartQty(total);
+      setCartQty(total)
     } catch (err) {
-      console.log(err);
+      console.log(err)
     }
-  };
+  }
 
   const renderCartProduct = () => {
     return cartProduct.map((val) => {
@@ -133,7 +138,7 @@ const Navbar = ({ onChange, onClick, onKeyDown }) => {
                 maxH="40"
                 borderRadius="lg"
                 width={{ md: 40 }}
-                src={val.Product.ProductPictures[0].product_picture}
+                src={`http://localhost:8000/public/${val.Product?.ProductPictures[0].product_picture}`}
               />
             </Box>
             <Box mt={{ base: 4, md: 0 }} ml={{ md: 6 }}>
@@ -151,35 +156,39 @@ const Navbar = ({ onChange, onClick, onKeyDown }) => {
                 display="block"
                 fontSize="lg"
                 lineHeight="normal"
-                fontWeight="semibold"
                 href="#"
               >
-                {Rupiah(val.Product.price)}
+                <Text fontWeight="700">{Rupiah(val.Product.price)}</Text>
               </Link>
               <Text fontWeight="bold" mt={2} color="teal.600">
                 Quantity
               </Text>
-              <Text mt={2} color="gray.500">
-                {val.quantity}
+              <Text mt={2} color="gray.500" fontWeight="700">
+                X{val.quantity}
               </Text>
             </Box>
           </Box>
         </>
-      );
-    });
-  };
+      )
+    })
+  }
 
   useEffect(() => {
-    keepUserLogin();
-  }, []);
+    keepUserLogin()
+  }, [])
 
   useEffect(() => {
-    fetchUserCart();
-  }, [cartProduct]);
+    fetchUserCart()
+  }, [])
+
+  // BUG
+  // useEffect(() => {
+  //   fetchUserCart()
+  // }, [cartProduct])
 
   useEffect(() => {
-    setSearchValue(searchQuery.get("search"));
-  }, []);
+    setSearchValue(searchQuery.get("search"))
+  }, [])
   return (
     <>
       <Box
@@ -200,15 +209,26 @@ const Navbar = ({ onChange, onClick, onKeyDown }) => {
           />
           <HStack
             spacing={8}
-            w={{ base: 10, md: "full" }}
+            w={{ base: "25", md: "full" }}
             alignItems={"center"}
           >
             <Box>
-              <LinkRouterDom to="/">
-                <Heading as="h1" size="lg" letterSpacing={"tighter"}>
-                  WIRED!
-                </Heading>
-              </LinkRouterDom>
+              <Logo />
+              {/* <Image
+                src="logo.png"
+                alt="logo"
+                width={
+                  isLargerThanMd
+                    ? "10rem"
+                    : isLargerThanSm
+                    ? "8.262rem"
+                    : "6.826rem"
+                }
+                maxW="100%"
+                py="1.25rem"
+                cursor="pointer"
+                onClick={() => navigate("/")}
+              /> */}
             </Box>
             <HStack
               w="full"
@@ -244,36 +264,70 @@ const Navbar = ({ onChange, onClick, onKeyDown }) => {
                 display="flex"
                 my="auto"
                 borderRight="1px solid #e0e0e0"
-                pr="50"
+                // pr="50"
                 color="#6c727c"
               >
                 <Popover trigger="hover">
                   <PopoverTrigger>
-                    <LinkRouterDom>
-                      <HStack>
+                    <LinkRouterDom to="/cart">
+                      <Button bg="inherit" size="md">
                         <IoMdCart fontSize="20px" />
-                        <Text>{cartSelector.cart.length}</Text>
-                      </HStack>
+                        {cartSelector.cart.length && authSelector.id ? (
+                          <sup>
+                            <Box
+                              fontSize="11px"
+                              backgroundColor="teal"
+                              borderRadius="50%"
+                              mt="-2px"
+                              mx="-8px"
+                              px="7px"
+                              py="8px"
+                              color="white"
+                              fontWeight="700"
+                            >
+                              {cartQty}
+                            </Box>
+                          </sup>
+                        ) : null}
+                      </Button>
                     </LinkRouterDom>
                   </PopoverTrigger>
-                  <PopoverContent>
-                    <PopoverHeader
-                      display="flex"
-                      justifyContent="space-between"
+                  {cartSelector.cart.length ? (
+                    <PopoverContent
+                      overflow="scroll"
+                      maxH="40vh"
+                      h={{ base: 0, md: "40vh" }}
                     >
-                      <Text>Keranjang ({cartSelector.cart.length})</Text>
-                      <LinkRouterDom to="/cart">
-                        <Text>Lihat Keranjang</Text>
-                      </LinkRouterDom>
-                    </PopoverHeader>
-                    <PopoverBody>
-                      {renderCartProduct()}
-                      {/* <Image src={product_picture} /> */}
-                      {/* <Text align="center" fontWeight="semibold">
-                        Keranjangmu Masih Kosong nih ?
-                      </Text> */}
-                    </PopoverBody>
-                  </PopoverContent>
+                      <PopoverHeader
+                        display="flex"
+                        justifyContent="space-between"
+                      >
+                        <Text>Keranjang</Text>
+                        <LinkRouterDom to="/cart">
+                          <Text>Lihat Keranjang</Text>
+                        </LinkRouterDom>
+                      </PopoverHeader>
+                      <PopoverBody>{renderCartProduct()}</PopoverBody>
+                    </PopoverContent>
+                  ) : (
+                    <PopoverContent>
+                      <PopoverHeader
+                        display="flex"
+                        justifyContent="space-between"
+                      >
+                        <Text>Keranjang</Text>
+                        <LinkRouterDom to="/cart">
+                          <Text>Lihat Keranjang</Text>
+                        </LinkRouterDom>
+                      </PopoverHeader>
+                      <PopoverBody>
+                        <Image src="assets/cart/keranjangkosong.png" />
+                        <Text align="center" fontWeight="semibold">
+                          Keranjangmu Masih Kosong nih ?
+                        </Text>
+                      </PopoverBody>
+                    </PopoverContent>
+                  )}
                 </Popover>
               </Box>
               {/* ====================================================================================== */}
@@ -300,7 +354,6 @@ const Navbar = ({ onChange, onClick, onKeyDown }) => {
                       name={authSelector.profile_picture}
                       src={authSelector.profile_picture}
                     />
-                    {/* {authSelector.profile_picture} */}
                     <Text my="auto" p="8px">
                       {authSelector.name}
                     </Text>
@@ -376,6 +429,52 @@ const Navbar = ({ onChange, onClick, onKeyDown }) => {
                   </Button>
                 </InputRightElement>
               </InputGroup>
+              {/* Cart on Mobile View */}
+              <Box
+                display="flex"
+                my="auto"
+                // pr="50"
+                color="#6c727c"
+              >
+                <Popover trigger="hover">
+                  <PopoverTrigger>
+                    <LinkRouterDom to="/cart">
+                      <Button bg="inherit" size="md">
+                        <IoMdCart fontSize="20px" />
+                        {cartSelector.cart.length && authSelector.id ? (
+                          <sup>
+                            <Box
+                              fontSize="11px"
+                              backgroundColor="teal"
+                              borderRadius="50%"
+                              mt="-2px"
+                              mx="-8px"
+                              px="7px"
+                              py="8px"
+                              color="white"
+                              fontWeight="700"
+                            >
+                              {cartQty}
+                            </Box>
+                          </sup>
+                        ) : null}
+                      </Button>
+                    </LinkRouterDom>
+                  </PopoverTrigger>
+                  <PopoverContent>
+                    <PopoverHeader
+                      display="flex"
+                      justifyContent="space-between"
+                    >
+                      <Text>Keranjang</Text>
+                      <LinkRouterDom to="/cart">
+                        <Text>Lihat Keranjang</Text>
+                      </LinkRouterDom>
+                    </PopoverHeader>
+                    <PopoverBody>{renderCartProduct()}</PopoverBody>
+                  </PopoverContent>
+                </Popover>
+              </Box>
 
               {authSelector.name ? null : (
                 <ButtonGroup gap="2" display={{ base: "flex", md: "none" }}>
@@ -401,7 +500,7 @@ const Navbar = ({ onChange, onClick, onKeyDown }) => {
       </Box>
       <Outlet />
     </>
-  );
-};
+  )
+}
 
-export default Navbar;
+export default Navbar

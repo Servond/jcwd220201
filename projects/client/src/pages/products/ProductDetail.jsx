@@ -21,17 +21,25 @@ import {
   InputRightElement,
   InputLeftElement,
   useToast,
+  useDisclosure,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalCloseButton,
+  ModalBody,
+  ModalFooter,
 } from "@chakra-ui/react"
 import { Carousel } from "react-responsive-carousel"
-import { useState } from "react"
-import { useParams } from "react-router-dom"
+import { Fragment, useState } from "react"
+import { Link, useLocation, useParams } from "react-router-dom"
 import "react-responsive-carousel/lib/styles/carousel.min.css"
-// import "../products/ProductDetail.css"
+import Logo from "../layout/Logo"
 import { axiosInstance } from "../../api"
 import { useEffect } from "react"
 import Navbar from "../layout/Navbar"
 import { AddIcon, MinusIcon } from "@chakra-ui/icons"
-import { useDispatch } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 import { addProductToCart, itemCart } from "../../redux/features/cartSlice"
 import { Rupiah } from "../../lib/currency/Rupiah"
 
@@ -45,16 +53,20 @@ const ProductDetail = () => {
     Category: "",
   })
 
+  // State Functionality
   const [productId, setProductId] = useState([])
   const [productImg, setProductImg] = useState([])
   const [productStock, setProductStock] = useState([])
   const [cartQty, setCartQty] = useState(null)
 
+  const { isOpen, onOpen, onClose } = useDisclosure()
+  const authSelector = useSelector((state) => state.auth)
+  const location = useLocation()
   const dispatch = useDispatch()
   const toast = useToast()
   const params = useParams()
 
-  const fetchProductDetail = async () => {
+  const fetchProduct = async () => {
     try {
       const response = await axiosInstance.get(`/products/${params.id}`)
 
@@ -109,6 +121,7 @@ const ProductDetail = () => {
       console.log(err)
     }
   }
+
   const addToCart1 = async () => {
     try {
       let addToCart1 = {
@@ -120,19 +133,32 @@ const ProductDetail = () => {
       dispatch(addProductToCart(response.data.data))
 
       toast({
-        title: "Product Add to Cart",
+        title: "Berhasil Ditambahkan",
         status: "success",
+        duration: 1000,
       })
       fetchCartByProduct()
       fetchCart()
     } catch (err) {
       console.log(err)
       toast({
-        title: "Error Add Product to Cart",
+        title: "Gagal Menambahkan Barang",
         status: "error",
+        duration: 1000,
         description: err.response.data.message,
       })
     }
+  }
+
+  // Validate User Functionality
+  const validateUser = () => {
+    if (!authSelector.id) {
+      onOpen()
+    }
+  }
+
+  const navigateLogin = () => {
+    onClose()
   }
 
   const updateAddProduct = async () => {
@@ -141,7 +167,11 @@ const ProductDetail = () => {
         quantity: qty,
       }
       await axiosInstance.patch(`/carts/addQty/${productId}`, updateQty)
-      toast({ title: "Product Add to Cart", status: "success" })
+      toast({
+        title: "Berhasil Ditambahkan",
+        status: "success",
+        duration: 1000,
+      })
 
       fetchCartByProduct()
       fetchCart()
@@ -151,20 +181,28 @@ const ProductDetail = () => {
       toast({
         title: `Barang sudah ada di keranjang tersisa ${sisaProduk}, hanya menambah Quantity ${cartQty}`,
         status: "error",
+        duration: 1000,
         description: err.response.data.message,
       })
     }
   }
 
+  // Depedency BUG
+  // useEffect(() => {
+  //   fetchCart()
+  //   fetchCartByProduct()
+  //   fetchProduct()
+  // }, [qty, cartQty, produck])
+
   useEffect(() => {
     fetchCart()
     fetchCartByProduct()
-    fetchProductDetail()
-  }, [qty, cartQty, produck])
+    fetchProduct()
+  }, [qty, cartQty])
 
   return (
-    <>
-      <Navbar />
+    <Fragment>
+      {/* <Navbar /> */}
       <Container maxW="7xl">
         <SimpleGrid
           spacing={{ base: 8, md: 10 }}
@@ -172,12 +210,12 @@ const ProductDetail = () => {
           py={{ base: 18, md: 24 }}
         >
           <Flex>
-            <Carousel swipeable={true} showStatus={false} dynamicHeight={false}>
+            <Carousel showStatus={false} showThumbs={false}>
               {productImg.map((val) => (
-                <img
+                <Image
                   // className="image-prod-detail"
                   h={{ base: "100%", sm: "400px", lg: "500px" }}
-                  src={val.product_picture}
+                  src={`http://localhost:8000/public/${val.product_picture}`}
                   align="center"
                   rounded="md"
                   fit="cover"
@@ -240,34 +278,28 @@ const ProductDetail = () => {
                     </Text>{" "}
                     {produck.Category?.category || "Kategori"}
                   </ListItem>
-                  {/* {productStock.map((val) => ( */}
+
                   <ListItem>
                     <Text as="span" fontWeight="thin">
                       Stock:
                     </Text>{" "}
                     {productStock}
                   </ListItem>
-                  {/* // ))} */}
-                  {/* <ListItem>
-                    <Text as="span" fontWeight="thin">
-                      Subtotal: {Rupiah(produck.price * qty)}
-                    </Text>{" "}
-                  </ListItem> */}
                 </List>
               </Box>
             </Stack>
             <HStack alignSelf="center" maxW="320px">
-              {/* <Button>-</Button>
-              <NumberInput>
-                <NumberInputField />
-              </NumberInput>
-              <Button>+</Button> */}
               <InputGroup>
                 <InputLeftElement>
-                  <AddIcon
+                  <Button
+                    isDisabled={productStock <= qty}
                     {...inc}
-                    color={productStock <= qty ? "#c0cada" : "#0095DA"}
-                  />
+                    variant="unstyled"
+                  >
+                    <AddIcon
+                      color={productStock <= qty ? "#c0cada" : "#0095DA"}
+                    />
+                  </Button>
                 </InputLeftElement>
                 <Input
                   width="10em"
@@ -277,7 +309,12 @@ const ProductDetail = () => {
                   isDisabled={productStock === 0 ? true : false}
                 />
                 <InputRightElement>
-                  <MinusIcon {...dec} color={qty > 1 ? "#0095DA" : "#c0cada"} />
+                  <Button variant="unstyled">
+                    <MinusIcon
+                      {...dec}
+                      color={qty > 1 ? "#0095DA" : "#c0cada"}
+                    />
+                  </Button>
                 </InputRightElement>
               </InputGroup>
             </HStack>
@@ -295,7 +332,7 @@ const ProductDetail = () => {
                 mt="8"
                 py="6"
                 rounded="none"
-                onClick={addToCart1}
+                onClick={authSelector.id ? addToCart1 : validateUser}
               >
                 Masukkan Keranjang
               </Button>
@@ -310,7 +347,7 @@ const ProductDetail = () => {
                 mt="8"
                 py="6"
                 rounded="none"
-                onClick={updateAddProduct}
+                onClick={authSelector.id ? updateAddProduct : validateUser}
               >
                 Masukkan Keranjang
               </Button>
@@ -318,7 +355,35 @@ const ProductDetail = () => {
           </Stack>
         </SimpleGrid>
       </Container>
-    </>
+
+      {/* User Validate Modal  */}
+      <Modal
+        isOpen={isOpen}
+        onClose={onClose}
+        isCentered
+        motionPreset="slideInBottom"
+      >
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Tidak dapat Menambahkan Barang !</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            Silahkan Login atau Register terlebih dahulu untuk bisa beli produk
+            ini . Terimakasih 😄
+          </ModalBody>
+          <ModalFooter gap="3">
+            <Link to="/login" replace state={{ from: location }}>
+              <Button colorScheme="green" onClick={navigateLogin}>
+                Login
+              </Button>
+            </Link>
+            <Link to="/register">
+              <Button colorScheme="teal">Register</Button>
+            </Link>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+    </Fragment>
   )
 }
 
