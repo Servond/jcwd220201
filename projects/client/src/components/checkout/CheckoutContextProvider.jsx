@@ -4,7 +4,6 @@ import { createContext } from "react";
 import useSelectAddress from "../../lib/checkout/hooks/useSelectAddress";
 import useGetShippingCost from "../../lib/checkout/hooks/useGetShippingCost";
 import useGetCartItems from "../../lib/checkout/hooks/useGetCartItems";
-import { useEffect } from "react";
 
 export const CheckoutContext = createContext(null);
 
@@ -74,10 +73,6 @@ export const CheckoutContextProvider = ({ children }) => {
       setIsReloading,
     },
   };
-
-  useEffect(() => {
-    console.log(cartItems);
-  }, [cartItems]);
 
   return (
     <CheckoutContext.Provider value={value}>

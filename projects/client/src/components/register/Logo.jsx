@@ -14,9 +14,7 @@ const Logo = () => {
       src="/assets/logo.png"
       alt="logo"
       cursor="pointer"
-      width={
-        isLargerThanMd ? "10rem" : isLargerThanSm ? "8.262rem" : "6.826rem"
-      }
+      width={["6.826rem", "8.262rem", "10rem"]}
       maxW="100%"
       py="1.25rem"
       onClick={() => navigate("/")}

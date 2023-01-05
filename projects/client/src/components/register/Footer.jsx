@@ -7,9 +7,7 @@ const Footer = () => {
   return (
     <Text
       color="rgba(49, 53, 59, 0.68)"
-      fontSize={
-        isLargerThanMd ? "0.812rem" : isLargerThanSm ? "0.67rem" : "0.553rem"
-      }
+      fontSize={["0.553rem", "0.67rem", "0.812rem"]}
       mt="7.5rem"
       mb="0.125rem"
       lineHeight="1.375rem"
