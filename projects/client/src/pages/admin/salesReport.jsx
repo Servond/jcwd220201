@@ -218,6 +218,20 @@ const SalesReport = () => {
     return { value: val.id, label: val.warehouse_name }
   })
 
+  const catOption = categories.map((val) => {
+    return { value: val.id, label: val.category }
+  })
+
+  const monthsOption = [
+    { month: "Jan", value: "0" },
+    { month: "Feb", value: "1" },
+    { month: "Mar", value: "2" },
+    { month: "Apr", value: "3" },
+    { month: "May", value: "4" },
+    { month: "Jun", value: "5" },
+    { month: "Jul", value: "6" },
+    { month: "Aug", value: "7" },
+  ]
   return (
     <>
       <Container bg="#e0e7eb" maxW="vw" p="0">
@@ -268,10 +282,15 @@ const SalesReport = () => {
                       justifySelf="center"
                       border="1px solid #dfe1e3"
                       borderRadius="8px"
-                      onChange={filterMonthBtn}
                     >
-                      <Select>
-                        <option value="">Select Month</option>
+                      <Select
+                        onChange={filterMonthBtn}
+                        options={monthsOption}
+                        fontSize={"15px"}
+                        bgColor="white"
+                        placeholder="Filter By Month"
+                      >
+                        {/* <option value="">Select Month</option>
                         <option value={1}>January</option>
                         <option value={2}>February</option>
                         <option value={3}>March</option>
@@ -283,7 +302,7 @@ const SalesReport = () => {
                         <option value={9}>September</option>
                         <option value={10}>October</option>
                         <option value={11}>November</option>
-                        <option value={12}>December</option>
+                        <option value={12}>December</option> */}
                       </Select>
                     </GridItem>
 
@@ -293,21 +312,20 @@ const SalesReport = () => {
                       justifySelf="center"
                       border="1px solid #dfe1e3"
                       borderRadius="8px"
-                      onChange={filterCategoryBtn}
                     >
-                      <Select>
-                        <option value="">Select Category</option>
-                        {categories.map((val) => (
-                          <option value={val.id}>{val.category}</option>
-                        ))}
-                      </Select>
+                      <Select
+                        onChange={filterCategoryBtn}
+                        options={catOption}
+                        fontSize={"15px"}
+                        bgColor="white"
+                        placeholder="Filter By Category"
+                      ></Select>
                     </GridItem>
 
                     {/* Warehouse */}
                     <GridItem
                       w="full"
                       justifySelf="center"
-                      onChange={filterWarehouseBtn}
                       border="1px solid #dfe1e3"
                       borderRadius="8px"
                     >
@@ -317,19 +335,7 @@ const SalesReport = () => {
                         bgColor="white"
                         placeholder="Filter By Warehouse"
                         options={warehouseOption}
-                      >
-                        {/* <option value=""> Select Warehouse</option>
-                    {authSelector.WarehouseId ===
-                    sales.map((val) => val.WarehouseId)[0]
-                      ? sales.map((val) => (
-                          <option value={val.WarehouseId}>
-                            {val.warehouse_name}
-                          </option>
-                        ))[0]
-                      : Warehouse.map((val) => (
-                          <option value={val.id}>{val.warehouse_name}</option>
-                        ))} */}
-                      </Select>
+                      ></Select>
                     </GridItem>
 
                     {/* Search */}

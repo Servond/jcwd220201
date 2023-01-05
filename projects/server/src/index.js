@@ -118,7 +118,7 @@ app.use(express.static(join(__dirname, clientPath)))
 //#endregion
 
 app.listen(PORT, async (err) => {
-  db.sequelize.sync({ force: false })
+  db.sequelize.sync({ alter: true })
   if (err) {
     console.log(`ERROR: ${err}`)
   } else {
