@@ -1,4 +1,8 @@
 import {
+  Alert,
+  AlertDescription,
+  AlertIcon,
+  AlertTitle,
   Box,
   Button,
   Container,
@@ -49,22 +53,22 @@ const SalesReport = () => {
   const fetchReport = async () => {
     try {
       const response = await axiosInstance.get(`/sales/report/2`, {
-        // params: {
-        //   _page: page,
-        //   _limit: limit,
-        //   _sortBy: sortBy,
-        //   _sortDir: sortDir,
-        //   CategoryId: filter,
-        //   payment_date: filterMonth,
-        //   product_name: nameSearch,
-        //   WarehouseId: filterWare,
-        //   // category: catSearch,
-        // },
+        params: {
+          _page: page,
+          _limit: limit,
+          _sortBy: sortBy,
+          _sortDir: sortDir,
+          category: filter,
+          payment_date: filterMonth,
+          product_name: nameSearch,
+          WarehouseId: filterWare,
+          // category: catSearch,
+        },
       })
 
       setTotalCount(response.data.dataCount)
       setSales(response.data.data)
-      console.log(response, "resp")
+      console.log(response, "order")
     } catch (err) {
       console.log(err)
     }
@@ -147,27 +151,27 @@ const SalesReport = () => {
     setSortBy(value)
   }
 
-  console.log(
-    "sales",
-    sales.map((val) =>
-      val.OrderItems.map((value) => value.Product.product_name)
-    )
-  )
-  console.log(
-    "proId",
-    sales.map((val) => val.OrderItems.map((value) => value.ProductId))
-  )
-  console.log(
-    "cat",
-    sales.map((val) =>
-      val.OrderItems.map((value) => value.Product.Category.category)
-    )
-  )
+  // console.log(
+  //   "sales",
+  //   sales.map((val) =>
+  //     val.OrderItems.map((value) => value.Product.product_name)
+  //   )
+  // )
+  // console.log(
+  //   "proId",
+  //   sales.map((val) => val.OrderItems.map((value) => value.ProductId))
+  // )
+  // console.log(
+  //   "cat",
+  //   sales.map((val) =>
+  //     val.OrderItems.map((value) => value.Product.Category.category)
+  //   )
+  // )
 
-  console.log(
-    "ware",
-    sales.map((val) => val.Warehouse.warehouse_name)
-  )
+  // console.log(
+  //   "ware",
+  //   sales.map((val) => val.Warehouse.warehouse_name)
+  // )
 
   // const renderSales = () => {
   //   return sales.map((val) => {
@@ -219,18 +223,18 @@ const SalesReport = () => {
   })
 
   const catOption = categories.map((val) => {
-    return { value: val.id, label: val.category }
+    return { value: val.category, label: val.category }
   })
 
   const monthsOption = [
-    { month: "Jan", value: "0" },
-    { month: "Feb", value: "1" },
-    { month: "Mar", value: "2" },
-    { month: "Apr", value: "3" },
-    { month: "May", value: "4" },
-    { month: "Jun", value: "5" },
-    { month: "Jul", value: "6" },
-    { month: "Aug", value: "7" },
+    { label: "Jan", value: "0" },
+    { label: "Feb", value: "1" },
+    { label: "Mar", value: "2" },
+    { label: "Apr", value: "3" },
+    { label: "May", value: "4" },
+    { label: "Jun", value: "5" },
+    { label: "Jul", value: "6" },
+    { label: "Aug", value: "7" },
   ]
   return (
     <>
@@ -352,29 +356,39 @@ const SalesReport = () => {
                     </Box>
 
                     {/* Search */}
-                    <GridItem
-                      w="full"
-                      justifySelf="center"
-                      border="1px solid #dfe1e3"
-                      borderRadius="8px"
-                    >
-                      <InputGroup>
-                        <Input
-                          onChange={searchBtnHandler}
-                          onKeyDown={handleKeyEnter}
-                          value={nameSearch}
-                        />
-                        <Button
-                          borderLeftRadius={"0"}
-                          bgColor={"white"}
-                          type="submit"
-                          border="1px solid #e2e8f0"
-                          borderLeft={"0px"}
-                        >
-                          search
-                        </Button>
-                      </InputGroup>
-                    </GridItem>
+                    <form onSubmit={formikSearch.handleSubmit}>
+                      <GridItem
+                        w="full"
+                        justifySelf="center"
+                        border="1px solid #dfe1e3"
+                        borderRadius="8px"
+                      >
+                        <InputGroup>
+                          <Input
+                            type={"text"}
+                            placeholder="Search By Name"
+                            name="search"
+                            bgColor={"white"}
+                            h="4vh"
+                            onChange={searchHandler}
+                            borderRightRadius="0"
+                            value={formikSearch.values.search}
+                            // onChange={searchBtnHandler}
+                            onKeyDown={handleKeyEnter}
+                            // value={nameSearch}
+                          />
+                          <Button
+                            borderLeftRadius={"0"}
+                            bgColor={"white"}
+                            type="submit"
+                            border="1px solid #e2e8f0"
+                            borderLeft={"0px"}
+                          >
+                            search
+                          </Button>
+                        </InputGroup>
+                      </GridItem>
+                    </form>
                   </Grid>
                 </Box>
               </Flex>
@@ -418,7 +432,7 @@ const SalesReport = () => {
                     <Tbody>
                       {sales.map((val) =>
                         val.OrderItems.map((value) => (
-                          <Tr>
+                          <Tr key={val.id}>
                             <Td>{val.Warehouse.warehouse_name}</Td>
                             <Td>{value.Product.Category.category}</Td>
                             <Td>{value.Product.product_name}</Td>
@@ -433,6 +447,24 @@ const SalesReport = () => {
                   </Table>
                 </TableContainer>
               </Container>
+
+              {!sales.length ? (
+                <Alert
+                  status="error"
+                  variant="subtle"
+                  flexDir="column"
+                  alignItems="center"
+                  justifyContent="center"
+                  textAlign="center"
+                  alignSelf="center"
+                  h="200px"
+                  w="70%"
+                >
+                  <AlertIcon boxSize="20px" mr="0" />
+                  <AlertTitle>Oops, produk tidak ditemukan !</AlertTitle>
+                  <AlertDescription>Coba kata kunci lain</AlertDescription>
+                </Alert>
+              ) : null}
 
               <HStack w="full" alignSelf="flex-end" justifyContent="center">
                 {renderPageButton()}

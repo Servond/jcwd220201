@@ -224,15 +224,16 @@ const salesReport = {
         _sortDir = "DESC",
         _sortBy = "WarehouseId",
         WarehouseId = "",
-        CategoryId = "",
+        category = "",
         product_name = "",
+        CategoryId = "",
         payment_date = "",
       } = req.query
 
       if (
-        _sortBy === "CategoryId" ||
+        _sortBy === "category" ||
         _sortBy === "WarehouseId" ||
-        CategoryId ||
+        category ||
         WarehouseId
       ) {
         if (!Number(WarehouseId)) {
@@ -262,14 +263,35 @@ const salesReport = {
                           product_name: {
                             [Op.like]: `%${product_name}%`,
                           },
+                          CategoryId: {
+                            [Op.like]: `%${CategoryId}%`,
+                          },
                         },
                       ],
                     },
-                    include: [{ model: db.Category, attributes: ["category"] }],
+                    include: [
+                      {
+                        model: db.Category,
+                        attributes: ["category"],
+                        CategoryId: {
+                          [Op.like]: `%${CategoryId}%`,
+                        },
+                      },
+                    ],
                   },
                 ],
               },
             ],
+            where: {
+              [Op.or]: [
+                {
+                  WarehouseId: {
+                    [Op.like]: `%${WarehouseId}%`,
+                  },
+                },
+              ],
+            },
+            WarehouseId: WarehouseId,
           })
           return res.status(200).json({
             message: "get all user",
@@ -305,16 +327,37 @@ const salesReport = {
                           product_name: {
                             [Op.like]: `%${product_name}%`,
                           },
+                          CategoryId: {
+                            [Op.like]: `%${CategoryId}%`,
+                          },
                         },
                       ],
                     },
-                    include: [{ model: db.Category, attributes: ["category"] }],
+                    include: [
+                      {
+                        model: db.Category,
+                        attributes: ["category"],
+                        CategoryId: {
+                          [Op.like]: `%${CategoryId}%`,
+                        },
+                      },
+                    ],
                   },
                 ],
               },
             ],
+            where: {
+              [Op.or]: [
+                {
+                  WarehouseId: {
+                    [Op.like]: `%${WarehouseId}%`,
+                  },
+                },
+              ],
+            },
             WarehouseId: WarehouseId,
             CategoryId: CategoryId,
+            category: category,
             payment_date: payment_date,
           })
           return res.status(200).json({
