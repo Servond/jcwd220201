@@ -93,6 +93,37 @@ const UserOrder = () => {
                 {loading
                   ? null
                   : data.map((val) => {
+                      return (
+                        <Tr h="auto">
+                          <Td cursor="pointer" _hover={{ color: "teal.400" }}>
+                            {val.name}
+                          </Td>
+                          <Td>
+                            <Text>{val.product_name}</Text>
+                          </Td>
+                          <Td>{val.quantity}</Td>
+                          <Td>{Rupiah(val.total_price)}</Td>
+                          <Td>{val.warehouse_name}</Td>
+                          <Td textTransform="capitalize">{val.status}</Td>
+                          {val.status === "menunggu konfirmasi pembayaran" ? (
+                            <Td>
+                              <Button>fraya</Button>
+                              <Button>fraya</Button>
+                            </Td>
+                          ) : val.status === "diproses" ? (
+                            <Td>
+                              <Button>ariel</Button>
+                              <Button>ariel</Button>
+                            </Td>
+                          ) : null}
+                        </Tr>
+                      )
+                    })}
+              </Tbody>
+              {/* <Tbody>
+                {loading
+                  ? null
+                  : data.map((val) => {
                       if (val.status === "menunggu konfirmasi pembayaran") {
                         return (
                           <Tr h="auto">
@@ -149,7 +180,7 @@ const UserOrder = () => {
                         )
                       }
                     })}
-              </Tbody>
+              </Tbody> */}
             </Table>
             {/* <ReactPaginate
               breakLabel="..."
