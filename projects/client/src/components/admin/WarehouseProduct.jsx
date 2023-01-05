@@ -40,6 +40,7 @@ import * as Yup from "yup"
 import EditProduct from "./editProduct"
 import PageButton from "./pageButton"
 import Select from "react-select"
+import { Carousel } from "react-responsive-carousel"
 
 import { Rupiah } from "../../lib/currency/Rupiah"
 import { useSearchParams } from "react-router-dom"
@@ -149,11 +150,13 @@ const WarehouseProduct = () => {
     setIdEdit(id)
   }
 
+  // console.log("PRODUCT", products)
   console.log(
     "map",
-    products.map((val) => val.images)
+    products.map((val) =>
+      val.ProductPictures.map((value) => value.product_picture)
+    )
   )
-
   const renderProduct = () => {
     return products.map((val) => {
       return (
@@ -179,10 +182,13 @@ const WarehouseProduct = () => {
           <Td border={"1px solid black"} textAlign={"center"}>
             {val.weight}
           </Td>
-
-          <Image
-            src={`http://localhost:8000/public/${val.ProductPictures[0].product_picture}`}
-          ></Image>
+          <Carousel showStatus={false} autoPlay={true}>
+            {val.ProductPictures.map((value) => (
+              <Image
+                src={`http://localhost:8000/public/${value.product_picture}`}
+              ></Image>
+            ))}
+          </Carousel>
 
           <Td border={"1px solid black"} textAlign={"center"}>
             <Button

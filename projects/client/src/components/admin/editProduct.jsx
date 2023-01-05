@@ -25,12 +25,13 @@ import { axiosInstance } from "../../api"
 import { MdDelete, MdDeleteForever } from "react-icons/md"
 
 import axios from "axios"
+import { useEffect } from "react"
 
 const EditProduct = (props) => {
   const inputFileRef = useRef()
   const toast = useToast()
   const { id } = useParams()
-  const [file, setFile] = useState("")
+  const [image, setImage] = useState("")
 
   const {
     nameEdit,
@@ -120,15 +121,20 @@ const EditProduct = (props) => {
       const newImg = new FormData()
 
       newImg.append("product_picture", e)
-      console.log(newImg, "newimg")
+
       const resp = await axiosInstance.post(
         `/product-admin/image/${idEdit}`,
         newImg
       )
+      setImage(resp.data.data.ProductPictures)
+      imageEdit.push(resp?.data?.data)
     } catch (err) {
       console.log(err)
     }
   }
+  console.log("image", image)
+
+  useEffect(() => {}, [image])
 
   return (
     <>
@@ -204,14 +210,15 @@ const EditProduct = (props) => {
                   ref={inputFileRef}
                   display="none"
                   onChange={(e) => handleImageEdit(e.target.files[0])}
+                  onClick={image}
                 />
-                {imageEdit ? (
-                  <>
-                    {imageEdit.map((item) => (
-                      <>
-                        {item.product_picture ? (
-                          <>
-                            <Flex>
+                <Flex overflowY="scroll" h="20vh">
+                  {imageEdit ? (
+                    <>
+                      {imageEdit.map((item) => (
+                        <>
+                          {item.product_picture ? (
+                            <>
                               <Image
                                 boxSize="100px"
                                 src={`http://localhost:8000/public/${item.product_picture}`}
@@ -227,33 +234,33 @@ const EditProduct = (props) => {
                               >
                                 <MdDeleteForever />
                               </Button>
-                            </Flex>
-                          </>
-                        ) : (
-                          <>
-                            <Flex>
-                              <Image
-                                boxSize="100px"
-                                src={`http://localhost:8000/public/${item.name}`}
-                              ></Image>
-                              <Button
-                                boxSize="10"
-                                w="6vh"
-                                colorScheme="red"
-                                alignSelf="center"
-                                onClick={() => {
-                                  deleteBtn(item.id)
-                                }}
-                              >
-                                <MdDeleteForever />
-                              </Button>
-                            </Flex>
-                          </>
-                        )}
-                      </>
-                    ))}
-                  </>
-                ) : null}
+                            </>
+                          ) : (
+                            <>
+                              <Flex>
+                                <Image
+                                  boxSize="100px"
+                                  src={`http://localhost:8000/public/${item.name}`}
+                                ></Image>
+                                <Button
+                                  boxSize="10"
+                                  w="6vh"
+                                  colorScheme="red"
+                                  alignSelf="center"
+                                  onClick={() => {
+                                    deleteBtn(item.id)
+                                  }}
+                                >
+                                  <MdDeleteForever />
+                                </Button>
+                              </Flex>
+                            </>
+                          )}
+                        </>
+                      ))}
+                    </>
+                  ) : null}
+                </Flex>
               </FormControl>
               <FormControl>
                 <FormLabel>
