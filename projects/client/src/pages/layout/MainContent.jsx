@@ -215,7 +215,6 @@ const MainContent = () => {
           <Footer />
         </Box>
       </Box>
-      <Footer />
     </>
   )
 }
