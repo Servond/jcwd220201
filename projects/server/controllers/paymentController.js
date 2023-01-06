@@ -66,7 +66,7 @@ const paymentController = {
             WarehouseId: WarehouseId,
           })
           return res.status(200).json({
-            message: "get all user",
+            message: "Get All Payment",
             data: findPayment.rows,
             dataCount: findPayment.count,
           })
@@ -101,7 +101,7 @@ const paymentController = {
           WarehouseId: WarehouseId,
         })
         return res.status(200).json({
-          message: "get all user",
+          message: "Get All paument",
           data: findPayment.rows,
           dataCount: findPayment.count,
         })
@@ -119,7 +119,7 @@ const paymentController = {
       })
 
       return res.status(200).json({
-        message: "Get All Warehouse User",
+        message: "Get All Payment",
         data: findPayment.rows,
         dataCount: findPayment.count,
       })
@@ -169,7 +169,7 @@ const paymentController = {
         where: {
           id: req.params.id,
         },
-        attribute: ["payment_date", "total_price", "UserId"],
+        attributes: ["payment_date", "total_price", "UserId"],
         include: [
           {
             model: db.OrderItem,
@@ -190,13 +190,63 @@ const paymentController = {
       })
 
       return res.status(200).json({
-        message: "Get all user order",
+        message: "Get payment by Id",
         data: findOrderById,
       })
     } catch (err) {
       console.log(err)
       return res.status(500).json({
         message: err.message,
+      })
+    }
+  },
+  findNearestWarehouse: async (req, res) => {
+    try {
+      // Get user id
+      const { id: UserId } = req.user
+
+      if (!UserId) {
+        return res.status(401).json({
+          message: "Terjadi kesalahan, silakan login terlebih dahulu",
+        })
+      }
+
+      // Get shipping address
+      const shippingAddress = await Address.findOne({
+        where: {
+          [Op.and]: [{ UserId }, { is_selected: true }],
+        },
+      })
+
+      // Get shipping address longitude and latitude
+      const [latitude, longitude] = shippingAddress.pinpoint.split(", ")
+      const shippingAddressCoordinates = {
+        latitude: Number(latitude),
+        longitude: Number(longitude),
+      }
+
+      // Get warehouse addresses
+      const warehousesInfo = await getWarehousesInfo()
+
+      // Sort warehouse by distance to shipping address
+      const sortedWarehouse = compareWarehouseDistances(
+        shippingAddressCoordinates,
+        warehousesInfo
+      )
+
+      const [nearestWarehouse] = sortedWarehouse.splice(0, 1)
+
+      // Send successful response
+      return res.status(200).json({
+        message: "Gudang terdekat ditemukan",
+        data: {
+          nearestWarehouse,
+          nearestBranches: sortedWarehouse,
+        },
+      })
+    } catch (err) {
+      return res.status(500).json({
+        message: "Server error",
       })
     }
   },
@@ -220,9 +270,56 @@ const paymentController = {
       })
     }
   },
+  getCartItems: async (req, res) => {
+    try {
+      // Get user id
+      const { id: UserId } = req.user
+
+      if (!UserId) {
+        return res.status(401).json({
+          message: "Terjadi kesalahan, silakan login terlebih dahulu",
+        })
+      }
+
+      // Get items in the cart
+      let cartItems = await Cart.findAll({
+        where: {
+          [Op.and]: [{ UserId }, { is_checked: true }],
+        },
+        include: [{ model: Product }],
+      })
+
+      if (!cartItems.length) {
+        cartItems = await Cart.findAll({
+          where: {
+            UserId,
+          },
+          include: [{ model: Product }],
+        })
+      }
+
+      if (!cartItems.length) {
+        return res.status(400).json({
+          message: "Keranjang kamu kosong.",
+          description: "Yuk tambahkan barang favoritmu ke keranjang!",
+        })
+      }
+
+      // Return successful response
+      return res.status(200).json({
+        message: "Berhasil mengambil data keranjang",
+        data: cartItems,
+      })
+    } catch (err) {
+      return res.status(500).json({
+        message: "Server error",
+      })
+    }
+  },
   confirmPayment: async (req, res) => {
     try {
       const { id } = req.params
+
       const findOrder = await db.Order.findOne({
         where: {
           id: id,
@@ -235,9 +332,123 @@ const paymentController = {
         })
       }
 
+      // Get order details
+      const {
+        orderData: { sortedWarehouse },
+        cartItems,
+      } = req.body
+
+      // Get warehouses details
+      const { nearestWarehouse, nearestBranches } = sortedWarehouse
+
+      // Check products availability in the nearest warehouse
+      for (let item of cartItems) {
+        const { ProductId, quantity } = item
+
+        // Get available stock from the nearest warehouse
+        const { stock } = await ProductStock.findOne({
+          raw: true,
+          where: {
+            [Op.and]: [
+              { ProductId },
+              { WarehouseId: nearestWarehouse.warehouseInfo.id },
+            ],
+          },
+        })
+
+        // Make a request to nearest branches if additional stock is needed
+        const requestItemsForm = []
+
+        if (stock < quantity) {
+          // Calculate items needed
+          let itemsNeeded = !stock ? quantity : quantity - stock
+
+          // Check stock availability from nearest branches
+          for (let branch of nearestBranches) {
+            const { stock: nearestBranchStock } = await ProductStock.findOne({
+              raw: true,
+              where: {
+                [Op.and]: [
+                  { ProductId },
+                  { WarehouseId: branch.warehouseInfo.id },
+                ],
+              },
+            })
+
+            const time = moment().format()
+
+            /*
+              Continue checking from subsequent nearest branches if stock not available
+              from the current nearest branch
+            */
+            if (!nearestBranchStock) {
+              continue
+            }
+
+            /*
+              Create request draft consisting of available items if available stock is less than
+              or equal to items needed
+            */
+            if (nearestBranchStock <= itemsNeeded) {
+              requestItemsForm.push({
+                ProductId,
+                quantity: nearestBranchStock,
+                StockRequest: {
+                  date: time,
+                  is_approved: false,
+                  FromWarehouseId: nearestWarehouse.warehouseInfo.id,
+                  ToWarehouseId: branch.warehouseInfo.id,
+                },
+              })
+
+              itemsNeeded -= nearestBranchStock
+
+              if (!itemsNeeded) {
+                break
+              }
+
+              continue
+            }
+
+            /*
+              Create request draft consisting of the number of items needed if available stock
+              is greater than items needed
+            */
+            if (nearestBranchStock >= itemsNeeded) {
+              requestItemsForm.push({
+                ProductId,
+                quantity: itemsNeeded,
+                StockRequest: {
+                  date: time,
+                  is_approved: false,
+                  FromWarehouseId: nearestWarehouse.warehouseInfo.id,
+                  ToWarehouseId: branch.warehouseInfo.id,
+                },
+              })
+
+              break
+            }
+          }
+
+          // Request needed product to the nearest branches
+          await sequelize.transaction(async (t) => {
+            await StockRequestItem.bulkCreate(requestItemsForm, {
+              include: StockRequest,
+              transaction: t,
+            })
+          })
+        }
+      }
+
+      const { id: statusId } = await db.Status.findOne({
+        where: {
+          status: "diproses",
+        },
+      })
+
       await db.Order.update(
         {
-          StatusId: 3,
+          StatusId: statusId,
         },
         {
           where: {

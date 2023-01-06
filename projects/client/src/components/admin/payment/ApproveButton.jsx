@@ -1,13 +1,13 @@
 import { Button, useToast } from "@chakra-ui/react"
-import CancelUserOrder from "./cancelOrderUser"
+import PaymentApprove from "./approvePayment"
 
-const CancelUserButton = () => {
+const ApproveButton = () => {
   const toast = useToast()
   return (
     <Button
       colorScheme="teal"
       onClick={async () => {
-        const resp = await CancelUserOrder()
+        const resp = await PaymentApprove()
 
         toast({
           title: resp.data.message,
@@ -15,9 +15,9 @@ const CancelUserButton = () => {
         })
       }}
     >
-      Batalkan Pesanan
+      Konfirmasi Pembayaran
     </Button>
   )
 }
 
-export default CancelUserButton
+export default ApproveButton
