@@ -554,7 +554,7 @@ const WarehouseProduct = () => {
             </Button>
           </HStack>
         </Flex>
-        <Box w="full" h="2.5%"></Box>
+        <Box w="full" h="5%"></Box>
 
         <Grid
           gap="4"
