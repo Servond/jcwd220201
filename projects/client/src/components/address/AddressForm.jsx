@@ -31,7 +31,6 @@ import useCheckInputError from "../../lib/address/hooks/useCheckInputError";
 import clearInput from "../../lib/address/clearInput";
 import CitiesInput from "./CitiesInput";
 import saveAddress from "../../lib/address/saveAddress";
-import { useEffect } from "react";
 
 const AddressForm = ({
   fetchAddresses,
@@ -131,8 +130,6 @@ const AddressForm = ({
       onClose();
     },
   });
-
-  useEffect(() => console.log(formik.values), [formik.values]);
 
   // Invalid input error handling
   const recipientErrorTrigger =

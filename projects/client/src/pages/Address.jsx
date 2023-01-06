@@ -92,7 +92,7 @@ const Address = () => {
             </Button>
           </Stack>
           {loadAddress ? (
-            <Box pt="1rem">
+            <Box mt="1.5rem" mb="-1rem">
               {renderAddresses(
                 addresses,
                 pageIndex,
