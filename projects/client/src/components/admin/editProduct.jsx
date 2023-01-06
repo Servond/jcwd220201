@@ -93,6 +93,7 @@ const EditProduct = (props) => {
         toast({
           title: "Edit Gagal",
           status: "error",
+          description: err.response.data.message,
         })
       }
     },
@@ -100,7 +101,7 @@ const EditProduct = (props) => {
 
   const deleteBtn = async (id) => {
     try {
-      const res = await axiosInstance.delete(`product-admin/image/${id}`)
+      const response = await axiosInstance.delete(`product-admin/image/${id}`)
 
       fetchProduct()
       fetchImage()
@@ -119,12 +120,12 @@ const EditProduct = (props) => {
 
       newImg.append("product_picture", e)
 
-      const resp = await axiosInstance.post(
+      const response = await axiosInstance.post(
         `/product-admin/image/${idEdit}`,
         newImg
       )
-      setImage(resp.data.data.ProductPictures)
-      imageEdit.push(resp?.data?.data)
+      setImage(response.data.data.ProductPictures)
+      imageEdit.push(response?.data?.data)
     } catch (err) {
       console.log(err)
     }

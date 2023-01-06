@@ -24,6 +24,12 @@ import {
   Input,
   InputGroup,
   Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
   Table,
   TableContainer,
   Tbody,
@@ -102,9 +108,9 @@ const WarehouseProduct = () => {
 
   const fetchImage = async () => {
     try {
-      const responseImg = await axiosInstance.get(`/product-admin/image`)
+      const response = await axiosInstance.get(`/product-admin/image`)
 
-      setImages(responseImg.data.data)
+      setImages(response.data.data)
     } catch (err) {
       console.log(err)
     }
@@ -112,9 +118,9 @@ const WarehouseProduct = () => {
 
   const getCategories = async () => {
     try {
-      const responCat = await axiosInstance.get(`/categories`)
+      const response = await axiosInstance.get(`/categories`)
 
-      setCategories(responCat.data.data)
+      setCategories(response.data.data)
     } catch (err) {
       console.log(err)
     }
@@ -122,9 +128,11 @@ const WarehouseProduct = () => {
 
   const deleteBtn = async (id) => {
     try {
-      await axiosInstance.delete(`/product-admin/${id}`)
+      const response = await axiosInstance.delete(`/product-admin/${id}`)
+
       fetchProduct()
       fetchImage()
+
       onClose()
       toast({
         title: "Produk telah dihapus",
@@ -132,9 +140,9 @@ const WarehouseProduct = () => {
     } catch (err) {
       console.log(err)
       toast({
-        title: "Edit Product Gagal",
+        title: "Hapus Product Gagal",
         status: "error",
-        description: "Hanya Super Admin yang dapat menghapus produk",
+        description: err.response.data.message,
       })
     }
   }
@@ -209,39 +217,9 @@ const WarehouseProduct = () => {
             >
               <BiEdit />
             </Button>
-            <Button ref={btnRef} onClick={onOpen} colorScheme="red" mx="4">
+            <Button colorScheme="red" onClick={() => deleteBtn(val.id)}>
               <RiDeleteBin5Fill />
             </Button>
-            <AlertDialog
-              isOpen={isOpen}
-              onClose={onClose}
-              leastDestructiveRef={cancelRef}
-              motionPreset="slideInBottom"
-              isCentered
-              finalFocusRef={btnRef}
-            >
-              <AlertDialogOverlay>
-                <AlertDialogContent>
-                  <AlertDialogHeader fontSize="lg" fontStyle="bold">
-                    Hapus Produk
-                  </AlertDialogHeader>
-                  <AlertDialogCloseButton />
-
-                  <AlertDialogBody>
-                    Apakah Yakin Ingin Menghapus Produk?
-                  </AlertDialogBody>
-
-                  <AlertDialogFooter>
-                    <Button mr="10px" ref={cancelRef} onClick={onClose}>
-                      Cancel
-                    </Button>
-                    <Button colorScheme="red" onClick={() => deleteBtn(val.id)}>
-                      Hapus
-                    </Button>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialogOverlay>
-            </AlertDialog>
           </Td>
         </Tr>
       )
@@ -340,7 +318,7 @@ const WarehouseProduct = () => {
           formData.append("product_picture", product_picture)
         })
 
-        await axiosInstance.post(`/product-admin/`, formData)
+        const response = await axiosInstance.post(`/product-admin/`, formData)
         formik.setFieldValue(product_name, "")
         formik.setFieldValue(description, "")
         formik.setFieldValue(price, "")
@@ -357,8 +335,8 @@ const WarehouseProduct = () => {
         })
       } catch (err) {
         toast({
-          title: "Nama Produk Telah Ada",
-          description: "Hanya Super Admin yang dapat menambahkan produk",
+          title: "Produk Gagal ditambahkan",
+          description: err.response.data.message,
           status: "error",
         })
         console.log(err)
@@ -369,7 +347,7 @@ const WarehouseProduct = () => {
       description: Yup.string().required(),
       price: Yup.string().required(),
       CategoryId: Yup.string().required(),
-      weight: Yup.string().required("2 kg"),
+      weight: Yup.string().required("Dalam Satuan Gram"),
       product_picture: Yup.string().required(),
     }),
     validateOnChange: false,
@@ -400,16 +378,6 @@ const WarehouseProduct = () => {
     { value: "product_name ASC", label: "Name A-Z" },
     { value: "product_name DESC", label: "Name Z-A" },
   ]
-
-  const customStyles = {
-    control: (base) => ({
-      ...base,
-      width: "min-content",
-      minWidth: "30vh",
-      minHeight: "6vh",
-      borderColor: "black",
-    }),
-  }
 
   return (
     <>
@@ -482,7 +450,19 @@ const WarehouseProduct = () => {
                     options={categoryOption}
                     fontSize={"15px"}
                     color={"black"}
-                    styles={customStyles}
+                    styles={{
+                      control: (base) => ({
+                        ...base,
+                        width: "min-content",
+                        minWidth: "30vh",
+                        minHeight: "6vh",
+                        borderColor: "black",
+                      }),
+                      menu: (provided) => ({
+                        ...provided,
+                        zIndex: 999,
+                      }),
+                    }}
                   ></Select>
                   <FormErrorMessage>
                     {formik.errors.CategoryId}
@@ -547,9 +527,12 @@ const WarehouseProduct = () => {
               </>
             ))}
 
-            <Box w="full" h="8%"></Box>
-
-            <Button onClick={formik.handleSubmit} my="4" colorScheme="teal">
+            <Button
+              onClick={formik.handleSubmit}
+              isDisabled={!formik.values.product_picture}
+              my="4"
+              colorScheme="teal"
+            >
               Add Product
             </Button>
           </HStack>
@@ -562,6 +545,7 @@ const WarehouseProduct = () => {
           mt="10"
           mb="4"
           ml="20%"
+          zIndex="2"
         >
           <Select
             onChange={filterProductHandler}
@@ -570,7 +554,10 @@ const WarehouseProduct = () => {
             color={"#6D6D6F"}
             placeholder="Filter"
             options={categoryOption}
-            position="sticky"
+            menuPosition="fixed"
+            styles={{
+              menu: (provided) => ({ ...provided, zIndex: 1, top: 0 }),
+            }}
           ></Select>
 
           <Select
@@ -612,7 +599,7 @@ const WarehouseProduct = () => {
             </FormControl>
           </form>
         </Grid>
-        <Box ml="47%">
+        <Box ml="47%" mb="4">
           <Button
             onClick={btnResetFilter}
             p="3"
@@ -624,11 +611,9 @@ const WarehouseProduct = () => {
           </Button>
         </Box>
 
-        <Box py="-2" pb="5" px="1" mt="2">
-          {/* <TableContainer border={"1px solid black"} w="1800px" mt={8}> */}
+        <Box py="-2" pb="2" px="12" mt="2" zIndex="0" position="relative">
           <Table responsive="md" variant="simple">
             <Thead
-              // overflow="scroll"
               zIndex="2"
               position={"sticky"}
               top={-1}
@@ -695,15 +680,7 @@ const WarehouseProduct = () => {
               {renderProduct()}
             </Tbody>
           </Table>
-          {/* </TableContainer> */}
         </Box>
-
-        <HStack mt="3" w="full" alignSelf="flex-end" justifyContent="center">
-          {renderPageButton()}
-          <Box>
-            Page {page}/{Math.ceil(totalCount / limit)}
-          </Box>
-        </HStack>
 
         <Box h="4%" w="full"></Box>
         {!products.length ? (
@@ -716,16 +693,23 @@ const WarehouseProduct = () => {
             textAlign="center"
             alignSelf="center"
             h="200px"
-            w="80%"
+            w="94%"
           >
             <AlertIcon boxSize="20px" mr="0" />
-            <AlertTitle>Oops, produk nggak ditemukan !</AlertTitle>
+            <AlertTitle>Oops, produk tidak ditemukan !</AlertTitle>
             <AlertDescription>
               Coba kata kunci lain. Terimakasih
               <span size="lg">🤯</span>
             </AlertDescription>
           </Alert>
         ) : null}
+
+        <HStack mt="3" w="full" alignSelf="flex-end" justifyContent="center">
+          {renderPageButton()}
+          <Box>
+            Page {page}/{Math.ceil(totalCount / limit)}
+          </Box>
+        </HStack>
       </Flex>
 
       <Modal isOpen={openModal} onClose={() => setOpenModal(false)}>
