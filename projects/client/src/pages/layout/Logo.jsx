@@ -9,7 +9,7 @@ const Logo = () => {
   return (
     <Image
       // src={require("logo.png")}
-      src="logo2.jpg"
+      src="logo.png"
       alt="logo"
       width={
         isLargerThanMd ? "10rem" : isLargerThanSm ? "8.262rem" : "6.826rem"

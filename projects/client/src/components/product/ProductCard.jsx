@@ -1,7 +1,7 @@
 import { Box, Flex, Image, Text } from "@chakra-ui/react"
 import { useEffect } from "react"
 import { useState } from "react"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import { axiosInstance } from "../../api"
 import { Rupiah } from "../../lib/currency/Rupiah"
 
@@ -14,8 +14,9 @@ const ProductCard = ({ id, product_name, price }) => {
     product_picture: "",
   })
   const [productImg, setProductImg] = useState([])
-
   const [productId, setProductId] = useState(0)
+
+  const navigate = useNavigate()
 
   const fetchProductById = async () => {
     try {
@@ -34,6 +35,11 @@ const ProductCard = ({ id, product_name, price }) => {
     } catch (err) {
       console.log(err)
     }
+  }
+
+  const toProductDetail = () => {
+    setProductId(id)
+    navigate(`/product-detail/${id}/${product_name}`)
   }
 
   useEffect(() => {
@@ -55,22 +61,22 @@ const ProductCard = ({ id, product_name, price }) => {
         shadow="2xl"
         // onClick={() => productDetail()}
       >
-        <Box w="full" h="full">
-          <Link to={`/product-detail/${id}/${product_name}`}>
-            <Box
-              w="100%"
-              height="200px"
-              pos="relative"
-              overflow="hidden"
-              roundedTop="lg"
-            >
-              <Image
-                objectFit="fill"
-                alt="pict of product"
-                src={`http://localhost:8000/public/${productImg?.product_picture}`}
-              />
-            </Box>
-          </Link>
+        <Box w="full" h="full" onClick={() => toProductDetail()}>
+          {/* <Link to={`/product-detail/${id}/${product_name}`}> */}
+          <Box
+            w="100%"
+            height="200px"
+            pos="relative"
+            overflow="hidden"
+            roundedTop="lg"
+          >
+            <Image
+              objectFit="fill"
+              alt="pict of product"
+              src={`http://localhost:8000/public/${productImg?.product_picture}`}
+            />
+          </Box>
+          {/* </Link> */}
           <Box p="1">
             <Box fontWeight="semibold" lineHeight="tight">
               {product_name}
