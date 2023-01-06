@@ -139,7 +139,7 @@ const registerController = {
       const user = await User.findOne({
         where: {
           email,
-          is_verified: null,
+          is_verified: false,
         },
         attributes: ["id"],
       });
