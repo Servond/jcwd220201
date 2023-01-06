@@ -31,6 +31,7 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
+  Tooltip,
 } from "@chakra-ui/react"
 import * as Yup from "yup"
 import { useFormik } from "formik"
@@ -44,6 +45,7 @@ import SidebarAdmin from "../../../components/admin/sidebarAdminDashboard"
 import Search from "../../../components/admin/stock/Search"
 import { Rupiah } from "../../../lib/currency/Rupiah"
 import EditStock from "../../../components/admin/stock/EditStock"
+import ReactPaginate from "react-paginate"
 
 const WarehouseStock = ({}) => {
   // Selector Redux
@@ -55,16 +57,13 @@ const WarehouseStock = ({}) => {
 
   // Produck Data & Category
   const [data, setData] = useState([])
-  console.log(
-    "data",
-    data.map((val) => val.ProductStock)
-  )
-  const [category, setCategory] = useState([])
 
-  const [page, setPage] = useState(0)
-  const [limit, setLimit] = useState(3)
-  const [pages, setPages] = useState(0)
-  const [rows, setRows] = useState(0)
+  // const [category, setCategory] = useState([])
+
+  // const [page, setPage] = useState(0)
+  // const [limit, setLimit] = useState(1)
+  // const [pages, setPages] = useState(0)
+  // const [rows, setRows] = useState(0)
 
   // Modal Edit Stock Props
   const [openModal, setOpenModal] = useState(false)
@@ -81,7 +80,7 @@ const WarehouseStock = ({}) => {
         const response = await axiosInstance.get(
           `admin/stock/all-product/${authSelector.WarehouseId}`
         )
-
+        console.log("res", response)
         setData(response.data.data.ProductStock)
       }
 
@@ -105,11 +104,14 @@ const WarehouseStock = ({}) => {
   //   try {
   //     if (authSelector.RoleId === 2) {
   //       const response = await axiosInstance.get(
-  //         `admin/stock/all-product/${authSelector.WarehouseId}`
+  //         `admin/stock/all-product/${authSelector.WarehouseId}?page=${page}&limit=${limit}`
   //       )
   //       console.log("res", response)
 
   //       setData(response.data.result)
+  //       setPage(response.data.page)
+  //       setPages(response.data.totalPage)
+  //       setRows(response.data.totalRows)
   //     }
 
   //     const allWarehouse = await axiosInstance.get("admin/stock/all-warehouse")
@@ -119,14 +121,21 @@ const WarehouseStock = ({}) => {
   //     })
 
   //     const response = await axiosInstance.get(
-  //       `admin/stock/all-product/${warehouseId[0].id}`
+  //       `admin/stock/all-product/${warehouseId[0].id}?page=${page}&limit=${limit}`
   //     )
   //     console.log("res", response)
 
   //     setData(response.data.result)
+  //     setPage(response.data.page)
+  //     setPages(response.data.totalPage)
+  //     setRows(response.data.totalRows)
   //   } catch (err) {
   //     console.log(err)
   //   }
+  // }
+
+  // const changePage = ({ selected }) => {
+  //   setPage(selected)
   // }
 
   const handleEdit = (stock, id) => {
@@ -172,19 +181,27 @@ const WarehouseStock = ({}) => {
             <Td>{val.Product.product_name || "Tidak ada Data"}</Td>
             <Td>{val.Product.Category.category || "Tidak ada Data"}</Td>
             <Td>{Rupiah(val.Product.price) || "Tidak ada Data"}</Td>
-            <Td w="50px">{val.stock}</Td>
+            <Td w="10rem">{val.stock || "Tidak ada Data"}</Td>
             <Td justify="space-between">
-              <Button
-                alignContent="left"
-                colorScheme="messenger"
-                _hover={{ bgColor: "telegram" }}
-                onClick={() => handleEdit(val.stock, val.id)}
-              >
-                <EditIcon />
-              </Button>
-              <Button colorScheme="red" onClick={() => btnDelete(val.id)}>
-                <DeleteIcon />
-              </Button>
+              <Tooltip label="Edit Stok" fontSize="md">
+                <Button
+                  alignContent="left"
+                  colorScheme="messenger"
+                  _hover={{ bgColor: "telegram", transform: "translateZ(5px)" }}
+                  onClick={() => handleEdit(val.stock, val.id)}
+                >
+                  <EditIcon />
+                </Button>
+              </Tooltip>
+              <Tooltip label="Hapus Stok" fontSize="md">
+                <Button
+                  _hover={{ bgColor: "telegram", transform: "translateX(5px)" }}
+                  colorScheme="red"
+                  onClick={() => btnDelete(val.id)}
+                >
+                  <DeleteIcon />
+                </Button>
+              </Tooltip>
             </Td>
           </Tr>
         )
@@ -192,9 +209,13 @@ const WarehouseStock = ({}) => {
     )
   }
 
+  // useEffect(() => {
+  //   fetchProductWarehouse()
+  // }, [page])
+
   useEffect(() => {
     fetchProductWarehouse()
-  }, [page])
+  }, [])
   return (
     <>
       <Container bg="#e0e7eb" maxW="vw" p="0">
@@ -219,6 +240,16 @@ const WarehouseStock = ({}) => {
               </Thead>
               <Tbody>{renderProduct()}</Tbody>
             </Table>
+            {/* <ReactPaginate
+              breakLabel="..."
+              containerClassName="address-pagination-buttons"
+              nextLabel="Berikutnya"
+              onPageChange={changePage}
+              pageRangeDisplayed={5}
+              pageClassName="address-pagination-pages"
+              pageCount={Math.min(10, pages)}
+              previousLabel="Sebelumnya"
+            /> */}
           </VStack>
         </Flex>
       </Container>

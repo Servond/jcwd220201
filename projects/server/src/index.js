@@ -50,11 +50,15 @@ app.use("/api/checkout", checkoutRoute);
 // Checkout middleware
 app.use("/api/checkout", checkoutRoute);
 
+// Checkout middleware
+app.use("/api/checkout", checkoutRoute);
+
 const {
   warehousesRoute,
   citiesRoute,
   provincesRoute,
   categoriesRoute,
+  adminUserRoute,
 } = require("../routes");
 
 app.use("/public", express.static("public"));
@@ -73,6 +77,7 @@ app.use("/sales", reportProductRoute);
 app.use("/admin/stock", productStockRoute);
 app.use("/payment", paymentRoute);
 app.use("/order/", userOrderRoute);
+app.use("/admin-user", adminUserRoute);
 
 app.get("/api", (req, res) => {
   res.send(`Hello, this is my API`);
