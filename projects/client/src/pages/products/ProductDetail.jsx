@@ -201,7 +201,7 @@ const ProductDetail = () => {
   }, [qty, cartQty])
 
   return (
-    <Fragment>
+    <>
       {/* <Navbar /> */}
       <Container maxW="7xl">
         <SimpleGrid
@@ -210,10 +210,16 @@ const ProductDetail = () => {
           py={{ base: 18, md: 24 }}
         >
           <Flex>
-            <Carousel showStatus={false} showThumbs={false}>
+            <Carousel
+              showStatus={false}
+              showIndicators={true}
+              autoPlay={true}
+              infiniteLoop={true}
+              width="100%"
+              dynamicHeight={false}
+            >
               {productImg.map((val) => (
-                <Image
-                  // className="image-prod-detail"
+                <img
                   h={{ base: "100%", sm: "400px", lg: "500px" }}
                   src={`http://localhost:8000/public/${val.product_picture}`}
                   align="center"
@@ -383,7 +389,7 @@ const ProductDetail = () => {
           </ModalFooter>
         </ModalContent>
       </Modal>
-    </Fragment>
+    </>
   )
 }
 
