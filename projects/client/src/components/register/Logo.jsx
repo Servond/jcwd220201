@@ -16,7 +16,7 @@ const Logo = () => {
       cursor="pointer"
       width={["6.826rem", "8.262rem", "10rem"]}
       maxW="100%"
-      py="1.25rem"
+      my="1.25rem"
       onClick={() => navigate("/")}
     />
   );

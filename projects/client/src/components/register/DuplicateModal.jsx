@@ -68,10 +68,10 @@ const DuplicateModal = ({ props: { email, RegisterContext } }) => {
             }}
             mr="0.375rem"
             width={["4.341rem", "6.673rem", "7.9rem", "10.25rem"]}
-            height={["2.046rem", "2.478rem", "2.739rem", "3rem"]}
+            height={["1.746rem", "2.478rem", "2.739rem", "3rem"]}
             maxW="100%"
             border="1px solid"
-            fontSize={["0.682rem", "0.826rem", "0.913rem", "1rem"]}
+            fontSize={["0.482rem", "0.826rem", "0.913rem", "1rem"]}
             fontWeight="700"
             colorScheme="white"
             color="teal"
@@ -82,9 +82,9 @@ const DuplicateModal = ({ props: { email, RegisterContext } }) => {
           </Button>
           <Button
             width={["4.341rem", "6.673rem", "7.9rem", "10.25rem"]}
-            height={["2.046rem", "2.478rem", "2.7391rem", "3rem"]}
+            height={["1.746rem", "2.478rem", "2.7391rem", "3rem"]}
             maxW="100%"
-            fontSize={["0.682rem", "0.826rem", "0.913rem", "1rem"]}
+            fontSize={["0.482rem", "0.826rem", "0.913rem", "1rem"]}
             fontWeight="700"
             colorScheme="teal"
             lineHeight="22px"

@@ -59,7 +59,7 @@ const registerController = {
       const existingUser = await User.findOne({
         where: {
           email,
-          is_verified: null,
+          is_verified: false,
         },
       });
 
