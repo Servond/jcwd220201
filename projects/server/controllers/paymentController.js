@@ -333,112 +333,112 @@ const paymentController = {
       }
 
       // Get order details
-      const {
-        orderData: { sortedWarehouse },
-        cartItems,
-      } = req.body
+      // const {
+      //   orderData: { sortedWarehouse },
+      //   cartItems,
+      // } = req.body
 
-      // Get warehouses details
-      const { nearestWarehouse, nearestBranches } = sortedWarehouse
+      // // Get warehouses details
+      // const { nearestWarehouse, nearestBranches } = sortedWarehouse
 
-      // Check products availability in the nearest warehouse
-      for (let item of cartItems) {
-        const { ProductId, quantity } = item
+      // // Check products availability in the nearest warehouse
+      // for (let item of cartItems) {
+      //   const { ProductId, quantity } = item
 
-        // Get available stock from the nearest warehouse
-        const { stock } = await ProductStock.findOne({
-          raw: true,
-          where: {
-            [Op.and]: [
-              { ProductId },
-              { WarehouseId: nearestWarehouse.warehouseInfo.id },
-            ],
-          },
-        })
+      //   // Get available stock from the nearest warehouse
+      //   const { stock } = await ProductStock.findOne({
+      //     raw: true,
+      //     where: {
+      //       [Op.and]: [
+      //         { ProductId },
+      //         { WarehouseId: nearestWarehouse.warehouseInfo.id },
+      //       ],
+      //     },
+      //   })
 
-        // Make a request to nearest branches if additional stock is needed
-        const requestItemsForm = []
+      //   // Make a request to nearest branches if additional stock is needed
+      //   const requestItemsForm = []
 
-        if (stock < quantity) {
-          // Calculate items needed
-          let itemsNeeded = !stock ? quantity : quantity - stock
+      //   if (stock < quantity) {
+      //     // Calculate items needed
+      //     let itemsNeeded = !stock ? quantity : quantity - stock
 
-          // Check stock availability from nearest branches
-          for (let branch of nearestBranches) {
-            const { stock: nearestBranchStock } = await ProductStock.findOne({
-              raw: true,
-              where: {
-                [Op.and]: [
-                  { ProductId },
-                  { WarehouseId: branch.warehouseInfo.id },
-                ],
-              },
-            })
+      //     // Check stock availability from nearest branches
+      //     for (let branch of nearestBranches) {
+      //       const { stock: nearestBranchStock } = await ProductStock.findOne({
+      //         raw: true,
+      //         where: {
+      //           [Op.and]: [
+      //             { ProductId },
+      //             { WarehouseId: branch.warehouseInfo.id },
+      //           ],
+      //         },
+      //       })
 
-            const time = moment().format()
+      //       const time = moment().format()
 
-            /*
-              Continue checking from subsequent nearest branches if stock not available
-              from the current nearest branch
-            */
-            if (!nearestBranchStock) {
-              continue
-            }
+      //       /*
+      //         Continue checking from subsequent nearest branches if stock not available
+      //         from the current nearest branch
+      //       */
+      //       if (!nearestBranchStock) {
+      //         continue
+      //       }
 
-            /*
-              Create request draft consisting of available items if available stock is less than
-              or equal to items needed
-            */
-            if (nearestBranchStock <= itemsNeeded) {
-              requestItemsForm.push({
-                ProductId,
-                quantity: nearestBranchStock,
-                StockRequest: {
-                  date: time,
-                  is_approved: false,
-                  FromWarehouseId: nearestWarehouse.warehouseInfo.id,
-                  ToWarehouseId: branch.warehouseInfo.id,
-                },
-              })
+      //       /*
+      //         Create request draft consisting of available items if available stock is less than
+      //         or equal to items needed
+      //       */
+      //       if (nearestBranchStock <= itemsNeeded) {
+      //         requestItemsForm.push({
+      //           ProductId,
+      //           quantity: nearestBranchStock,
+      //           StockRequest: {
+      //             date: time,
+      //             is_approved: false,
+      //             FromWarehouseId: nearestWarehouse.warehouseInfo.id,
+      //             ToWarehouseId: branch.warehouseInfo.id,
+      //           },
+      //         })
 
-              itemsNeeded -= nearestBranchStock
+      //         itemsNeeded -= nearestBranchStock
 
-              if (!itemsNeeded) {
-                break
-              }
+      //         if (!itemsNeeded) {
+      //           break
+      //         }
 
-              continue
-            }
+      //         continue
+      //       }
 
-            /*
-              Create request draft consisting of the number of items needed if available stock
-              is greater than items needed
-            */
-            if (nearestBranchStock >= itemsNeeded) {
-              requestItemsForm.push({
-                ProductId,
-                quantity: itemsNeeded,
-                StockRequest: {
-                  date: time,
-                  is_approved: false,
-                  FromWarehouseId: nearestWarehouse.warehouseInfo.id,
-                  ToWarehouseId: branch.warehouseInfo.id,
-                },
-              })
+      //       /*
+      //         Create request draft consisting of the number of items needed if available stock
+      //         is greater than items needed
+      //       */
+      //       if (nearestBranchStock >= itemsNeeded) {
+      //         requestItemsForm.push({
+      //           ProductId,
+      //           quantity: itemsNeeded,
+      //           StockRequest: {
+      //             date: time,
+      //             is_approved: false,
+      //             FromWarehouseId: nearestWarehouse.warehouseInfo.id,
+      //             ToWarehouseId: branch.warehouseInfo.id,
+      //           },
+      //         })
 
-              break
-            }
-          }
+      //         break
+      //       }
+      //     }
 
-          // Request needed product to the nearest branches
-          await sequelize.transaction(async (t) => {
-            await StockRequestItem.bulkCreate(requestItemsForm, {
-              include: StockRequest,
-              transaction: t,
-            })
-          })
-        }
-      }
+      //     // Request needed product to the nearest branches
+      //     await sequelize.transaction(async (t) => {
+      //       await StockRequestItem.bulkCreate(requestItemsForm, {
+      //         include: StockRequest,
+      //         transaction: t,
+      //       })
+      //     })
+      //   }
+      // }
 
       const { id: statusId } = await db.Status.findOne({
         where: {
