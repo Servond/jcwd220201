@@ -240,7 +240,7 @@ const LoginPage = () => {
                           <Center>
                             <Button
                               type={"submit"}
-                              isDisabled={!formik.values.email}
+                              isDisabled={!formik.values.password}
                               bgColor="teal.500"
                               color={"white"}
                               mt="5"

@@ -136,7 +136,7 @@ const WarehouseProduct = () => {
       fetchProduct()
       fetchImage()
 
-      onClose()
+      setOpenAlert(false)
       toast({
         title: "Produk telah dihapus",
       })
@@ -393,13 +393,6 @@ const WarehouseProduct = () => {
   ]
 
   const handleDisable = () => {
-    // formik.setFieldValue(product_name, "")
-    //     formik.setFieldValue(description, "")
-    //     formik.setFieldValue(price, "")
-    //     formik.setFieldValue(CategoryId, "")
-    //     formik.setFieldValue(weight, "")
-    //     formik.setFieldValue(product_picture, [])
-
     console.log(formik.values.product_name, "ini")
     let tempField = []
     if (formik.values.product_name !== "") {
@@ -591,14 +584,6 @@ const WarehouseProduct = () => {
 
             <Button
               onClick={formik.handleSubmit}
-              // isDisabled={
-              //   !formik.values.product_name &&
-              //   !formik.values.description &&
-              //   !formik.values.price &&
-              //   !formik.values.CategoryId &&
-              //   !formik.values.weight &&
-              //   !formik.values.product_picture
-              // }
               isDisabled={disable}
               my="4"
               colorScheme="teal"

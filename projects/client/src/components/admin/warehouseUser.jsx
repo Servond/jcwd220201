@@ -132,7 +132,7 @@ const WarehouseUser = () => {
       getUser()
       getWarehouse()
 
-      onClose()
+      setOpenAlert(false)
 
       toast({
         title: "User telah dihapus",
@@ -492,7 +492,7 @@ const WarehouseUser = () => {
             w="70%"
           >
             <AlertIcon boxSize="20px" mr="0" />
-            <AlertTitle>Oops, produk tidak ditemukan !</AlertTitle>
+            <AlertTitle>Oops, user tidak ditemukan !</AlertTitle>
             <AlertDescription>Coba kata kunci lain</AlertDescription>
           </Alert>
         ) : null}
