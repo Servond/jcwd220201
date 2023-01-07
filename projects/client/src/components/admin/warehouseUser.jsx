@@ -453,7 +453,7 @@ const WarehouseUser = () => {
                     <Td textAlign="center" border="1px solid black">
                       {val.Warehouse.warehouse_name}
                     </Td>
-                    <Td textAlign="center" border="1px solid black" w="50px">
+                    <Td textAlign="center" border="1px solid black" w="10px">
                       <Button
                         alignContent={"left"}
                         onClick={() =>
@@ -462,7 +462,7 @@ const WarehouseUser = () => {
                         mx="4"
                         colorScheme={"teal"}
                       >
-                        <FaRegEdit />
+                        <FaRegEdit /> Edit
                       </Button>
                       <Button
                         ref={btnRef}
@@ -470,7 +470,7 @@ const WarehouseUser = () => {
                         colorScheme="red"
                         mx="4"
                       >
-                        <RiDeleteBin2Line />
+                        <RiDeleteBin2Line /> Hapus
                       </Button>
                     </Td>
                   </Tr>

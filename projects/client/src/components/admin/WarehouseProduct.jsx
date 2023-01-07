@@ -172,11 +172,11 @@ const WarehouseProduct = () => {
             border={"1px solid black"}
             textAlign={"center"}
             whiteSpace="pre-wrap"
-            width="34%"
+            width="30%"
           >
             <Text textAlign="justify">{val.description} </Text>
           </Td>
-          <Td width="20%" border={"1px solid black"} textAlign={"center"}>
+          <Td width="10%" border={"1px solid black"} textAlign={"center"}>
             {Rupiah(val.price)}
           </Td>
           <Td width="2vh" border={"1px solid black"} textAlign={"center"}>
@@ -193,7 +193,7 @@ const WarehouseProduct = () => {
             ))}
           </Carousel>
 
-          <Td width="20%" border={"1px solid black"} textAlign={"center"}>
+          <Td width="23%" border={"1px solid black"} textAlign={"center"}>
             <Button
               alignContent={"left"}
               onClick={() =>
@@ -210,7 +210,7 @@ const WarehouseProduct = () => {
               mx="3"
               colorScheme={"teal"}
             >
-              <BiEdit />
+              <BiEdit /> Edit
             </Button>
             <Button
               ref={btnRef}
@@ -218,7 +218,7 @@ const WarehouseProduct = () => {
               colorScheme="red"
               mx="4"
             >
-              <RiDeleteBin5Fill />
+              <RiDeleteBin5Fill /> Hapus
             </Button>
           </Td>
         </Tr>
