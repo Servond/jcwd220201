@@ -79,6 +79,9 @@ const WarehouseProduct = () => {
   const { isOpen, onOpen, onClose } = useDisclosure()
   const cancelRef = useRef()
   const btnRef = useRef()
+  const [openAlert, setOpenAlert] = useState(false)
+  const [idDelete, setIdDelete] = useState(0)
+  const [disable, setDisable] = useState(true)
 
   const toast = useToast()
 
@@ -126,9 +129,9 @@ const WarehouseProduct = () => {
     }
   }
 
-  const deleteBtn = async (id) => {
+  const deleteBtn = async () => {
     try {
-      const response = await axiosInstance.delete(`/product-admin/${id}`)
+      const response = await axiosInstance.delete(`/product-admin/${idDelete}`)
 
       fetchProduct()
       fetchImage()
@@ -217,7 +220,12 @@ const WarehouseProduct = () => {
             >
               <BiEdit />
             </Button>
-            <Button colorScheme="red" onClick={() => deleteBtn(val.id)}>
+            <Button
+              ref={btnRef}
+              onClick={() => handleOpenAlert(val.id)}
+              colorScheme="red"
+              mx="4"
+            >
               <RiDeleteBin5Fill />
             </Button>
           </Td>
@@ -370,6 +378,11 @@ const WarehouseProduct = () => {
     }
   }
 
+  const handleOpenAlert = (id) => {
+    setOpenAlert(true)
+    setIdDelete(id)
+  }
+
   const categoryOption = categories.map((val) => {
     return { value: val.id, label: val.category }
   })
@@ -378,6 +391,55 @@ const WarehouseProduct = () => {
     { value: "product_name ASC", label: "Name A-Z" },
     { value: "product_name DESC", label: "Name Z-A" },
   ]
+
+  const handleDisable = () => {
+    // formik.setFieldValue(product_name, "")
+    //     formik.setFieldValue(description, "")
+    //     formik.setFieldValue(price, "")
+    //     formik.setFieldValue(CategoryId, "")
+    //     formik.setFieldValue(weight, "")
+    //     formik.setFieldValue(product_picture, [])
+
+    console.log(formik.values.product_name, "ini")
+    let tempField = []
+    if (formik.values.product_name !== "") {
+      tempField.push(formik.values.product_name)
+    }
+    if (formik.values.description !== "") {
+      tempField.push(formik.values.description)
+    }
+    if (formik.values.price !== "") {
+      tempField.push(formik.values.price)
+    }
+    if (formik.values.CategoryId !== "") {
+      tempField.push(formik.values.CategoryId)
+    }
+    if (formik.values.weight !== "") {
+      tempField.push(formik.values.weight)
+    }
+    if (formik.values.product_picture?.length > 0) {
+      tempField.push(formik.values.product_picture)
+    }
+
+    console.log(formik.values)
+    console.log(tempField, "temp")
+    if (tempField.length === 6) {
+      setDisable(false)
+    }
+  }
+
+  useEffect(() => {
+    console.log(disable, "disable")
+    handleDisable()
+  }, [
+    formik.values.product_name,
+    formik.values.description,
+    formik.values.price,
+    formik.values.CategoryId,
+    formik.values.weight,
+    formik.values.product_picture,
+    disable,
+  ])
 
   return (
     <>
@@ -529,7 +591,15 @@ const WarehouseProduct = () => {
 
             <Button
               onClick={formik.handleSubmit}
-              isDisabled={!formik.values.product_picture}
+              // isDisabled={
+              //   !formik.values.product_name &&
+              //   !formik.values.description &&
+              //   !formik.values.price &&
+              //   !formik.values.CategoryId &&
+              //   !formik.values.weight &&
+              //   !formik.values.product_picture
+              // }
+              isDisabled={disable}
               my="4"
               colorScheme="teal"
             >
@@ -711,6 +781,46 @@ const WarehouseProduct = () => {
           </Box>
         </HStack>
       </Flex>
+
+      <AlertDialog
+        isOpen={openAlert}
+        onClose={() => setOpenAlert(false)}
+        leastDestructiveRef={cancelRef}
+        motionPreset="slideInBottom"
+        isCentered
+        finalFocusRef={btnRef}
+      >
+        <AlertDialogOverlay
+          bg="none"
+          backdropFilter="auto"
+          backdropInvert="80%"
+          backdropBlur="2px"
+        >
+          <AlertDialogContent>
+            <AlertDialogHeader fontSize="lg" fontStyle="bold">
+              Hapus Produk
+            </AlertDialogHeader>
+            <AlertDialogCloseButton />
+
+            <AlertDialogBody>
+              Apakah Yakin Ingin Menghapus Produk?
+            </AlertDialogBody>
+
+            <AlertDialogFooter>
+              <Button
+                mr="10px"
+                ref={cancelRef}
+                onClick={() => setOpenAlert(false)}
+              >
+                Cancel
+              </Button>
+              <Button onClick={() => deleteBtn()} colorScheme="red">
+                Hapus
+              </Button>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialogOverlay>
+      </AlertDialog>
 
       <Modal isOpen={openModal} onClose={() => setOpenModal(false)}>
         <EditProduct

@@ -71,6 +71,8 @@ const WarehouseUser = () => {
   const { isOpen, onOpen, onClose } = useDisclosure()
   const cancelRef = useRef()
   const btnRef = useRef()
+  const [openAlert, setOpenAlert] = useState(false)
+  const [idDelete, setIdDelete] = useState(0)
 
   const fetchWareUser = async () => {
     try {
@@ -122,9 +124,9 @@ const WarehouseUser = () => {
     }
   }
 
-  const deleteBtn = async (id) => {
+  const deleteBtn = async () => {
     try {
-      const response = await axiosInstance.delete(`/warehouse-user/${id}`)
+      const response = await axiosInstance.delete(`/warehouse-user/${idDelete}`)
 
       fetchWareUser()
       getUser()
@@ -272,6 +274,11 @@ const WarehouseUser = () => {
       width: "min-content",
       minWidth: "25vh",
     }),
+  }
+
+  const handleOpenAlert = (id) => {
+    setOpenAlert(true)
+    setIdDelete(id)
   }
 
   return (
@@ -432,7 +439,7 @@ const WarehouseUser = () => {
 
               <Tbody maxWidth="max-content">
                 {users.map((val) => (
-                  <Tr key={val.id}>
+                  <Tr>
                     <Td textAlign="center" border="1px solid black">
                       {val.UserId}
                     </Td>
@@ -459,55 +466,12 @@ const WarehouseUser = () => {
                       </Button>
                       <Button
                         ref={btnRef}
-                        onClick={onOpen}
+                        onClick={() => handleOpenAlert(val.id)}
                         colorScheme="red"
                         mx="4"
                       >
                         <RiDeleteBin2Line />
                       </Button>
-                      <AlertDialog
-                        isOpen={isOpen}
-                        onClose={onClose}
-                        leastDestructiveRef={cancelRef}
-                        motionPreset="slideInBottom"
-                        isCentered
-                        finalFocusRef={btnRef}
-                      >
-                        <AlertDialogOverlay
-                          bg="none"
-                          backdropFilter="auto"
-                          backdropInvert="80%"
-                          backdropBlur="2px"
-                        >
-                          <AlertDialogContent>
-                            <AlertDialogHeader fontSize="lg" fontStyle="bold">
-                              Hapus Admin
-                            </AlertDialogHeader>
-                            <AlertDialogCloseButton />
-
-                            <AlertDialogBody>
-                              Apakah Yakin Ingin Menghapus Warehouse Admin??
-                            </AlertDialogBody>
-
-                            <AlertDialogFooter>
-                              <Button
-                                mr="10px"
-                                ref={cancelRef}
-                                onClick={onClose}
-                              >
-                                Cancel
-                              </Button>
-
-                              <Button
-                                onClick={(val) => deleteBtn(val.id)}
-                                colorScheme="red"
-                              >
-                                Hapus
-                              </Button>
-                            </AlertDialogFooter>
-                          </AlertDialogContent>
-                        </AlertDialogOverlay>
-                      </AlertDialog>
                     </Td>
                   </Tr>
                 ))}
@@ -542,6 +506,45 @@ const WarehouseUser = () => {
 
         <Box h="4%" w="full"></Box>
       </Flex>
+      <AlertDialog
+        isOpen={openAlert}
+        onClose={() => setOpenAlert(false)}
+        leastDestructiveRef={cancelRef}
+        motionPreset="slideInBottom"
+        isCentered
+        finalFocusRef={btnRef}
+      >
+        <AlertDialogOverlay
+          bg="none"
+          backdropFilter="auto"
+          backdropInvert="80%"
+          backdropBlur="2px"
+        >
+          <AlertDialogContent>
+            <AlertDialogHeader fontSize="lg" fontStyle="bold">
+              Hapus Admin
+            </AlertDialogHeader>
+            <AlertDialogCloseButton />
+
+            <AlertDialogBody>
+              Apakah Yakin Ingin Menghapus Warehouse Admin?
+            </AlertDialogBody>
+
+            <AlertDialogFooter>
+              <Button
+                mr="10px"
+                ref={cancelRef}
+                onClick={() => setOpenAlert(false)}
+              >
+                Cancel
+              </Button>
+              <Button onClick={() => deleteBtn()} colorScheme="red">
+                Hapus
+              </Button>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialogOverlay>
+      </AlertDialog>
 
       <Modal isOpen={openModal} onClose={() => setOpenModal(false)}>
         <EditWarehouseUser
