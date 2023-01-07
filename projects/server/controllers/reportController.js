@@ -167,13 +167,12 @@ const salesReport = {
     // console.log("cname", category)
     try {
       const { _sortBy = "" } = req.query
-      let sql = `SELECT ord.WarehouseId, pr.CategoryId, pr.id AS productId, ct.category, pr.product_name, pr.description, ord_items.total_price AS total_price, ord.shipping_cost,
-                  ord_items.total_price + ord.shipping_cost AS total, wr.warehouse_name, ord.payment_date
-                  FROM orderitems AS ord_items
-                  JOIN orders AS ord ON ord.id = ord_items.OrderId
-                  JOIN products AS pr ON pr.id = ord_items.ProductId
-                  JOIN categories AS ct ON ct.id = pr.CategoryId
-                  JOIN warehouse AS wr ON wr.id = ord.WarehouseId `
+      let sql = `SELECT  ord.WarehouseId, pr.CategoryId, pr.id AS productId, ct.category, pr.product_name, pr.description, ord.total_price, wr.warehouse_name, ord.payment_date
+      FROM orderitems AS ord_items
+      JOIN orders AS ord ON ord.id = ord_items.OrderId
+      JOIN products AS pr ON pr.id = ord_items.ProductId
+      JOIN categories AS ct ON ct.id = pr.CategoryId
+      JOIN warehouse as wr ON wr.id = ord.WarehouseId `
 
       if (WarehouseId && CategoryId && payment_date) {
         sql += `WHERE WarehouseId=${WarehouseId} AND CategoryId=${CategoryId} AND MONTH(ord.payment_date)=${payment_date} `
@@ -209,8 +208,8 @@ const salesReport = {
 
       return res.status(200).json({
         message: "Filtered",
-        data: findDataReal[0],
-        dataCount: dataCountReal[0],
+        data: findDataReal,
+        dataCount: dataCountReal.length,
       })
     } catch (err) {
       return res.status(500).json({

@@ -64,8 +64,14 @@ const LoginPage = () => {
             gender: response.data.data.gender,
             date_of_birth: response.data.data.date_of_birth,
             profile_picture: response.data.data.profile_picture,
+            WarehouseId:
+              response.data.data.WarehousesUsers.length > 0
+                ? response.data.data.WarehousesUsers[0].WarehouseId
+                : "",
           })
         )
+
+        console.log(response, "login")
         toast({
           title: "Login success",
           description: response.data.message,

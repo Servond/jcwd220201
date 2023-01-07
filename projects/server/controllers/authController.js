@@ -17,6 +17,12 @@ const authController = {
         where: {
           email,
         },
+        include: [
+          {
+            model: db.WarehousesUser,
+            atrributes: ["warehouseId"],
+          },
+        ],
       })
       if (!findUserByEmail) {
         return res.status(400).json({
@@ -49,7 +55,7 @@ const authController = {
     } catch (err) {
       console.log(err)
       return res.status(500).json({
-        message: "Server Error",
+        message: err.message,
       })
     }
   },

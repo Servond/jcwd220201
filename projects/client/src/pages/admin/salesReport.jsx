@@ -38,7 +38,7 @@ const SalesReport = () => {
   const [totalCount, setTotalCount] = useState(0)
   const [sortBy, setSortBy] = useState("")
   const [sortDir, setSortDir] = useState("DESC")
-  const [filter, setFilter] = useState("All")
+  const [filter, setFilter] = useState("")
   const [filterMonth, setFilterMonth] = useState("")
   const [filterWare, setFilterWare] = useState("")
   const [currentSearch, setCurrentSearch] = useState("")
@@ -52,23 +52,55 @@ const SalesReport = () => {
 
   const fetchReport = async () => {
     try {
-      const response = await axiosInstance.get(`/sales/report/2`, {
-        params: {
-          _page: page,
-          _limit: limit,
-          _sortBy: sortBy,
-          _sortDir: sortDir,
-          category: filter,
-          payment_date: filterMonth,
-          product_name: nameSearch,
-          WarehouseId: filterWare,
-          // category: catSearch,
-        },
-      })
+      console.log(authSelector, "auth")
+
+      // const response = await axiosInstance.get(`/sales/report`, {
+      //   params: {
+      //     _page: page,
+      //     _limit: limit,
+      //     _sortBy: sortBy,
+      //     _sortDir: sortDir,
+      //     category: filter,
+      //     payment_date: filterMonth,
+      //     product_name: nameSearch,
+      //     WarehouseId: filterWare,
+      //   },
+      // })
+
+      let response
+      if (authSelector.RoleId === 1) {
+        response = await axiosInstance.get(`/sales/report`, {
+          params: {
+            _page: page,
+            _limit: limit,
+            _sortBy: sortBy,
+            _sortDir: sortDir,
+            category: filter,
+            payment_date: filterMonth,
+            product_name: nameSearch,
+            WarehouseId: filterWare,
+          },
+        })
+      } else {
+        response = await axiosInstance.get(`/sales/report`, {
+          params: {
+            _page: page,
+            _limit: limit,
+            _sortBy: sortBy,
+            _sortDir: sortDir,
+            category: filter,
+            payment_date: filterMonth,
+            product_name: nameSearch,
+            WarehouseId: authSelector.WarehouseId,
+          },
+        })
+        setFilterWare(authSelector.WarehouseId)
+      }
 
       setTotalCount(response.data.dataCount)
       setSales(response.data.data)
-      console.log(response, "order")
+
+      console.log(response.data.data, "order")
     } catch (err) {
       console.log(err)
     }
@@ -102,12 +134,16 @@ const SalesReport = () => {
 
   const filterWarehouseBtn = (event) => {
     const value = event.value
+    console.log(value, "Ware")
     setFilterWare(value)
+    fetchReport()
   }
 
   const filterCategoryBtn = (event) => {
     const value = event.value
+    console.log(value, "val")
     setFilter(value)
+    fetchReport()
   }
 
   const filterMonthBtn = (event) => {
@@ -168,10 +204,10 @@ const SalesReport = () => {
   //   )
   // )
 
-  // console.log(
-  //   "ware",
-  //   sales.map((val) => val.Warehouse.warehouse_name)
-  // )
+  console.log(
+    "ware",
+    sales.map((val) => val.warehouse_name)
+  )
 
   // const renderSales = () => {
   //   return sales.map((val) => {
@@ -236,6 +272,7 @@ const SalesReport = () => {
     { label: "Jul", value: "6" },
     { label: "Aug", value: "7" },
   ]
+
   return (
     <>
       <Container bg="#e0e7eb" maxW="vw" p="0">
@@ -408,7 +445,7 @@ const SalesReport = () => {
                     >
                       <Tr>
                         <Th w="100px">
-                          <Text fontSize="10px">WarehouseId</Text>
+                          <Text fontSize="10px">Warehouse name</Text>
                         </Th>
 
                         <Th w="100px">
@@ -421,7 +458,7 @@ const SalesReport = () => {
                           <Text fontSize="10px">Total price</Text>
                         </Th>
                         <Th w="100px">
-                          <Text fontSize="10px">Shipping Cost</Text>
+                          <Text fontSize="10px">description</Text>
                         </Th>
 
                         <Th w="100px">
@@ -430,18 +467,16 @@ const SalesReport = () => {
                       </Tr>
                     </Thead>
                     <Tbody>
-                      {sales.map((val) =>
-                        val.OrderItems.map((value) => (
-                          <Tr key={val.id}>
-                            <Td>{val.Warehouse.warehouse_name}</Td>
-                            <Td>{value.Product.Category.category}</Td>
-                            <Td>{value.Product.product_name}</Td>
-                            <Td>{Rupiah(val.total_price)}</Td>
-                            <Td>{Rupiah(val.shipping_cost)}</Td>
-                            <Td>{val.payment_date}</Td>
-                          </Tr>
-                        ))
-                      )}
+                      {sales?.map((val) => (
+                        <Tr key={val.id}>
+                          <Td>{val.warehouse_name}</Td>
+                          <Td>{val.category}</Td>
+                          <Td>{val.product_name}</Td>
+                          <Td>{Rupiah(val.total_price)}</Td>
+                          <Td>{val.description}</Td>
+                          <Td>{val.payment_date}</Td>
+                        </Tr>
+                      ))}
                     </Tbody>
                     {/* <Tbody maxWidth="max-content"> {renderSales()}</Tbody> */}
                   </Table>
