@@ -257,7 +257,7 @@ const ProductList = () => {
       <ProductCard
         key={val.id.toString()}
         product_name={val.product_name}
-        product_picture={`http://localhost:8000/public/${val.Product?.ProductPictures?.product_picture}`}
+        product_picture={`http://localhost:8000/public/${val.product_picture}`}
         price={val.price}
         id={val.id}
       />

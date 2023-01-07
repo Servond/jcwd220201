@@ -73,7 +73,7 @@ const ProductCard = ({ id, product_name, price }) => {
             <Image
               objectFit="fill"
               alt="pict of product"
-              src={`http://localhost:8000/public/${productImg?.product_picture}`}
+              src={`http://localhost:8000/public/${productImg.product_picture}`}
             />
           </Box>
           {/* </Link> */}
