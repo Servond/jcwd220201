@@ -1,11 +1,17 @@
 import {
   Alert,
   AlertDescription,
+  AlertDialog,
+  AlertDialogBody,
+  AlertDialogCloseButton,
+  AlertDialogContent,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogOverlay,
   AlertIcon,
   AlertTitle,
   Box,
   Button,
-  Container,
   Flex,
   FormControl,
   FormErrorMessage,
@@ -18,9 +24,7 @@ import {
   Input,
   InputGroup,
   Modal,
-  Tab,
   Table,
-  TableContainer,
   Tbody,
   Td,
   Text,
@@ -28,8 +32,8 @@ import {
   Th,
   Thead,
   Tr,
+  useDisclosure,
   useToast,
-  VStack,
 } from "@chakra-ui/react"
 import { useFormik } from "formik"
 import { useEffect, useRef, useState } from "react"
@@ -40,7 +44,7 @@ import * as Yup from "yup"
 import EditProduct from "./editProduct"
 import PageButton from "./pageButton"
 import Select from "react-select"
-
+import { Carousel } from "react-responsive-carousel"
 import { Rupiah } from "../../lib/currency/Rupiah"
 import { useSearchParams } from "react-router-dom"
 
@@ -65,6 +69,12 @@ const WarehouseProduct = () => {
   const [sortDir, setSortDir] = useState("DESC")
   const [filter, setFilter] = useState("All")
   const [currentSearch, setCurrentSearch] = useState("")
+  const { isOpen, onOpen, onClose } = useDisclosure()
+  const cancelRef = useRef()
+  const btnRef = useRef()
+  const [openAlert, setOpenAlert] = useState(false)
+  const [idDelete, setIdDelete] = useState(0)
+  const [disable, setDisable] = useState(true)
 
   const toast = useToast()
 
@@ -94,9 +104,9 @@ const WarehouseProduct = () => {
 
   const fetchImage = async () => {
     try {
-      const responseImg = await axiosInstance.get(`/product-admin/image`)
+      const response = await axiosInstance.get(`/product-admin/image`)
 
-      setImages(responseImg.data.data)
+      setImages(response.data.data)
     } catch (err) {
       console.log(err)
     }
@@ -104,28 +114,31 @@ const WarehouseProduct = () => {
 
   const getCategories = async () => {
     try {
-      const responCat = await axiosInstance.get(`/categories`)
+      const response = await axiosInstance.get(`/categories`)
 
-      setCategories(responCat.data.data)
+      setCategories(response.data.data)
     } catch (err) {
       console.log(err)
     }
   }
 
-  const deleteBtn = async (id) => {
+  const deleteBtn = async () => {
     try {
-      await axiosInstance.delete(`/product-admin/${id}`)
+      const response = await axiosInstance.delete(`/product-admin/${idDelete}`)
+
       fetchProduct()
       fetchImage()
+
+      setOpenAlert(false)
       toast({
         title: "Produk telah dihapus",
       })
     } catch (err) {
       console.log(err)
       toast({
-        title: "Edit Product Gagal",
+        title: "Hapus Product Gagal",
         status: "error",
-        description: "Hanya Super Admin yang dapat menghapus produk",
+        description: err.response.data.message,
       })
     }
   }
@@ -158,33 +171,35 @@ const WarehouseProduct = () => {
     return products.map((val) => {
       return (
         <Tr key={val.id} border={"1px solid black"} textAlign={"center"}>
-          <Td border={"1px solid black"} textAlign={"center"}>
+          <Td width="20%" border={"1px solid black"} textAlign={"center"}>
             {val.product_name}
           </Td>
           <Td
             border={"1px solid black"}
             textAlign={"center"}
             whiteSpace="pre-wrap"
-            width="50%"
+            width="30%"
           >
-            {" "}
             <Text textAlign="justify">{val.description} </Text>
           </Td>
-          <Td border={"1px solid black"} textAlign={"center"}>
+          <Td width="10%" border={"1px solid black"} textAlign={"center"}>
             {Rupiah(val.price)}
           </Td>
-          <Td border={"1px solid black"} textAlign={"center"}>
+          <Td width="2vh" border={"1px solid black"} textAlign={"center"}>
             {val.CategoryId}
           </Td>
-          <Td border={"1px solid black"} textAlign={"center"}>
+          <Td width="4vh" border={"1px solid black"} textAlign={"center"}>
             {val.weight}
           </Td>
+          <Carousel width="20vh" autoPlay={true}>
+            {val.ProductPictures.map((value) => (
+              <Image
+                src={`http://localhost:8000/public/${value.product_picture}`}
+              ></Image>
+            ))}
+          </Carousel>
 
-          <Image
-            src={`http://localhost:8000/public/${val.ProductPictures[0].product_picture}`}
-          ></Image>
-
-          <Td border={"1px solid black"} textAlign={"center"}>
+          <Td width="23%" border={"1px solid black"} textAlign={"center"}>
             <Button
               alignContent={"left"}
               onClick={() =>
@@ -201,10 +216,15 @@ const WarehouseProduct = () => {
               mx="3"
               colorScheme={"teal"}
             >
-              <BiEdit />
+              <BiEdit /> Edit
             </Button>
-            <Button onClick={() => deleteBtn(val.id)} colorScheme="red" mx="3">
-              <RiDeleteBin5Fill />
+            <Button
+              ref={btnRef}
+              onClick={() => handleOpenAlert(val.id)}
+              colorScheme="red"
+              mx="4"
+            >
+              <RiDeleteBin5Fill /> Hapus
             </Button>
           </Td>
         </Tr>
@@ -304,7 +324,7 @@ const WarehouseProduct = () => {
           formData.append("product_picture", product_picture)
         })
 
-        await axiosInstance.post(`/product-admin/`, formData)
+        const response = await axiosInstance.post(`/product-admin/`, formData)
         formik.setFieldValue(product_name, "")
         formik.setFieldValue(description, "")
         formik.setFieldValue(price, "")
@@ -321,8 +341,8 @@ const WarehouseProduct = () => {
         })
       } catch (err) {
         toast({
-          title: "Nama Produk Telah Ada",
-          description: "Hanya Super Admin yang dapat menambahkan produk",
+          title: "Produk Gagal ditambahkan",
+          description: err.response.data.message,
           status: "error",
         })
         console.log(err)
@@ -333,13 +353,8 @@ const WarehouseProduct = () => {
       description: Yup.string().required(),
       price: Yup.string().required(),
       CategoryId: Yup.string().required(),
-      weight: Yup.string().required("2 kg"),
-      product_picture: Yup.string()
-        .required()
-        .test("fileSize", "The file is too large", (value) => {
-          if (!value.length) return true // attachment is optional
-          return value[0].size <= 1000000
-        }),
+      weight: Yup.string().required("Dalam Satuan Gram"),
+      product_picture: Yup.string().required(),
     }),
     validateOnChange: false,
   })
@@ -361,6 +376,11 @@ const WarehouseProduct = () => {
     }
   }
 
+  const handleOpenAlert = (id) => {
+    setOpenAlert(true)
+    setIdDelete(id)
+  }
+
   const categoryOption = categories.map((val) => {
     return { value: val.id, label: val.category }
   })
@@ -370,20 +390,65 @@ const WarehouseProduct = () => {
     { value: "product_name DESC", label: "Name Z-A" },
   ]
 
+  const handleDisable = () => {
+    console.log(formik.values.product_name, "ini")
+    let tempField = []
+    if (formik.values.product_name !== "") {
+      tempField.push(formik.values.product_name)
+    }
+    if (formik.values.description !== "") {
+      tempField.push(formik.values.description)
+    }
+    if (formik.values.price !== "") {
+      tempField.push(formik.values.price)
+    }
+    if (formik.values.CategoryId !== "") {
+      tempField.push(formik.values.CategoryId)
+    }
+    if (formik.values.weight !== "") {
+      tempField.push(formik.values.weight)
+    }
+    if (formik.values.product_picture?.length > 0) {
+      tempField.push(formik.values.product_picture)
+    }
+
+    console.log(formik.values)
+    console.log(tempField, "temp")
+    if (tempField.length === 6) {
+      setDisable(false)
+    }
+  }
+
+  useEffect(() => {
+    console.log(disable, "disable")
+    handleDisable()
+  }, [
+    formik.values.product_name,
+    formik.values.description,
+    formik.values.price,
+    formik.values.CategoryId,
+    formik.values.weight,
+    formik.values.product_picture,
+    disable,
+  ])
+
   return (
     <>
-      <Flex h="100%" w="full" direction="column">
+      <Flex h="100%" direction="column">
         <Flex w="full" justifyContent="center">
           <HStack mt="3" wrap="wrap" justifyContent="center">
-            <Grid templateColumns="repeat(3, 1fr)" gap="2" ml="60" mr="60">
+            <Grid templateColumns="repeat(3, 1fr)" gap="-6" ml="60" mr="60">
               <GridItem>
                 <FormControl isInvalid={formik.errors.product_name}>
                   <FormLabel>Nama Produk</FormLabel>
                   <Input
+                    h="6vh"
+                    w="30vh"
                     borderColor="black"
                     name="product_name"
                     onChange={formChangeHandler}
                     value={formik.values.product_name}
+                    backgroundColor="white"
                   />
                   <FormErrorMessage>
                     {formik.errors.product_name}
@@ -392,19 +457,18 @@ const WarehouseProduct = () => {
               </GridItem>
 
               <GridItem>
-                <FormControl
-                  maxW="100%"
-                  minColumn="1"
-                  isInvalid={formik.errors.description}
-                >
+                <FormControl>
                   <FormLabel>Deskripsi</FormLabel>
                   <Textarea
+                    h="6vh"
+                    w="30vh"
                     minH="unset"
                     minRows="1"
                     borderColor="black"
                     name="description"
                     onChange={formChangeHandler}
                     value={formik.values.description}
+                    backgroundColor="white"
                   />
                   <FormErrorMessage>
                     {formik.errors.description}
@@ -412,20 +476,23 @@ const WarehouseProduct = () => {
                 </FormControl>
               </GridItem>
               <GridItem>
-                <FormControl maxW="100%" isInvalid={formik.errors.price}>
+                <FormControl isInvalid={formik.errors.price}>
                   <FormLabel>Harga</FormLabel>
                   <Input
+                    h="6vh"
+                    w="30vh"
                     borderColor="black"
                     name="price"
                     onChange={formChangeHandler}
                     value={formik.values.price}
+                    backgroundColor="white"
                   />
                   <FormErrorMessage>{formik.errors.price}</FormErrorMessage>
                 </FormControl>
               </GridItem>
 
               <GridItem>
-                <FormControl maxW="100%" isInvalid={formik.errors.CategoryId}>
+                <FormControl isInvalid={formik.errors.CategoryId}>
                   <FormLabel>Category Id</FormLabel>
                   <Select
                     name="CategoryId"
@@ -436,6 +503,19 @@ const WarehouseProduct = () => {
                     options={categoryOption}
                     fontSize={"15px"}
                     color={"black"}
+                    styles={{
+                      control: (base) => ({
+                        ...base,
+                        width: "min-content",
+                        minWidth: "30vh",
+                        minHeight: "6vh",
+                        borderColor: "black",
+                      }),
+                      menu: (provided) => ({
+                        ...provided,
+                        zIndex: 999,
+                      }),
+                    }}
                   ></Select>
                   <FormErrorMessage>
                     {formik.errors.CategoryId}
@@ -444,22 +524,29 @@ const WarehouseProduct = () => {
               </GridItem>
 
               <GridItem>
-                <FormControl maxW="100%" isInvalid={formik.errors.weight}>
+                <FormControl isInvalid={formik.errors.weight}>
                   <FormLabel>Berat</FormLabel>
                   <Input
+                    h="6vh"
+                    w="30vh"
                     borderColor="black"
                     name="weight"
                     onChange={formChangeHandler}
                     value={formik.values.weight}
+                    backgroundColor="white"
                   />
                   <FormErrorMessage>{formik.errors.weight}</FormErrorMessage>
                 </FormControl>
               </GridItem>
 
               <GridItem>
-                <FormControl maxW="100%">
+                <FormControl>
                   <FormLabel>Foto Produk</FormLabel>
-                  <Button w="full" onClick={() => inputFileRef.current.click()}>
+                  <Button
+                    h="6vh"
+                    w="30vh"
+                    onClick={() => inputFileRef.current.click()}
+                  >
                     + Tambahkan Foto
                   </Button>
                   <Input
@@ -493,11 +580,9 @@ const WarehouseProduct = () => {
               </>
             ))}
 
-            <Box w="full" h="8%"></Box>
-
             <Button
-              // disabled={formik.isSubmitting ? true : false}
               onClick={formik.handleSubmit}
+              isDisabled={disable}
               my="4"
               colorScheme="teal"
             >
@@ -505,7 +590,7 @@ const WarehouseProduct = () => {
             </Button>
           </HStack>
         </Flex>
-        <Box w="full" h="2.5%"></Box>
+        <Box w="full" h="5%"></Box>
 
         <Grid
           gap="4"
@@ -513,6 +598,7 @@ const WarehouseProduct = () => {
           mt="10"
           mb="4"
           ml="20%"
+          zIndex="2"
         >
           <Select
             onChange={filterProductHandler}
@@ -521,6 +607,10 @@ const WarehouseProduct = () => {
             color={"#6D6D6F"}
             placeholder="Filter"
             options={categoryOption}
+            menuPosition="fixed"
+            styles={{
+              menu: (provided) => ({ ...provided, zIndex: 1, top: 0 }),
+            }}
           ></Select>
 
           <Select
@@ -563,7 +653,7 @@ const WarehouseProduct = () => {
             </FormControl>
           </form>
         </Grid>
-        <Box ml="50%">
+        <Box ml="47%" mb="4">
           <Button
             onClick={btnResetFilter}
             p="3"
@@ -575,77 +665,76 @@ const WarehouseProduct = () => {
           </Button>
         </Box>
 
-        <Container maxW="container.xl" py="8" pb="5" px="1">
-          <TableContainer
-            border={"1px solid black"}
-            w="1800px"
-            mt={8}
-            overflowY="scroll"
-          >
-            <Table responsive="md" variant="simple">
-              <Thead position={"sticky"} top={-1} backgroundColor={"#718096"}>
-                <Tr border={"1px solid black"} maxW="50px">
-                  <Th
-                    border={"1px solid black"}
-                    textAlign={"center"}
-                    color="black"
-                    w="100px"
-                  >
-                    Nama Produk
-                  </Th>
-                  <Th
-                    border={"1px solid black"}
-                    textAlign={"center"}
-                    color="black"
-                    w="300px"
-                  >
-                    Deskripsi
-                  </Th>
-                  <Th
-                    border={"1px solid black"}
-                    textAlign={"center"}
-                    color="black"
-                    w="100px"
-                  >
-                    Harga
-                  </Th>
-                  <Th
-                    border={"1px solid black"}
-                    textAlign={"center"}
-                    color="black"
-                    w="100px"
-                  >
-                    Category Id
-                  </Th>
-                  <Th
-                    border={"1px solid black"}
-                    textAlign={"center"}
-                    color="black"
-                    w="100px"
-                  >
-                    Berat
-                  </Th>
-                  <Th
-                    border={"1px solid black"}
-                    textAlign={"center"}
-                    color="black"
-                    w="100px"
-                  >
-                    Foto Produk
-                  </Th>
-                </Tr>
-              </Thead>
-              <Tbody maxWidth="max-content"> {renderProduct()}</Tbody>
-            </Table>
-          </TableContainer>
-        </Container>
-
-        <HStack w="full" alignSelf="flex-end" justifyContent="center">
-          {renderPageButton()}
-          <Box>
-            Page {page}/{Math.ceil(totalCount / limit)}
-          </Box>
-        </HStack>
+        <Box py="-2" pb="2" px="12" mt="2" zIndex="0" position="relative">
+          <Table responsive="md" variant="simple">
+            <Thead
+              zIndex="2"
+              position={"sticky"}
+              top={-1}
+              backgroundColor={"#718096"}
+            >
+              <Tr border={"1px solid black"} maxW="50px">
+                <Th
+                  border={"1px solid black"}
+                  textAlign={"center"}
+                  color="black"
+                  w="100px"
+                >
+                  Nama Produk
+                </Th>
+                <Th
+                  border={"1px solid black"}
+                  textAlign={"center"}
+                  color="black"
+                  w="100px"
+                >
+                  Deskripsi
+                </Th>
+                <Th
+                  border={"1px solid black"}
+                  textAlign={"center"}
+                  color="black"
+                  w="100px"
+                >
+                  Harga
+                </Th>
+                <Th
+                  border={"1px solid black"}
+                  textAlign={"center"}
+                  color="black"
+                  w="100px"
+                >
+                  Category Id
+                </Th>
+                <Th
+                  border={"1px solid black"}
+                  textAlign={"center"}
+                  color="black"
+                  w="100px"
+                >
+                  Berat
+                </Th>
+                <Th
+                  border={"1px solid black"}
+                  textAlign={"center"}
+                  color="black"
+                  w="100px"
+                >
+                  Foto Produk
+                </Th>
+                <Th
+                  border={"1px solid black"}
+                  textAlign={"center"}
+                  color="black"
+                  w="100px"
+                ></Th>
+              </Tr>
+            </Thead>
+            <Tbody backgroundColor="white" maxWidth="max-content">
+              {renderProduct()}
+            </Tbody>
+          </Table>
+        </Box>
 
         <Box h="4%" w="full"></Box>
         {!products.length ? (
@@ -658,17 +747,64 @@ const WarehouseProduct = () => {
             textAlign="center"
             alignSelf="center"
             h="200px"
-            w="80%"
+            w="94%"
           >
             <AlertIcon boxSize="20px" mr="0" />
-            <AlertTitle>Oops, produk nggak ditemukan !</AlertTitle>
+            <AlertTitle>Oops, produk tidak ditemukan !</AlertTitle>
             <AlertDescription>
               Coba kata kunci lain. Terimakasih
               <span size="lg">🤯</span>
             </AlertDescription>
           </Alert>
         ) : null}
+
+        <HStack mt="3" w="full" alignSelf="flex-end" justifyContent="center">
+          {renderPageButton()}
+          <Box>
+            Page {page}/{Math.ceil(totalCount / limit)}
+          </Box>
+        </HStack>
       </Flex>
+
+      <AlertDialog
+        isOpen={openAlert}
+        onClose={() => setOpenAlert(false)}
+        leastDestructiveRef={cancelRef}
+        motionPreset="slideInBottom"
+        isCentered
+        finalFocusRef={btnRef}
+      >
+        <AlertDialogOverlay
+          bg="none"
+          backdropFilter="auto"
+          backdropInvert="80%"
+          backdropBlur="2px"
+        >
+          <AlertDialogContent>
+            <AlertDialogHeader fontSize="lg" fontStyle="bold">
+              Hapus Produk
+            </AlertDialogHeader>
+            <AlertDialogCloseButton />
+
+            <AlertDialogBody>
+              Apakah Yakin Ingin Menghapus Produk?
+            </AlertDialogBody>
+
+            <AlertDialogFooter>
+              <Button
+                mr="10px"
+                ref={cancelRef}
+                onClick={() => setOpenAlert(false)}
+              >
+                Cancel
+              </Button>
+              <Button onClick={() => deleteBtn()} colorScheme="red">
+                Hapus
+              </Button>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialogOverlay>
+      </AlertDialog>
 
       <Modal isOpen={openModal} onClose={() => setOpenModal(false)}>
         <EditProduct
@@ -693,6 +829,7 @@ const WarehouseProduct = () => {
           preview={preview}
           setPreview={setPreview}
           categories={categories}
+          categoryOption={categoryOption}
         />
       </Modal>
     </>

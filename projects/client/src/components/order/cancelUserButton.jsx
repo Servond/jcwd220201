@@ -7,11 +7,11 @@ const CancelUserButton = () => {
     <Button
       colorScheme="teal"
       onClick={async () => {
-        const resp = await CancelUserOrder()
+        const response = await cancelUserOrder()
 
         toast({
-          title: resp.data.message,
-          status: resp.status === 200 ? "success" : "error",
+          title: response.data.message,
+          status: response.status === 200 ? "success" : "error",
         })
       }}
     >
