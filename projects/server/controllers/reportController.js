@@ -194,6 +194,8 @@ const salesReport = {
       } else if (category) {
         sql += `WHERE ct.category LIKE "%${category}%" `
       }
+      console.log(category)
+      console.log(CategoryId, "catid")
 
       const dataCount = await db.sequelize.query(sql)
       const dataCountReal = dataCount[0]
@@ -359,6 +361,134 @@ const salesReport = {
             CategoryId: CategoryId,
             category: category,
             payment_date: payment_date,
+          })
+          return res.status(200).json({
+            message: "get all user",
+            data: findReport.rows,
+            dataCount: findReport.count,
+          })
+        }
+        if (!Number(category)) {
+          const findReport = await db.Order.findAndCountAll({
+            attributes: [
+              "payment_date",
+              "total_price",
+              "WarehouseId",
+              "shipping_cost",
+            ],
+            limit: Number(_limit),
+            offset: (_page - 1) * _limit,
+            order: [["category", _sortDir]],
+            include: [
+              { model: db.Warehouse, attributes: ["warehouse_name"] },
+
+              {
+                model: db.OrderItem,
+                attributes: ["ProductId"],
+                include: [
+                  {
+                    model: db.Product,
+                    attributes: ["product_name", "CategoryId"],
+                    where: {
+                      [Op.or]: [
+                        {
+                          product_name: {
+                            [Op.like]: `%${product_name}%`,
+                          },
+                          CategoryId: {
+                            [Op.like]: `%${CategoryId}%`,
+                          },
+                        },
+                      ],
+                    },
+                    include: [
+                      {
+                        model: db.Category,
+                        attributes: ["category"],
+                        category: {
+                          [Op.like]: `%${category}%`,
+                        },
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
+            where: {
+              [Op.or]: [
+                {
+                  WarehouseId: {
+                    [Op.like]: `%${WarehouseId}%`,
+                  },
+                },
+              ],
+            },
+            category: category,
+          })
+          return res.status(200).json({
+            message: "get all user",
+            data: findReport.rows,
+            dataCount: findReport.count,
+          })
+        }
+
+        if (Number(category)) {
+          const findReport = await db.Order.findAndCountAll({
+            attributes: [
+              "payment_date",
+              "total_price",
+              "WarehouseId",
+              "shipping_cost",
+            ],
+            limit: Number(_limit),
+            offset: (_page - 1) * _limit,
+            order: [["category", _sortDir]],
+            include: [
+              { model: db.Warehouse, attributes: ["warehouse_name"] },
+
+              {
+                model: db.OrderItem,
+                attributes: ["ProductId"],
+                include: [
+                  {
+                    model: db.Product,
+                    attributes: ["product_name", "CategoryId"],
+                    where: {
+                      [Op.or]: [
+                        {
+                          product_name: {
+                            [Op.like]: `%${product_name}%`,
+                          },
+                          CategoryId: {
+                            [Op.like]: `%${CategoryId}%`,
+                          },
+                        },
+                      ],
+                    },
+                    include: [
+                      {
+                        model: db.Category,
+                        attributes: ["category"],
+                        category: {
+                          [Op.like]: `%${category}%`,
+                        },
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
+            where: {
+              [Op.or]: [
+                {
+                  WarehouseId: {
+                    [Op.like]: `%${WarehouseId}%`,
+                  },
+                },
+              ],
+            },
+
+            category: category,
           })
           return res.status(200).json({
             message: "get all user",
