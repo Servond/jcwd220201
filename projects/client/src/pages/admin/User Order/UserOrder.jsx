@@ -2,6 +2,7 @@ import { useEffect } from "react"
 import { useState } from "react"
 import { axiosInstance } from "../../../api"
 import Search from "../../../components/admin/stock/Search"
+import ApproveButton from "../../../components/admin/payment/ApproveButton"
 
 import {
   Box,
@@ -107,7 +108,7 @@ const UserOrder = () => {
                           <Td textTransform="capitalize">{val.status}</Td>
                           {val.status === "menunggu konfirmasi pembayaran" ? (
                             <Td>
-                              <Button>fraya</Button>
+                              <ApproveButton />
                               <Button>fraya</Button>
                             </Td>
                           ) : val.status === "diproses" ? (

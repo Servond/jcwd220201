@@ -7,12 +7,12 @@ const ApproveButton = () => {
     <Button
       colorScheme="teal"
       onClick={async () => {
-        const resp = await PaymentApprove()
+        const response = await PaymentApprove()
 
-        toast({
-          title: resp.data.message,
-          status: resp.status === 200 ? "success" : "error",
-        })
+        // toast({
+        //   title: response.data.message,
+        //   status: response.status === 200 ? "success" : "error",
+        // })
       }}
     >
       Konfirmasi Pembayaran
