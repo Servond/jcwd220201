@@ -50,7 +50,6 @@ const ProductCard = ({ id, product_name, price }) => {
   return (
     <>
       <Flex
-        // w="full"
         w={{ base: "full", lg: "15em" }}
         h="full"
         alignItems="center"
@@ -59,10 +58,8 @@ const ProductCard = ({ id, product_name, price }) => {
         bg="white"
         rounded="xl"
         shadow="2xl"
-        // onClick={() => productDetail()}
       >
         <Box w="full" h="full" onClick={() => toProductDetail()}>
-          {/* <Link to={`/product-detail/${id}/${product_name}`}> */}
           <Box
             w="100%"
             height="200px"
@@ -76,14 +73,12 @@ const ProductCard = ({ id, product_name, price }) => {
               src={`http://localhost:8000/public/${productImg.product_picture}`}
             />
           </Box>
-          {/* </Link> */}
           <Box p="1">
             <Box fontWeight="semibold" lineHeight="tight">
               {product_name}
             </Box>
 
             <Box>{Rupiah(price)}</Box>
-            {/* <Box>{productData.category_id}</Box> */}
           </Box>
         </Box>
       </Flex>
