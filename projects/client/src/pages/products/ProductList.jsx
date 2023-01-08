@@ -200,10 +200,20 @@ const ProductList = () => {
     return { value: val.id, label: val.category }
   })
 
+  // const filterCategory = (e) => {
+  //   const value = e.value
+
+  //   setFilterProduct(value)
+  // }
   const filterCategory = (e) => {
     const value = e.value
 
     setFilterProduct(value)
+    const params = {}
+    if (searchParams.get("search")) {
+      params["search"] = searchParams.get("search")
+    }
+    setSearchParams(value)
   }
 
   const btnResetFilter = () => {
@@ -221,10 +231,12 @@ const ProductList = () => {
       if (
         passing[0] === "product_name" ||
         passing[0] === "harga maksimum" ||
-        passing[0] === "harga minimum"
+        passing[0] === "harga minimum" ||
+        passing[0] === "category"
       ) {
         setSortBy(passing[0])
         setSortDir(passing[1])
+        setFilterProduct(passing[0])
       }
     }
     fetchProducts()
@@ -236,8 +248,7 @@ const ProductList = () => {
 
   const renderProducts = () => {
     return products.map((val, i) => (
-      // <Box>
-      <MotionBox>
+      <MotionBox variants={cardVariant}>
         <ProductCard
           key={val.id.toString()}
           product_name={val.product_name}
@@ -246,7 +257,6 @@ const ProductList = () => {
           id={val.id}
         />
       </MotionBox>
-      // </Box>
     ))
   }
 
@@ -421,27 +431,6 @@ const ProductList = () => {
           <Footer />
         </Box>
       </Box>
-
-      {/* Using Animate */}
-
-      {/* <Box ml="15em" mr="1em" mt="1em">
-          <MotionSimpleGrid
-          mt="4"
-          minChildWidth="250px"
-          spacing="1em"
-          minH="full"
-          variants={parentVariant}
-          initial="initial"
-          animate="animate"
-          align="center"
-          >
-          {data.map((product, i) => (
-            <MotionBox variants={cardVariant} key={i}>
-            <ProductCard product={product} />
-            </MotionBox>
-          ))}
-        </MotionSimpleGrid>
-        </Box> */}
     </>
   )
 }
