@@ -70,11 +70,6 @@ const WarehouseStock = ({}) => {
 
   // const [category, setCategory] = useState([])
 
-  // const [page, setPage] = useState(0)
-  // const [limit, setLimit] = useState(1)
-  // const [pages, setPages] = useState(0)
-  // const [rows, setRows] = useState(0)
-
   // Modal Edit Stock Props
   const [openModal, setOpenModal] = useState(false)
   const [stockEdit, setStockEdit] = useState("")
@@ -85,11 +80,11 @@ const WarehouseStock = ({}) => {
   const cancelRef = useRef()
 
   const fetchProductWarehouse = async () => {
+    const productPerPage = 10
     try {
-      const productPerPage = 10
       if (authSelector.RoleId === 2) {
         const response = await axiosInstance.get(
-          `admin/stock/all-product/${authSelector.WarehouseId}`,
+          `/admin/stock/all-product/${authSelector.WarehouseId}`,
           {
             params: {
               _page: page,
@@ -111,13 +106,13 @@ const WarehouseStock = ({}) => {
         }
       }
 
-      const allWarehouse = await axiosInstance.get("admin/stock/all-warehouse")
+      const allWarehouse = await axiosInstance.get("/admin/stock/all-warehouse")
       const warehouseId = allWarehouse.data.data.filter((val) => {
         return val.warehouse_name == params.id
       })
 
       const response = await axiosInstance.get(
-        `admin/stock/all-product/${warehouseId[0].id}`,
+        `/admin/stock/all-product/${warehouseId[0].id}`,
         {
           params: {
             _page: page,
@@ -240,7 +235,7 @@ const WarehouseStock = ({}) => {
 
           <VStack h="full" w="full" overflowX="scroll">
             <Text>Product Stock Data : {params.id}</Text>
-            <Search />
+
             <Table>
               <Thead>
                 <Tr>
@@ -280,16 +275,6 @@ const WarehouseStock = ({}) => {
                 </Box>
               </Box>
             </Box>
-            {/* <ReactPaginate
-              breakLabel="..."
-              containerClassName="address-pagination-buttons"
-              nextLabel="Berikutnya"
-              onPageChange={changePage}
-              pageRangeDisplayed={5}
-              pageClassName="address-pagination-pages"
-              pageCount={Math.min(10, pages)}
-              previousLabel="Sebelumnya"
-            /> */}
           </VStack>
         </Flex>
       </Container>

@@ -148,12 +148,7 @@ const productStockController = {
 
       const findAdminByRole = await User.findByPk(req.user.id)
 
-      // if (findAdminByRole.RoleId !== 1 && findAdminByRole.RoleId !== 2) {
-      //   return res.status(400).json({
-      //     message: "Hanya Warehouse Admin & Admin yang bisa melihat Fitur ini",
-      //   })
-      // }
-      if (findAdminByRole.RoleId === 3) {
+      if (findAdminByRole.RoleId !== 1 && findAdminByRole.RoleId !== 2) {
         return res.status(400).json({
           message: "Hanya Warehouse Admin & Admin yang bisa melihat Fitur ini",
         })
@@ -169,15 +164,15 @@ const productStockController = {
             limit: Number(_limit),
             offset: (_page - 1) * _limit,
             subQuery: false,
-            where: { WarehouseId: id },
             include: [
               {
                 model: Product,
-                where: { product_name: { [Op.like]: `%${product_name}%` } },
                 include: [{ model: Category }, { model: ProductPicture }],
+                where: { product_name: { [Op.like]: `%${product_name}%` } },
               },
             ],
             order: [[{ model: Product }, _sortBy, _sortDir]],
+            where: { WarehouseId: id },
           })
 
           return res.status(200).json({
@@ -186,20 +181,23 @@ const productStockController = {
             dataCount: findWarehouseAdmin.count,
           })
         }
+
         const findWarehouseAdmin = await ProductStock.findAndCountAll({
           limit: Number(_limit),
           offset: (_page - 1) * _limit,
-          T,
           subQuery: false,
-          where: { WarehouseId: id },
           include: [
             {
               model: Product,
-              where: { product_name: { [Op.like]: `%${product_name}%` } },
               include: [{ model: Category }, { model: ProductPicture }],
+              where: {
+                product_name: { [Op.like]: `%${product_name}%` },
+                CategoryId,
+              },
             },
           ],
           order: [[{ model: Product }, _sortBy, _sortDir]],
+          where: { WarehouseId: id },
         })
 
         return res.status(200).json({
@@ -208,18 +206,19 @@ const productStockController = {
           dataCount: findWarehouseAdmin.count,
         })
       }
+
       const findWarehouseAdmin = await ProductStock.findAndCountAll({
         limit: Number(_limit),
         offset: (_page - 1) * _limit,
         subQuery: false,
         order: [[_sortBy, _sortDir]],
-        where: { WarehouseId: id },
         include: [
           {
             model: Product,
             include: [{ model: Category }, { model: ProductPicture }],
           },
         ],
+        where: { WarehouseId: id },
       })
 
       return res.status(200).json({
@@ -231,60 +230,6 @@ const productStockController = {
       console.log(err)
       return res.status(500).json({ message: err.message })
     }
-
-    // Later Try This Method
-    //   const { id } = req.params
-
-    //   const findAdminByRole = await User.findByPk(req.user.id)
-
-    //   if (findAdminByRole.RoleId !== 1 && findAdminByRole.RoleId !== 2) {
-    //     return res.status(400).json({
-    //       message: "Hanya Warehouse Admin & Admin yang bisa melihat Fitur ini",
-    //     })
-    //   }
-
-    //   const page = parseInt(req.query.page) || 0
-    //   const limit = parseInt(req.query.limit) || 1
-    //   const search = req.query.search_query || ""
-    //   const offset = limit * page
-    //   const totalRows = await ProductStock.count({
-    //     where: { WarehouseId: id },
-    //     include: [
-    //       {
-    //         model: Product,
-    //         where: { product_name: { [Op.like]: "%" + search + "%" } },
-    //         include: [{ model: Category }, { model: ProductPicture }],
-    //       },
-    //     ],
-    //   })
-    //   const totalPage = Math.ceil(totalRows / limit)
-    //   const result = await ProductStock.findAll({
-    //     where: { WarehouseId: id },
-    //     include: [
-    //       {
-    //         model: Product,
-    //         where: { product_name: { [Op.like]: "%" + search + "%" } },
-    //         include: [{ model: Category }, { model: ProductPicture }],
-    //       },
-    //     ],
-    //     offset: offset,
-    //     limit: limit,
-    //     subQuery: false,
-    //     order: [[{ model: Product }, "id", "ASC"]],
-    //   })
-
-    //   return res.status(200).json({
-    //     message: "Data Warehouse Admin",
-    //     result: result,
-    //     page: page,
-    //     limit: limit,
-    //     totalRows: totalRows,
-    //     totalPage: totalPage,
-    //   })
-    // } catch (err) {
-    //   console.log(err)
-    //   return res.status(500).json({ message: err.message })
-    // }
   },
   getAllCategory: async (req, res) => {
     try {
