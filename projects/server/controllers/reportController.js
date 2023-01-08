@@ -18,12 +18,13 @@ const salesReport = {
 
     try {
       const { _sortBy = "" } = req.query
-      let sql = `SELECT  ord.WarehouseId, pr.CategoryId, pr.id AS productId, ct.category, pr.product_name, pr.description, ord.total_price, wr.warehouse_name, ord.payment_date
+      let sql = `SELECT  ord.WarehouseId, pr.CategoryId, pr.id AS productId, ct.category, pr.product_name, us.name, ord.total_price, wr.warehouse_name, ord.payment_date
       FROM orderitems AS ord_items
       JOIN orders AS ord ON ord.id = ord_items.OrderId
       JOIN products AS pr ON pr.id = ord_items.ProductId
       JOIN categories AS ct ON ct.id = pr.CategoryId
-      JOIN warehouse as wr ON wr.id = ord.WarehouseId `
+      JOIN warehouse as wr ON wr.id = ord.WarehouseId
+      JOIN users as us ON us.id = ord.UserId `
 
       if (WarehouseId && CategoryId && payment_date && category) {
         sql += `WHERE WarehouseId=${WarehouseId} AND CategoryId=${CategoryId} AND MONTH(ord.payment_date)=${payment_date} AND category=${category} `
@@ -52,7 +53,7 @@ const salesReport = {
       const dataCount = await db.sequelize.query(sql)
       const dataCountReal = dataCount[0]
 
-      sql += `ORDER BY pr.product_name ${_sortBy}
+      sql += `ORDER BY ord.payment_date ${_sortBy}
                 LIMIT ${_limit}
                 OFFSET ${(_page - 1) * _limit} `
 

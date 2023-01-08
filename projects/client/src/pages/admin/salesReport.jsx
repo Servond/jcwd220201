@@ -43,7 +43,6 @@ const SalesReport = () => {
   const [filterWare, setFilterWare] = useState("")
   const [currentSearch, setCurrentSearch] = useState("")
   const [nameSearch, setNameSearch] = useState("")
-  const [catSearch, setCatSearch] = useState("")
   const [warehouse, setWarehouse] = useState([])
   const [categories, setCategories] = useState([])
   const [sales, setSales] = useState([])
@@ -84,8 +83,6 @@ const SalesReport = () => {
 
       setTotalCount(response.data.dataCount)
       setSales(response.data.data)
-
-      console.log(response.data.data, "order")
     } catch (err) {
       console.log(err)
     }
@@ -111,40 +108,16 @@ const SalesReport = () => {
     }
   }
 
-  const sortProduct = (e) => {
-    const value = e.value
-
-    setSortBy(value.split(" ")[0])
-    setSortDir(value.split(" ")[1])
-
-    if (value === "harga maksimum") {
-      setSortBy("total_price")
-      setSortDir("DESC")
-    } else if (value === "harga minimum") {
-      setSortBy("total_price")
-      setSortDir("ASC")
-    } else if (value == "") {
-      setSortBy("")
-      setSortDir("")
-    }
-  }
-
-  const sortUsertHandler = (event) => {
-    const value = event.value
-    setSortBy(value.split(" ")[0])
-    setSortDir(value.split(" ")[1])
-  }
-
   const filterWarehouseBtn = (event) => {
     const value = event.value
-    console.log(value, "Ware")
+
     setFilterWare(value)
     fetchReport()
   }
 
   const filterCategoryBtn = (event) => {
     const value = event.value
-    console.log(value, "val")
+
     setFilter(value)
     fetchReport()
   }
@@ -179,11 +152,6 @@ const SalesReport = () => {
     setSortBy(false)
     setFilter(false)
     window.location.reload(false)
-  }
-
-  const sortHandler = ({ target }) => {
-    const { value } = target
-    setSortBy(value)
   }
 
   const renderPageButton = () => {
@@ -236,11 +204,6 @@ const SalesReport = () => {
     { label: "Desember", value: "12" },
   ]
 
-  const sortUser = [
-    { value: "product_name ASC", label: "A-Z" },
-    { value: "product_name DESC", label: "Z-A" },
-  ]
-
   return (
     <>
       <Container bg="#e0e7eb" maxW="vw" p="0">
@@ -271,6 +234,7 @@ const SalesReport = () => {
                     ml="12"
                     gridTemplateColumns="repeat(5,1fr)"
                   >
+                    {/* Month */}
                     <GridItem
                       w="full"
                       justifySelf="center"
@@ -412,7 +376,7 @@ const SalesReport = () => {
                           border={"1px solid black"}
                           textAlign={"center"}
                         >
-                          <Text fontSize="12px">description</Text>
+                          <Text fontSize="12px">nama user</Text>
                         </Th>
 
                         <Th
@@ -433,7 +397,7 @@ const SalesReport = () => {
                           <Td textAlign={"center"}>
                             {Rupiah(val.total_price)}
                           </Td>
-                          <Td textAlign={"center"}>{val.description}</Td>
+                          <Td textAlign={"center"}>{val.name}</Td>
                           <Td textAlign={"center"}>{val.payment_date}</Td>
                         </Tr>
                       ))}

@@ -39,8 +39,6 @@ const OrderPayment = () => {
       const response = await axiosInstance.get(`/payment`)
 
       setPayment(response.data.data)
-
-      console.log(response, "response")
     } catch (err) {
       console.log(err)
     }
@@ -84,7 +82,6 @@ const OrderPayment = () => {
   }
 
   const renderOrder = () => {
-    // console.log(payment, "pay")
     return payment.map((val) => {
       return (
         <Tr key={val.id}>

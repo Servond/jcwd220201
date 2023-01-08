@@ -72,7 +72,6 @@ const LoginPage = () => {
           })
         )
 
-        console.log(response, "login")
         toast({
           title: "Login success",
           description: response.data.message,
