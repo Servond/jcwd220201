@@ -215,14 +215,7 @@ const App = () => {
             </ProtectedRoute>
           }
         />
-        <Route
-          path="/admin/sales-report"
-          element={
-            <ProtectedRoute>
-              <SalesReport />
-            </ProtectedRoute>
-          }
-        />
+
         <Route
           path="/admin/payment"
           element={
