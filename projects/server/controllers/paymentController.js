@@ -333,7 +333,7 @@ const paymentController = {
   confirmPayment: async (req, res) => {
     try {
       const { id } = req.params
-      const { WarehouseId, stock } = req.body
+      const { WarehouseId, stock, ProductId } = req.body
 
       const findOrder = await Order.findOne({
         where: {
@@ -501,8 +501,6 @@ const paymentController = {
         }
       }
 
-      // console.log(updateStock, "update")
-
       const { id: statusId } = await Status.findOne({
         where: {
           status: "diproses",
@@ -521,7 +519,7 @@ const paymentController = {
       )
 
       const updateStock = await ProductStock.update(
-        { stock: stock },
+        { stock: 0 },
         { where: { id: id } }
       )
 
