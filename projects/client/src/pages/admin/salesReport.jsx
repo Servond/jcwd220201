@@ -52,21 +52,6 @@ const SalesReport = () => {
 
   const fetchReport = async () => {
     try {
-      console.log(authSelector, "auth")
-
-      // const response = await axiosInstance.get(`/sales/report`, {
-      //   params: {
-      //     _page: page,
-      //     _limit: limit,
-      //     _sortBy: sortBy,
-      //     _sortDir: sortDir,
-      //     category: filter,
-      //     payment_date: filterMonth,
-      //     product_name: nameSearch,
-      //     WarehouseId: filterWare,
-      //   },
-      // })
-
       let response
       if (authSelector.RoleId === 1) {
         response = await axiosInstance.get(`/sales/report`, {
@@ -126,6 +111,24 @@ const SalesReport = () => {
     }
   }
 
+  const sortProduct = (e) => {
+    const value = e.value
+
+    setSortBy(value.split(" ")[0])
+    setSortDir(value.split(" ")[1])
+
+    if (value === "harga maksimum") {
+      setSortBy("total_price")
+      setSortDir("DESC")
+    } else if (value === "harga minimum") {
+      setSortBy("total_price")
+      setSortDir("ASC")
+    } else if (value == "") {
+      setSortBy("")
+      setSortDir("")
+    }
+  }
+
   const sortUsertHandler = (event) => {
     const value = event.value
     setSortBy(value.split(" ")[0])
@@ -149,10 +152,6 @@ const SalesReport = () => {
   const filterMonthBtn = (event) => {
     const value = event.value
     setFilterMonth(value)
-  }
-
-  const searchBtnHandler = (e) => {
-    setNameSearch(e.target.value)
   }
 
   const handleKeyEnter = (e) => {
@@ -186,46 +185,6 @@ const SalesReport = () => {
     const { value } = target
     setSortBy(value)
   }
-
-  // console.log(
-  //   "sales",
-  //   sales.map((val) =>
-  //     val.OrderItems.map((value) => value.Product.product_name)
-  //   )
-  // )
-  // console.log(
-  //   "proId",
-  //   sales.map((val) => val.OrderItems.map((value) => value.ProductId))
-  // )
-  // console.log(
-  //   "cat",
-  //   sales.map((val) =>
-  //     val.OrderItems.map((value) => value.Product.Category.category)
-  //   )
-  // )
-
-  console.log(
-    "ware",
-    sales.map((val) => val.warehouse_name)
-  )
-
-  // const renderSales = () => {
-  //   return sales.map((val) => {
-  //     return (
-  //       <Tr key={val.id}>
-  //         <Td>{val.WarehouseId}</Td>
-  //         <Td>{val.CategoryId}</Td>
-  //         <Td>{val.category}</Td>
-  //         <Td>{val.product_name}</Td>
-  //         <Td>{Rupiah(val.total_price)}</Td>
-  //         <Td>{val.shipping_cost}</Td>
-  //         <Td>{Rupiah(val.total)}</Td>
-  //         <Td>{val.warehouse_name}</Td>
-  //         <Td>{val.payment_date}</Td>
-  //       </Tr>
-  //     )
-  //   })
-  // }
 
   const renderPageButton = () => {
     const totalPage = Math.ceil(totalCount / limit)
@@ -263,14 +222,23 @@ const SalesReport = () => {
   })
 
   const monthsOption = [
-    { label: "Jan", value: "0" },
-    { label: "Feb", value: "1" },
-    { label: "Mar", value: "2" },
-    { label: "Apr", value: "3" },
-    { label: "May", value: "4" },
-    { label: "Jun", value: "5" },
-    { label: "Jul", value: "6" },
-    { label: "Aug", value: "7" },
+    { label: "Januari", value: "1" },
+    { label: "Februari", value: "2" },
+    { label: "Maret", value: "3" },
+    { label: "April", value: "4" },
+    { label: "Mei", value: "5" },
+    { label: "Juni", value: "6" },
+    { label: "Juli", value: "7" },
+    { label: "Augustus", value: "8" },
+    { label: "September", value: "9" },
+    { label: "Oktober", value: "10" },
+    { label: "November", value: "11" },
+    { label: "Desember", value: "12" },
+  ]
+
+  const sortUser = [
+    { value: "product_name ASC", label: "A-Z" },
+    { value: "product_name DESC", label: "Z-A" },
   ]
 
   return (
@@ -289,7 +257,7 @@ const SalesReport = () => {
                 fontWeight="bold"
                 fontSize="200x"
               >
-                Sales Report
+                <Text fontSize="40px"> Sales Report</Text>
               </Box>
             </Flex>
 
@@ -298,26 +266,11 @@ const SalesReport = () => {
                 <Box mt="3vh">
                   <Grid
                     p="5px"
-                    gap="5"
+                    gap="4"
                     w="full"
-                    gridTemplateColumns="repeat(3,1fr)"
+                    ml="12"
+                    gridTemplateColumns="repeat(5,1fr)"
                   >
-                    {/* Sort */}
-                    <GridItem
-                      w="full"
-                      justifySelf="center"
-                      border="1px solid #dfe1e3"
-                      borderRadius="8px"
-                      onChange={sortHandler}
-                    >
-                      <Select>
-                        <option value="">sort</option>
-                        <option value={"ASC"}>Ascending</option>
-                        <option value={"DESC"}>Descending</option>
-                      </Select>
-                    </GridItem>
-
-                    {/* Month */}
                     <GridItem
                       w="full"
                       justifySelf="center"
@@ -330,21 +283,7 @@ const SalesReport = () => {
                         fontSize={"15px"}
                         bgColor="white"
                         placeholder="Filter By Month"
-                      >
-                        {/* <option value="">Select Month</option>
-                        <option value={1}>January</option>
-                        <option value={2}>February</option>
-                        <option value={3}>March</option>
-                        <option value={4}>April</option>
-                        <option value={5}>May</option>
-                        <option value={6}>June</option>
-                        <option value={7}>July</option>
-                        <option value={8}>August</option>
-                        <option value={9}>September</option>
-                        <option value={10}>October</option>
-                        <option value={11}>November</option>
-                        <option value={12}>December</option> */}
-                      </Select>
+                      ></Select>
                     </GridItem>
 
                     {/* Category */}
@@ -379,19 +318,6 @@ const SalesReport = () => {
                       ></Select>
                     </GridItem>
 
-                    {/* Reset */}
-                    <Box ml="50%">
-                      <Button
-                        onClick={btnResetFilter}
-                        p="3"
-                        bgColor="white"
-                        variant="solid"
-                        _hover={{ borderBottom: "2px solid " }}
-                      >
-                        Reset Filter
-                      </Button>
-                    </Box>
-
                     {/* Search */}
                     <form onSubmit={formikSearch.handleSubmit}>
                       <GridItem
@@ -406,7 +332,7 @@ const SalesReport = () => {
                             placeholder="Search By Name"
                             name="search"
                             bgColor={"white"}
-                            h="4vh"
+                            h="4.1vh"
                             onChange={searchHandler}
                             borderRightRadius="0"
                             value={formikSearch.values.search}
@@ -426,6 +352,19 @@ const SalesReport = () => {
                         </InputGroup>
                       </GridItem>
                     </form>
+
+                    {/* Reset */}
+                    <Box ml="20%">
+                      <Button
+                        onClick={btnResetFilter}
+                        p="3"
+                        bgColor="white"
+                        variant="solid"
+                        _hover={{ borderBottom: "2px solid " }}
+                      >
+                        Reset Filter
+                      </Button>
+                    </Box>
                   </Grid>
                 </Box>
               </Flex>
@@ -436,49 +375,69 @@ const SalesReport = () => {
                   mt={8}
                   overflowY="unset"
                 >
-                  <Table responsive="md" variant="simple">
-                    <Thead
-                      position={"sticky"}
-                      top={-1}
-                      backgroundColor={"#718096"}
-                      textColor="black"
-                    >
-                      <Tr>
-                        <Th w="100px">
-                          <Text fontSize="10px">Warehouse name</Text>
+                  <Table variant="striped" colorScheme="blue">
+                    <Thead position={"sticky"} top={-1}>
+                      <Tr border={"1px solid black"} maxW="50px">
+                        <Th
+                          w="100px"
+                          border={"1px solid black"}
+                          textAlign={"center"}
+                        >
+                          <Text fontSize="12px">Warehouse name</Text>
                         </Th>
 
-                        <Th w="100px">
-                          <Text fontSize="10px">Category</Text>
+                        <Th
+                          w="100px"
+                          border={"1px solid black"}
+                          textAlign={"center"}
+                        >
+                          <Text fontSize="12px">Category</Text>
                         </Th>
-                        <Th w="100px">
-                          <Text fontSize="10px">product_name</Text>
+                        <Th
+                          w="100px"
+                          border={"1px solid black"}
+                          textAlign={"center"}
+                        >
+                          <Text fontSize="12px">product_name</Text>
                         </Th>
-                        <Th w="100px">
-                          <Text fontSize="10px">Total price</Text>
+                        <Th
+                          w="100px"
+                          border={"1px solid black"}
+                          textAlign={"center"}
+                        >
+                          <Text fontSize="12px">Total price</Text>
                         </Th>
-                        <Th w="100px">
-                          <Text fontSize="10px">description</Text>
+                        <Th
+                          w="100px"
+                          border={"1px solid black"}
+                          textAlign={"center"}
+                        >
+                          <Text fontSize="12px">description</Text>
                         </Th>
 
-                        <Th w="100px">
-                          <Text fontSize="10px">Payment_Date</Text>
+                        <Th
+                          w="100px"
+                          border={"1px solid black"}
+                          textAlign={"center"}
+                        >
+                          <Text fontSize="12px">Payment_Date</Text>
                         </Th>
                       </Tr>
                     </Thead>
-                    <Tbody>
+                    <Tbody bgColor="white">
                       {sales?.map((val) => (
                         <Tr key={val.id}>
-                          <Td>{val.warehouse_name}</Td>
-                          <Td>{val.category}</Td>
-                          <Td>{val.product_name}</Td>
-                          <Td>{Rupiah(val.total_price)}</Td>
-                          <Td>{val.description}</Td>
-                          <Td>{val.payment_date}</Td>
+                          <Td textAlign={"center"}>{val.warehouse_name}</Td>
+                          <Td textAlign={"center"}>{val.category}</Td>
+                          <Td textAlign={"center"}>{val.product_name}</Td>
+                          <Td textAlign={"center"}>
+                            {Rupiah(val.total_price)}
+                          </Td>
+                          <Td textAlign={"center"}>{val.description}</Td>
+                          <Td textAlign={"center"}>{val.payment_date}</Td>
                         </Tr>
                       ))}
                     </Tbody>
-                    {/* <Tbody maxWidth="max-content"> {renderSales()}</Tbody> */}
                   </Table>
                 </TableContainer>
               </Container>
@@ -493,7 +452,8 @@ const SalesReport = () => {
                   textAlign="center"
                   alignSelf="center"
                   h="200px"
-                  w="70%"
+                  mt="2"
+                  w="84%"
                 >
                   <AlertIcon boxSize="20px" mr="0" />
                   <AlertTitle>Oops, produk tidak ditemukan !</AlertTitle>
@@ -501,13 +461,17 @@ const SalesReport = () => {
                 </Alert>
               ) : null}
 
-              <HStack w="full" alignSelf="flex-end" justifyContent="center">
+              <HStack
+                mt="2"
+                w="full"
+                alignSelf="flex-end"
+                justifyContent="center"
+              >
                 {renderPageButton()}
                 <Box>
                   Page {page}/{Math.ceil(totalCount / limit)}
                 </Box>
               </HStack>
-              <Box h="4%" w="full"></Box>
             </Flex>
           </VStack>
         </Flex>

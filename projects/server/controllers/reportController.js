@@ -4,150 +4,6 @@ const { sequelize } = require("../models")
 const db = require("../models")
 
 const salesReport = {
-  getTodayOrder: async (req, res) => {
-    const TODAY_START = moment().startOf("day")
-    const NOW = moment().format("YYYY-MM-DD HH:mm")
-    try {
-      const todayOrder = await db.Order.count({
-        where: {
-          payment_date: {
-            [Op.gt]: TODAY_START,
-            [Op.lt]: NOW,
-          },
-          StatusId: {
-            [Op.ne]: 5,
-          },
-        },
-      })
-
-      const yesterdayOrder = await db.Order.count({
-        where: {
-          payment_date: {
-            [Op.gt]: moment(TODAY_START).subtract(1, "day"),
-            [Op.lt]: TODAY_START,
-          },
-          StatusId: {
-            [Op.ne]: 5,
-          },
-        },
-      })
-
-      const todayAndYesterdayOrder = {
-        todayOrder,
-        yesterdayOrder,
-      }
-
-      return res.status(200).json({
-        message: "transaksi ditemukan",
-        data: todayAndYesterdayOrder,
-      })
-    } catch (err) {
-      console.log(err)
-      return res.status(500).json({
-        message: err.message,
-      })
-    }
-  },
-  highRevenue: async (req, res) => {
-    try {
-      const { _sortDir = "DESC" } = req.query
-      let products = await db.Order.findAll({
-        attributes: ["id", "total_price"],
-        order: [["total_price", _sortDir]],
-
-        where: {
-          StatusId: 5,
-        },
-      })
-      return res.status(200).json({
-        message: "high revenue",
-        data: products,
-      })
-    } catch (err) {
-      console.log(err)
-      return res.status(500).json({
-        message: err.message,
-      })
-    }
-  },
-  lowRevenue: async (req, res) => {
-    try {
-      const { _sortDir = "ASC" } = req.query
-      let products = await db.Order.findAndCountAll({
-        attributes: ["id", "total_price"],
-        order: [["total_price", _sortDir]],
-
-        where: {
-          StatusId: 5,
-        },
-      })
-      return res.status(200).json({
-        message: "Low revenue",
-        data: products,
-      })
-    } catch (err) {
-      console.log(err)
-      return res.status(500).json({
-        message: err.message,
-      })
-    }
-  },
-  getAllTransactions: async (req, res) => {
-    try {
-      let products = await db.Order.findAll({
-        attributes: ["id", "updatedAt", "StatusId", "total_price"],
-        where: {
-          StatusId: 5,
-        },
-        include: [
-          {
-            model: db.OrderItem,
-            include: [{ model: db.Product }],
-          },
-
-          {
-            model: db.User,
-          },
-        ],
-        order: [["id", "DESC"]],
-      })
-
-      return res.status(200).json({
-        message: "get All transaction",
-        data: products,
-      })
-    } catch (err) {
-      console.log(err)
-      return res.status(500).json({
-        message: err.message,
-      })
-    }
-  },
-  getOrderItem: async (req, res) => {
-    try {
-      let products = await db.OrderItem.findAll({
-        attributes: ["ProductId", "total_price"],
-
-        include: [
-          {
-            model: db.Product,
-          },
-        ],
-        order: [["total_price", "DESC"]],
-      })
-
-      return res.status(200).json({
-        message: "get All transaction",
-        data: products,
-      })
-    } catch (err) {
-      console.log(err)
-      return res.status(500).json({
-        message: err.message,
-      })
-    }
-  },
-
   getReportWithQuery: async (req, res) => {
     const CategoryId = req.query.CategoryId
     const WarehouseId = req.query.WarehouseId
@@ -160,11 +16,6 @@ const salesReport = {
       _sortDir = "DESC",
     } = req.query
 
-    // console.log("ct", CategoryId)
-    // console.log("wr", WarehouseId)
-    // console.log("mnth", payment_date)
-    // console.log("pr", product_name)
-    // console.log("cname", category)
     try {
       const { _sortBy = "" } = req.query
       let sql = `SELECT  ord.WarehouseId, pr.CategoryId, pr.id AS productId, ct.category, pr.product_name, pr.description, ord.total_price, wr.warehouse_name, ord.payment_date
@@ -174,14 +25,18 @@ const salesReport = {
       JOIN categories AS ct ON ct.id = pr.CategoryId
       JOIN warehouse as wr ON wr.id = ord.WarehouseId `
 
-      if (WarehouseId && CategoryId && payment_date) {
-        sql += `WHERE WarehouseId=${WarehouseId} AND CategoryId=${CategoryId} AND MONTH(ord.payment_date)=${payment_date} `
+      if (WarehouseId && CategoryId && payment_date && category) {
+        sql += `WHERE WarehouseId=${WarehouseId} AND CategoryId=${CategoryId} AND MONTH(ord.payment_date)=${payment_date} AND category=${category} `
       } else if (WarehouseId && CategoryId) {
         sql += `WHERE WarehouseId=${WarehouseId} AND CategoryId=${CategoryId} `
       } else if (WarehouseId && payment_date) {
         sql += `WHERE WarehouseId=${WarehouseId} AND MONTH(ord.payment_date)=${payment_date} `
+      } else if (WarehouseId && category) {
+        sql += `WHERE WarehouseId=${WarehouseId} AND category=${category} `
       } else if (CategoryId && payment_date) {
         sql += `WHERE CategoryId=${CategoryId} AND MONTH(ord.payment_date)=${payment_date} `
+      } else if (category && payment_date) {
+        sql += `WHERE category=${category} AND MONTH(ord.payment_date)=${payment_date} `
       } else if (CategoryId) {
         sql += `WHERE CategoryId=${CategoryId} `
       } else if (WarehouseId) {
@@ -193,13 +48,11 @@ const salesReport = {
       } else if (category) {
         sql += `WHERE ct.category LIKE "%${category}%" `
       }
-      console.log(category)
-      console.log(CategoryId, "catid")
 
       const dataCount = await db.sequelize.query(sql)
       const dataCountReal = dataCount[0]
 
-      sql += `ORDER BY ord.payment_date ${_sortBy}
+      sql += `ORDER BY pr.product_name ${_sortBy}
                 LIMIT ${_limit}
                 OFFSET ${(_page - 1) * _limit} `
 
@@ -212,308 +65,6 @@ const salesReport = {
         dataCount: dataCountReal.length,
       })
     } catch (err) {
-      return res.status(500).json({
-        message: err.message,
-      })
-    }
-  },
-  getReport: async (req, res) => {
-    try {
-      const {
-        _limit = 6,
-        _page = 1,
-        _sortDir = "DESC",
-        _sortBy = "WarehouseId",
-        WarehouseId = "",
-        category = "",
-        product_name = "",
-        CategoryId = "",
-        payment_date = "",
-      } = req.query
-
-      if (
-        _sortBy === "category" ||
-        _sortBy === "WarehouseId" ||
-        category ||
-        WarehouseId
-      ) {
-        if (!Number(WarehouseId)) {
-          const findReport = await db.Order.findAndCountAll({
-            attributes: [
-              "payment_date",
-              "total_price",
-              "WarehouseId",
-              "shipping_cost",
-            ],
-            limit: Number(_limit),
-            offset: (_page - 1) * _limit,
-            order: [["WarehouseId", _sortDir]],
-            include: [
-              { model: db.Warehouse, attributes: ["warehouse_name"] },
-
-              {
-                model: db.OrderItem,
-                attributes: ["ProductId"],
-                include: [
-                  {
-                    model: db.Product,
-                    attributes: ["product_name", "CategoryId"],
-                    where: {
-                      [Op.or]: [
-                        {
-                          product_name: {
-                            [Op.like]: `%${product_name}%`,
-                          },
-                          CategoryId: {
-                            [Op.like]: `%${CategoryId}%`,
-                          },
-                        },
-                      ],
-                    },
-                    include: [
-                      {
-                        model: db.Category,
-                        attributes: ["category"],
-                        CategoryId: {
-                          [Op.like]: `%${CategoryId}%`,
-                        },
-                      },
-                    ],
-                  },
-                ],
-              },
-            ],
-            where: {
-              [Op.or]: [
-                {
-                  WarehouseId: {
-                    [Op.like]: `%${WarehouseId}%`,
-                  },
-                },
-              ],
-            },
-            WarehouseId: WarehouseId,
-          })
-          return res.status(200).json({
-            message: "get all user",
-            data: findReport.rows,
-            dataCount: findReport.count,
-          })
-        }
-
-        if (Number(WarehouseId)) {
-          const findReport = await db.Order.findAndCountAll({
-            attributes: [
-              "payment_date",
-              "total_price",
-              "WarehouseId",
-              "shipping_cost",
-            ],
-            limit: Number(_limit),
-            offset: (_page - 1) * _limit,
-            order: [["WarehouseId", _sortDir]],
-            include: [
-              { model: db.Warehouse, attributes: ["warehouse_name"] },
-
-              {
-                model: db.OrderItem,
-                attributes: ["ProductId"],
-                include: [
-                  {
-                    model: db.Product,
-                    attributes: ["product_name", "CategoryId"],
-                    where: {
-                      [Op.or]: [
-                        {
-                          product_name: {
-                            [Op.like]: `%${product_name}%`,
-                          },
-                          CategoryId: {
-                            [Op.like]: `%${CategoryId}%`,
-                          },
-                        },
-                      ],
-                    },
-                    include: [
-                      {
-                        model: db.Category,
-                        attributes: ["category"],
-                        CategoryId: {
-                          [Op.like]: `%${CategoryId}%`,
-                        },
-                      },
-                    ],
-                  },
-                ],
-              },
-            ],
-            where: {
-              [Op.or]: [
-                {
-                  WarehouseId: {
-                    [Op.like]: `%${WarehouseId}%`,
-                  },
-                },
-              ],
-            },
-            WarehouseId: WarehouseId,
-            CategoryId: CategoryId,
-            category: category,
-            payment_date: payment_date,
-          })
-          return res.status(200).json({
-            message: "get all user",
-            data: findReport.rows,
-            dataCount: findReport.count,
-          })
-        }
-        if (!Number(category)) {
-          const findReport = await db.Order.findAndCountAll({
-            attributes: [
-              "payment_date",
-              "total_price",
-              "WarehouseId",
-              "shipping_cost",
-            ],
-            limit: Number(_limit),
-            offset: (_page - 1) * _limit,
-            order: [["category", _sortDir]],
-            include: [
-              { model: db.Warehouse, attributes: ["warehouse_name"] },
-
-              {
-                model: db.OrderItem,
-                attributes: ["ProductId"],
-                include: [
-                  {
-                    model: db.Product,
-                    attributes: ["product_name", "CategoryId"],
-                    where: {
-                      [Op.or]: [
-                        {
-                          product_name: {
-                            [Op.like]: `%${product_name}%`,
-                          },
-                          CategoryId: {
-                            [Op.like]: `%${CategoryId}%`,
-                          },
-                        },
-                      ],
-                    },
-                    include: [
-                      {
-                        model: db.Category,
-                        attributes: ["category"],
-                        category: {
-                          [Op.like]: `%${category}%`,
-                        },
-                      },
-                    ],
-                  },
-                ],
-              },
-            ],
-            where: {
-              [Op.or]: [
-                {
-                  WarehouseId: {
-                    [Op.like]: `%${WarehouseId}%`,
-                  },
-                },
-              ],
-            },
-            category: category,
-          })
-          return res.status(200).json({
-            message: "get all user",
-            data: findReport.rows,
-            dataCount: findReport.count,
-          })
-        }
-
-        if (Number(category)) {
-          const findReport = await db.Order.findAndCountAll({
-            attributes: [
-              "payment_date",
-              "total_price",
-              "WarehouseId",
-              "shipping_cost",
-            ],
-            limit: Number(_limit),
-            offset: (_page - 1) * _limit,
-            order: [["category", _sortDir]],
-            include: [
-              { model: db.Warehouse, attributes: ["warehouse_name"] },
-
-              {
-                model: db.OrderItem,
-                attributes: ["ProductId"],
-                include: [
-                  {
-                    model: db.Product,
-                    attributes: ["product_name", "CategoryId"],
-                    where: {
-                      [Op.or]: [
-                        {
-                          product_name: {
-                            [Op.like]: `%${product_name}%`,
-                          },
-                          CategoryId: {
-                            [Op.like]: `%${CategoryId}%`,
-                          },
-                        },
-                      ],
-                    },
-                    include: [
-                      {
-                        model: db.Category,
-                        attributes: ["category"],
-                        category: {
-                          [Op.like]: `%${category}%`,
-                        },
-                      },
-                    ],
-                  },
-                ],
-              },
-            ],
-            where: {
-              [Op.or]: [
-                {
-                  WarehouseId: {
-                    [Op.like]: `%${WarehouseId}%`,
-                  },
-                },
-              ],
-            },
-
-            category: category,
-          })
-          return res.status(200).json({
-            message: "get all user",
-            data: findReport.rows,
-            dataCount: findReport.count,
-          })
-        }
-        const findReport = await db.Order.findAndCountAll({
-          limit: Number(_limit),
-          offset: (_page - 1) * _limit,
-          order: [["WarehouseId", _sortDir]],
-          include: [
-            { model: db.Product, attributes: ["product_name"] },
-            { model: db.Warehouse, attributes: ["warehouse_name"] },
-            { model: db.Category, attributes: ["category"] },
-          ],
-        })
-
-        return res.status(200).json({
-          message: "Get All report",
-          data: findReport.rows,
-          dataCount: findReport.count,
-        })
-      }
-    } catch (err) {
-      console.log(err)
       return res.status(500).json({
         message: err.message,
       })

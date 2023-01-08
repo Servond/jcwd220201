@@ -529,6 +529,7 @@ const WarehouseProduct = () => {
                     value={formik.values.weight}
                     backgroundColor="white"
                   />
+                  <FormHelperText>Dalam Satuan Gram</FormHelperText>
                   <FormErrorMessage>{formik.errors.weight}</FormErrorMessage>
                 </FormControl>
               </GridItem>
