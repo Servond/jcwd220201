@@ -1,4 +1,13 @@
-const db = require("../models")
+const {
+  Order,
+  ProductStock,
+  Product,
+  Address,
+  Status,
+  OrderItem,
+  User,
+  sequelize,
+} = require("../models")
 const fs = require("fs")
 const emailer = require("../lib/emailer")
 const moment = require("moment")
@@ -9,6 +18,7 @@ const getDestinationInfo = require("../lib/checkout/getDestinationInfo")
 
 const handlebars = require("handlebars")
 const { Op } = require("sequelize")
+const { Console } = require("console")
 
 const paymentController = {
   getPayment: async (req, res) => {
@@ -33,7 +43,7 @@ const paymentController = {
         StatusId
       ) {
         if (!Number(WarehouseId)) {
-          const findPayment = await db.Order.findAndCountAll({
+          const findPayment = await Order.findAndCountAll({
             attributes: [
               "id",
               "payment_date",
@@ -323,8 +333,9 @@ const paymentController = {
   confirmPayment: async (req, res) => {
     try {
       const { id } = req.params
+      const { WarehouseId, stock } = req.body
 
-      const findOrder = await db.Order.findOne({
+      const findOrder = await Order.findOne({
         where: {
           id: id,
         },
@@ -336,20 +347,44 @@ const paymentController = {
         })
       }
 
-      // Get order details
-      const {
-        orderData: { sortedWarehouse },
-        cartItems,
-      } = req.body
+      // Get shipping address
+      const shippingAddress = await Address.findOne({
+        where: {
+          is_selected: true,
+        },
+      })
 
-      // Get warehouses details
-      const { nearestWarehouse, nearestBranches } = sortedWarehouse
+      // Get shipping address longitude and latitude
+      const [latitude, longitude] = shippingAddress.pinpoint.split(", ")
+      const shippingAddressCoordinates = {
+        latitude: Number(latitude),
+        longitude: Number(longitude),
+      }
+
+      // Get warehouse addresses
+      const warehousesInfo = await getWarehousesInfo()
+
+      // Sort warehouse by distance to shipping address
+      const sortedWarehouse = compareWarehouseDistances(
+        shippingAddressCoordinates,
+        warehousesInfo
+      )
+
+      const [nearestWarehouse] = sortedWarehouse.splice(0, 1)
+      const nearestBranches = sortedWarehouse
+
+      const orderItems = await OrderItem.findAll({
+        where: {
+          OrderId: findOrder.id,
+        },
+        include: [{ model: Product }],
+      })
 
       // Check overall product availability
-      for (let item of cartItems) {
+      for (let item of orderItems) {
         const { ProductId, quantity } = item
 
-        const stockDetails = await db.ProductStock.findAll({
+        const stockDetails = await ProductStock.findAll({
           where: {
             ProductId,
           },
@@ -358,6 +393,8 @@ const paymentController = {
         const totalStock = stockDetails.reduce((accumulator, current) => {
           return accumulator + current.stock
         }, 0)
+
+        console.log(totalStock, "totalStock")
 
         // Cancel order if one of the product is not available
         if (totalStock < quantity) {
@@ -368,62 +405,8 @@ const paymentController = {
         }
       }
 
-      // Create new order
-      let orderId = null
-
-      const { id: statusid } = await db.Status.findOne({
-        where: {
-          status: "menunggu pembayaran",
-        },
-      })
-
-      await sequelize.transaction(async (t) => {
-        const newOrder = await Order.create(
-          {
-            shipping_service: shippingService,
-            total_price: subtotal,
-            AddressId: addressId,
-            CourierId: courierId,
-            StatusId: statusid,
-            UserId,
-            shipping_cost: shippingCost,
-            WarehouseId: sortedWarehouse.nearestWarehouse.warehouseInfo.id,
-            sent_at: null,
-          },
-          {
-            transaction: t,
-          }
-        )
-
-        orderId = newOrder.id
-      })
-
-      // Persist order items
-      const itemsToOrder = []
-      for (let item of cartItems) {
-        const {
-          Product: { price },
-          ProductId,
-          quantity,
-        } = item
-
-        // Store cart item details
-        itemsToOrder.push({
-          ProductId,
-          quantity,
-          total_price: price * quantity,
-          OrderId: orderId,
-        })
-      }
-
-      await sequelize.transaction(async (t) => {
-        await OrderItem.bulkCreate(itemsToOrder, {
-          transaction: t,
-        })
-      })
-
       // Check products availability in the nearest warehouse
-      for (let item of cartItems) {
+      for (let item of orderItems) {
         const { ProductId, quantity } = item
 
         // Get available stock from the nearest warehouse
@@ -436,6 +419,8 @@ const paymentController = {
             ],
           },
         })
+
+        console.log(nearestWarehouse, "near warehouse")
 
         // Make a request to nearest branches if additional stock is needed
         const requestItemsForm = []
@@ -455,6 +440,7 @@ const paymentController = {
                 ],
               },
             })
+            console.log(nearestBranchStock, "stock")
 
             const time = moment().format()
 
@@ -476,7 +462,7 @@ const paymentController = {
                 quantity: nearestBranchStock,
                 StockRequest: {
                   date: time,
-                  is_approved: false,
+                  is_approved: true,
                   FromWarehouseId: nearestWarehouse.warehouseInfo.id,
                   ToWarehouseId: branch.warehouseInfo.id,
                 },
@@ -501,33 +487,29 @@ const paymentController = {
                 quantity: itemsNeeded,
                 StockRequest: {
                   date: time,
-                  is_approved: false,
+                  is_approved: true,
                   FromWarehouseId: nearestWarehouse.warehouseInfo.id,
                   ToWarehouseId: branch.warehouseInfo.id,
                 },
               })
+              console.log(itemsNeeded, "need")
+              console.log(quantity, "quantity")
 
               break
             }
           }
-
-          // Request needed product to the nearest branches
-          await sequelize.transaction(async (t) => {
-            await StockRequestItem.bulkCreate(requestItemsForm, {
-              include: StockRequest,
-              transaction: t,
-            })
-          })
         }
       }
 
-      const { id: statusId } = await db.Status.findOne({
+      // console.log(updateStock, "update")
+
+      const { id: statusId } = await Status.findOne({
         where: {
           status: "diproses",
         },
       })
 
-      await db.Order.update(
+      await Order.update(
         {
           StatusId: statusId,
         },
@@ -538,11 +520,16 @@ const paymentController = {
         }
       )
 
-      const findApproveTrasanction = await db.Order.findOne({
+      const updateStock = await ProductStock.update(
+        { stock: stock },
+        { where: { id: id } }
+      )
+
+      const findApproveTrasanction = await Order.findOne({
         where: {
           id: id,
         },
-        include: [{ model: db.User }],
+        include: [{ model: User }],
       })
 
       const totalBill = findApproveTrasanction.total_price
