@@ -250,7 +250,12 @@ const productStockController = {
       }
 
       const validateProduct = await ProductStock.findOne({
-        where: { WarehouseId: req.body.WarehouseId },
+        where: {
+          [Op.and]: {
+            WarehouseId: req.body.WarehouseId,
+            ProductId: req.body.ProductId,
+          },
+        },
       })
 
       if (validateProduct) {
