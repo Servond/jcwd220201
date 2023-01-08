@@ -3,6 +3,10 @@ const fs = require("fs")
 const emailer = require("../lib/emailer")
 const moment = require("moment")
 
+const getWarehousesInfo = require("../lib/checkout/getWarehousesInfo")
+const compareWarehouseDistances = require("../lib/checkout/compareWarehouseDistances")
+const getDestinationInfo = require("../lib/checkout/getDestinationInfo")
+
 const handlebars = require("handlebars")
 const { Op } = require("sequelize")
 
@@ -333,112 +337,189 @@ const paymentController = {
       }
 
       // Get order details
-      // const {
-      //   orderData: { sortedWarehouse },
-      //   cartItems,
-      // } = req.body
+      const {
+        orderData: { sortedWarehouse },
+        cartItems,
+      } = req.body
 
-      // // Get warehouses details
-      // const { nearestWarehouse, nearestBranches } = sortedWarehouse
+      // Get warehouses details
+      const { nearestWarehouse, nearestBranches } = sortedWarehouse
 
-      // // Check products availability in the nearest warehouse
-      // for (let item of cartItems) {
-      //   const { ProductId, quantity } = item
+      // Check overall product availability
+      for (let item of cartItems) {
+        const { ProductId, quantity } = item
 
-      //   // Get available stock from the nearest warehouse
-      //   const { stock } = await ProductStock.findOne({
-      //     raw: true,
-      //     where: {
-      //       [Op.and]: [
-      //         { ProductId },
-      //         { WarehouseId: nearestWarehouse.warehouseInfo.id },
-      //       ],
-      //     },
-      //   })
+        const stockDetails = await db.ProductStock.findAll({
+          where: {
+            ProductId,
+          },
+        })
 
-      //   // Make a request to nearest branches if additional stock is needed
-      //   const requestItemsForm = []
+        const totalStock = stockDetails.reduce((accumulator, current) => {
+          return accumulator + current.stock
+        }, 0)
 
-      //   if (stock < quantity) {
-      //     // Calculate items needed
-      //     let itemsNeeded = !stock ? quantity : quantity - stock
+        // Cancel order if one of the product is not available
+        if (totalStock < quantity) {
+          return res.status(422).json({
+            message: "Transaksi gagal",
+            description: "Ada barang yang tidak tersedia di keranjang Anda",
+          })
+        }
+      }
 
-      //     // Check stock availability from nearest branches
-      //     for (let branch of nearestBranches) {
-      //       const { stock: nearestBranchStock } = await ProductStock.findOne({
-      //         raw: true,
-      //         where: {
-      //           [Op.and]: [
-      //             { ProductId },
-      //             { WarehouseId: branch.warehouseInfo.id },
-      //           ],
-      //         },
-      //       })
+      // Create new order
+      let orderId = null
 
-      //       const time = moment().format()
+      const { id: statusid } = await db.Status.findOne({
+        where: {
+          status: "menunggu pembayaran",
+        },
+      })
 
-      //       /*
-      //         Continue checking from subsequent nearest branches if stock not available
-      //         from the current nearest branch
-      //       */
-      //       if (!nearestBranchStock) {
-      //         continue
-      //       }
+      await sequelize.transaction(async (t) => {
+        const newOrder = await Order.create(
+          {
+            shipping_service: shippingService,
+            total_price: subtotal,
+            AddressId: addressId,
+            CourierId: courierId,
+            StatusId: statusid,
+            UserId,
+            shipping_cost: shippingCost,
+            WarehouseId: sortedWarehouse.nearestWarehouse.warehouseInfo.id,
+            sent_at: null,
+          },
+          {
+            transaction: t,
+          }
+        )
 
-      //       /*
-      //         Create request draft consisting of available items if available stock is less than
-      //         or equal to items needed
-      //       */
-      //       if (nearestBranchStock <= itemsNeeded) {
-      //         requestItemsForm.push({
-      //           ProductId,
-      //           quantity: nearestBranchStock,
-      //           StockRequest: {
-      //             date: time,
-      //             is_approved: false,
-      //             FromWarehouseId: nearestWarehouse.warehouseInfo.id,
-      //             ToWarehouseId: branch.warehouseInfo.id,
-      //           },
-      //         })
+        orderId = newOrder.id
+      })
 
-      //         itemsNeeded -= nearestBranchStock
+      // Persist order items
+      const itemsToOrder = []
+      for (let item of cartItems) {
+        const {
+          Product: { price },
+          ProductId,
+          quantity,
+        } = item
 
-      //         if (!itemsNeeded) {
-      //           break
-      //         }
+        // Store cart item details
+        itemsToOrder.push({
+          ProductId,
+          quantity,
+          total_price: price * quantity,
+          OrderId: orderId,
+        })
+      }
 
-      //         continue
-      //       }
+      await sequelize.transaction(async (t) => {
+        await OrderItem.bulkCreate(itemsToOrder, {
+          transaction: t,
+        })
+      })
 
-      //       /*
-      //         Create request draft consisting of the number of items needed if available stock
-      //         is greater than items needed
-      //       */
-      //       if (nearestBranchStock >= itemsNeeded) {
-      //         requestItemsForm.push({
-      //           ProductId,
-      //           quantity: itemsNeeded,
-      //           StockRequest: {
-      //             date: time,
-      //             is_approved: false,
-      //             FromWarehouseId: nearestWarehouse.warehouseInfo.id,
-      //             ToWarehouseId: branch.warehouseInfo.id,
-      //           },
-      //         })
+      // Check products availability in the nearest warehouse
+      for (let item of cartItems) {
+        const { ProductId, quantity } = item
 
-      //         break
-      //       }
-      //     }
+        // Get available stock from the nearest warehouse
+        const { stock } = await ProductStock.findOne({
+          raw: true,
+          where: {
+            [Op.and]: [
+              { ProductId },
+              { WarehouseId: nearestWarehouse.warehouseInfo.id },
+            ],
+          },
+        })
 
-      //     // Request needed product to the nearest branches
-      //     await sequelize.transaction(async (t) => {
-      //       await StockRequestItem.bulkCreate(requestItemsForm, {
-      //         include: StockRequest,
-      //         transaction: t,
-      //       })
-      //     })
-      //   }
-      // }
+        // Make a request to nearest branches if additional stock is needed
+        const requestItemsForm = []
+
+        if (stock < quantity) {
+          // Calculate items needed
+          let itemsNeeded = !stock ? quantity : quantity - stock
+
+          // Check stock availability from nearest branches
+          for (let branch of nearestBranches) {
+            const { stock: nearestBranchStock } = await ProductStock.findOne({
+              raw: true,
+              where: {
+                [Op.and]: [
+                  { ProductId },
+                  { WarehouseId: branch.warehouseInfo.id },
+                ],
+              },
+            })
+
+            const time = moment().format()
+
+            /*
+              Continue checking from subsequent nearest branches if stock not available
+              from the current nearest branch
+            */
+            if (!nearestBranchStock) {
+              continue
+            }
+
+            /*
+              Create request draft consisting of available items if available stock is less than
+              or equal to items needed
+            */
+            if (nearestBranchStock <= itemsNeeded) {
+              requestItemsForm.push({
+                ProductId,
+                quantity: nearestBranchStock,
+                StockRequest: {
+                  date: time,
+                  is_approved: false,
+                  FromWarehouseId: nearestWarehouse.warehouseInfo.id,
+                  ToWarehouseId: branch.warehouseInfo.id,
+                },
+              })
+
+              itemsNeeded -= nearestBranchStock
+
+              if (!itemsNeeded) {
+                break
+              }
+
+              continue
+            }
+
+            /*
+              Create request draft consisting of the number of items needed if available stock
+              is greater than items needed
+            */
+            if (nearestBranchStock >= itemsNeeded) {
+              requestItemsForm.push({
+                ProductId,
+                quantity: itemsNeeded,
+                StockRequest: {
+                  date: time,
+                  is_approved: false,
+                  FromWarehouseId: nearestWarehouse.warehouseInfo.id,
+                  ToWarehouseId: branch.warehouseInfo.id,
+                },
+              })
+
+              break
+            }
+          }
+
+          // Request needed product to the nearest branches
+          await sequelize.transaction(async (t) => {
+            await StockRequestItem.bulkCreate(requestItemsForm, {
+              include: StockRequest,
+              transaction: t,
+            })
+          })
+        }
+      }
 
       const { id: statusId } = await db.Status.findOne({
         where: {
@@ -514,9 +595,15 @@ const paymentController = {
         })
       }
 
+      const { id: statusId } = await db.Status.findOne({
+        where: {
+          status: "menunggu pembayaran",
+        },
+      })
+
       await db.Order.update(
         {
-          StatusId: 2,
+          StatusId: statusId,
         },
         {
           where: {

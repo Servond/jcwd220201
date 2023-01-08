@@ -1,13 +1,13 @@
 import { Button, useToast } from "@chakra-ui/react"
 import PaymentApprove from "./approvePayment"
 
-const ApproveButton = () => {
+const ApproveButton = ({ id }) => {
   const toast = useToast()
   return (
     <Button
       colorScheme="teal"
       onClick={async () => {
-        const response = await PaymentApprove()
+        const response = await PaymentApprove(id)
 
         // toast({
         //   title: response.data.message,
