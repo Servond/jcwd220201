@@ -17,12 +17,8 @@ const authController = {
         where: {
           email,
         },
-        include: [
-          {
-            model: db.WarehousesUser,
-            atrributes: ["warehouseId"],
-          },
-        ],
+
+        include: [{ model: db.WarehousesUser, attributes: ["WarehouseId"] }],
       })
       if (!findUserByEmail) {
         return res.status(400).json({

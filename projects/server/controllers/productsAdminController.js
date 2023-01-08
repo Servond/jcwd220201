@@ -56,7 +56,7 @@ const productAdminController = {
         await db.ProductPicture.bulkCreate(newProductImg)
 
         const foundProductById = await db.Product.findByPk(createProduct.id, {
-          include: [db.ProductPicture],
+          include: [{ model: db.ProductPicture }],
         })
 
         return res.status(200).json({
@@ -102,7 +102,7 @@ const productAdminController = {
               [Op.or]: [
                 {
                   product_name: {
-                    [Op.like]: `%${product_name}`,
+                    [Op.like]: `%${product_name}%`,
                   },
                 },
               ],
@@ -124,7 +124,7 @@ const productAdminController = {
             [Op.or]: [
               {
                 product_name: {
-                  [Op.like]: `%${product_name}`,
+                  [Op.like]: `%${product_name}%`,
                 },
               },
             ],

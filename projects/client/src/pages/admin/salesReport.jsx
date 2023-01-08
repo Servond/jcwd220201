@@ -108,9 +108,9 @@ const SalesReport = () => {
 
   const fethWarehouse = async () => {
     try {
-      const respon = await axiosInstance.get(`/warehouses`)
+      const response = await axiosInstance.get(`/warehouses`)
 
-      setWarehouse(respon.data.data)
+      setWarehouse(response.data.data)
     } catch (err) {
       console.log(err)
     }
@@ -118,9 +118,9 @@ const SalesReport = () => {
 
   const getCategory = async () => {
     try {
-      const respon = await axiosInstance.get(`/categories`)
+      const response = await axiosInstance.get(`/categories`)
 
-      setCategories(respon.data.data)
+      setCategories(response.data.data)
     } catch (err) {
       console.log(err)
     }
