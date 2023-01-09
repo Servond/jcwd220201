@@ -18,6 +18,7 @@ export const CheckoutContextProvider = ({ children }) => {
     setShippingAddress,
     setAddresses,
     setNoAddressFound,
+    setDisplayNoAddressFound,
   } = useSelectAddress();
 
   // Items
@@ -53,6 +54,7 @@ export const CheckoutContextProvider = ({ children }) => {
       setShippingAddress,
       setAddresses,
       setNoAddressFound,
+      setDisplayNoAddressFound,
     },
     items: {
       cartItems,

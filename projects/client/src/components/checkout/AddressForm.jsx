@@ -32,6 +32,7 @@ import useCheckInputError from "../../lib/address/hooks/useCheckInputError";
 import clearInput from "../../lib/address/clearInput";
 import CitiesInput from "./CitiesInput";
 import saveAddress from "../../lib/address/saveAddress";
+import fetchAddresses from "../../lib/checkout/fetchAddresses";
 
 const AddressForm = ({ isOpen, onClose }) => {
   // Get user id
@@ -39,7 +40,7 @@ const AddressForm = ({ isOpen, onClose }) => {
 
   // Get checkout context
   const {
-    address: { setNoAddressFound },
+    address: { setShippingAddress, setAddresses, setDisplayNoAddressFound },
   } = useContext(CheckoutContext);
 
   // Monitor user input
@@ -107,7 +108,12 @@ const AddressForm = ({ isOpen, onClose }) => {
       const res = await saveAddress(address);
 
       // Update address list
-      setNoAddressFound(false);
+      const response = await fetchAddresses();
+
+      const { selectedAddress, addresses } = response.data;
+      setShippingAddress(selectedAddress);
+      setAddresses(addresses);
+      setDisplayNoAddressFound(false);
 
       // Alert user of the result
       toast({
