@@ -70,7 +70,6 @@ const WarehouseStock = ({}) => {
   const [totalCount, setTotalCount] = useState(0)
   const [filter, setFilter] = useState("All")
   const [search, setSearch] = useState("")
-  const [isClearable, setIsClearable] = useState(true)
 
   // Modal Edit Stock Props
   const [openModal, setOpenModal] = useState(false)
@@ -119,7 +118,6 @@ const WarehouseStock = ({}) => {
           params: {
             _page: page,
             _limit: productPerPage,
-            // product_name: currentSearch,
             CategoryId: filter,
             _sortBy: sortBy,
             _sortDir: sortDir,
@@ -167,7 +165,7 @@ const WarehouseStock = ({}) => {
     return data.map((val) => {
       return (
         <Tr h="auto" key={val.id.toString()} boxShadow="base">
-          <Td w="100px">
+          <Td w="0">
             <Carousel showThumbs={false}>
               {val.Product.ProductPictures.map((value) => (
                 <Image
@@ -357,18 +355,18 @@ const WarehouseStock = ({}) => {
               </Thead>
               <Tbody>{renderProduct()}</Tbody>
             </Table>
-            <Box p="20px" fontSize={"16px"}>
-              <Box textAlign={"center"}>
+            <Box p="20px" fontSize="16px">
+              <Box textAlign="center">
                 <Button
                   onClick={previousPage}
                   disabled={page === 1 ? true : null}
                   _hover={false}
                   _active={false}
                 >
-                  <AiOutlineLeftCircle fontSize={"20px"} />
+                  <AiOutlineLeftCircle fontSize="20px" />
                 </Button>
 
-                <Box display={"inline"}>{page}</Box>
+                <Box display="inline">{page}</Box>
 
                 <Button
                   onClick={nextPage}
@@ -376,7 +374,7 @@ const WarehouseStock = ({}) => {
                   _hover={false}
                   _active={false}
                 >
-                  <AiOutlineRightCircle fontSize={"20px"} />
+                  <AiOutlineRightCircle fontSize="20px" />
                 </Button>
                 <Box>
                   Page: {page} of {maxPage}
