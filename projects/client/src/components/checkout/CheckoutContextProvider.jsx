@@ -13,8 +13,11 @@ export const CheckoutContextProvider = ({ children }) => {
     shippingAddress,
     addresses,
     isLoading,
+    noAddressFound,
+    displayNoAddressFound,
     setShippingAddress,
     setAddresses,
+    setNoAddressFound,
   } = useSelectAddress();
 
   // Items
@@ -45,8 +48,11 @@ export const CheckoutContextProvider = ({ children }) => {
       shippingAddress,
       addresses,
       isLoading,
+      noAddressFound,
+      displayNoAddressFound,
       setShippingAddress,
       setAddresses,
+      setNoAddressFound,
     },
     items: {
       cartItems,

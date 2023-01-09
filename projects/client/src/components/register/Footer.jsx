@@ -15,7 +15,7 @@ const Footer = () => {
       display="block"
       textAlign="center"
     >
-      &copy; 2009-2023,PT Wired
+      &copy; 2009 - 2023, PT Wired.
     </Text>
   );
 };

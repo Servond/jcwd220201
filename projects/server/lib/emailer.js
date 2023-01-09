@@ -26,8 +26,6 @@ const emailer = async ({ to, subject, text, html }) => {
       },
     ],
   });
-
-  console.log("Message sent: %s", info.messageId);
 };
 
 module.exports = emailer;

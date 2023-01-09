@@ -11,7 +11,7 @@ const Header = () => {
       px="5.6875rem"
       width="100%"
     >
-      <Image src="https://assets.tokopedia.net/assets-tokopedia-lite/v2/zeus/kratos/88199797.svg" />
+      <Image src="/assets/logo.png" width="auto" height="3.6875rem" />
     </Box>
   );
 };
