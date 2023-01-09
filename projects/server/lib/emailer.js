@@ -27,10 +27,13 @@ const emailer = async ({
     subject,
     text,
     html,
-    attachments,
-    filename,
-    path,
-    cid,
+    attachments: [
+      {
+        filename: "logo.png",
+        path: __dirname + "/assets/logo.png",
+        cid: "logo",
+      },
+    ],
   });
 };
 
