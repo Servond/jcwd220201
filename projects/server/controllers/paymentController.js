@@ -86,8 +86,6 @@ const paymentController = {
           return accumulator + current.stock
         }, 0)
 
-        console.log(totalStock, "totalStock")
-
         // Cancel order if one of the product is not available
         if (totalStock < quantity) {
           return res.status(422).json({
@@ -113,11 +111,8 @@ const paymentController = {
           },
         })
 
-        console.log(nearestWarehouse, "near warehouse")
-
         // Make a request to nearest branches if additional stock is needed
         const requestItemsForm = []
-        console.log(requestItemsForm, "form")
 
         if (stock < quantity) {
           // Calculate items needed
@@ -134,7 +129,6 @@ const paymentController = {
                 ],
               },
             })
-            console.log(nearestBranchStock, "stock")
 
             const time = moment().format()
 
@@ -164,35 +158,6 @@ const paymentController = {
                 },
               })
 
-              // if (quantity > stock) {
-              //   const update = await ProductStock.update(
-              //     {
-              //       stock: 0,
-              //     },
-              //     {
-              //       where: {
-              //         id: id,
-              //         ProductId: findOrder.ProductId,
-              //         WarehouseId: findOrder.WarehouseId,
-              //       },
-              //     }
-              //   )
-              // } else if (quantity <= stock) {
-              //   const update = await ProductStock.update(
-              //     {
-              //       stock: 0,
-              //     },
-              //     {
-              //       where: {
-              //         id: id,
-              //         ProductId: findOrder.ProductId,
-              //         WarehouseId: findOrder.WarehouseId,
-              //       },
-              //     }
-              //   )
-              //   console.log(update, "up")
-              // }
-
               // update jumlah klo = 0, kalau < stock update 0
               // stock >= update stock semula dikurangi item needed
 
@@ -211,8 +176,6 @@ const paymentController = {
             */
 
             if (nearestBranchStock >= itemsNeeded) {
-              console.log(itemsNeeded, "need")
-              console.log(quantity, "quantity")
               requestItemsForm.push({
                 ProductId,
                 quantity: itemsNeeded,

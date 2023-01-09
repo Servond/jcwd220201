@@ -30,7 +30,6 @@ import RecoverPassword from "./pages/RecoverPassword"
 import ManageUser from "./pages/admin/manageUser"
 import EditPassword from "./components/profile/EditPassword"
 import SalesReport from "./pages/admin/salesReport"
-import OrderPayment from "./components/admin/orderPayment"
 import Checkout from "./pages/Checkout"
 import UserOrder from "./pages/admin/User Order/UserOrder"
 import Transactions from "./pages/Transactions"
@@ -206,29 +205,12 @@ const App = () => {
             </ProtectedRoute>
           }
         />
-        <Route
-          path="/admin/payment"
-          element={
-            <ProtectedRoute>
-              <OrderPayment />
-            </ProtectedRoute>
-          }
-        />
 
         <Route
           path="/admin/sales-report"
           element={
             <ProtectedRoute>
               <SalesReport />
-            </ProtectedRoute>
-          }
-        />
-
-        <Route
-          path="/admin/payment"
-          element={
-            <ProtectedRoute>
-              <OrderPayment />
             </ProtectedRoute>
           }
         />
