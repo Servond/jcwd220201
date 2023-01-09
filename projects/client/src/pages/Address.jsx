@@ -104,7 +104,7 @@ const Address = () => {
           {loadAddress ? (
             !addresses.length ? (
               <Alert
-                backgroundColor="rgba(62, 191, 184, 0.285)"
+                backgroundColor="rgba(62, 191, 184, 0.22)"
                 borderRadius="0.5rem"
                 status="info"
                 variant="subtle"
