@@ -150,9 +150,9 @@ const UserOrder = () => {
                                 alignContent={"left"}
                                 onClick={() => confirmOrder(val.id)}
                                 mx="3"
-                                colorScheme={"teal"}
+                                colorScheme={"telegram"}
                               >
-                                confirm
+                                Konfirmasi
                               </Button>
                               <Button
                                 alignContent={"left"}
@@ -160,7 +160,7 @@ const UserOrder = () => {
                                 mx="3"
                                 colorScheme={"red"}
                               >
-                                Reject
+                                Batalkan
                               </Button>
                             </Td>
                           ) : val.status === "diproses" ? (

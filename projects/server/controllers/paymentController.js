@@ -6,6 +6,8 @@ const {
   Status,
   OrderItem,
   User,
+  Warehouse,
+  Stock,
   sequelize,
 } = require("../models")
 const fs = require("fs")
@@ -56,13 +58,13 @@ const paymentController = {
             offset: (_page - 1) * _limit,
             order: [[_sortBy, _sortDir]],
             include: [
-              { model: db.Warehouse, attributes: ["Warehouse_name"] },
+              { model: Warehouse, attributes: ["Warehouse_name"] },
               {
-                model: db.OrderItem,
+                model: OrderItem,
                 attributes: ["ProductId"],
                 include: [
                   {
-                    model: db.Product,
+                    model: Product,
                     attributes: ["product_name"],
                     where: {
                       [Op.or]: [
@@ -86,18 +88,18 @@ const paymentController = {
           })
         }
 
-        const findPayment = await db.Order.findAndCountAll({
+        const findPayment = await Order.findAndCountAll({
           limit: Number(_limit),
           offset: (_page - 1) * _limit,
           order: [[_sortBy, _sortDir]],
           include: [
-            { model: db.Warehouse, attributes: ["Warehouse_name"] },
+            { model: Warehouse, attributes: ["Warehouse_name"] },
             {
-              model: db.OrderItem,
+              model: OrderItem,
               attributes: ["ProductId"],
               include: [
                 {
-                  model: db.Product,
+                  model: Product,
                   attributes: ["product_name"],
                   where: {
                     [Op.or]: [
@@ -121,14 +123,14 @@ const paymentController = {
         })
       }
 
-      const findPayment = await db.Order.findAndCountAll({
+      const findPayment = await Order.findAndCountAll({
         limit: Number(_limit),
         offset: (_page - 1) * _limit,
         order: [["UserId", _sortDir]],
         include: [
-          { model: db.OrderItem, attributes: ["ProductId"] },
-          { model: db.Warehouse, attributes: ["Warehouse_name"] },
-          { model: db.Product, attributes: ["product_name"] },
+          { model: OrderItem, attributes: ["ProductId"] },
+          { model: Warehouse, attributes: ["Warehouse_name"] },
+          { model: Product, attributes: ["product_name"] },
         ],
       })
 
@@ -138,7 +140,7 @@ const paymentController = {
         dataCount: findPayment.count,
       })
 
-      // let allOrder = await db.Order.findAll({
+      // let allOrder = await Order.findAll({
       //   attributes: [
       //     "id",
       //     "payment_date",
@@ -149,8 +151,8 @@ const paymentController = {
       //   ],
       //   include: [
       //     {
-      //       model: db.OrderItem,
-      //       include: [{ model: db.Product, attributes: ["product_name"] }],
+      //       model: OrderItem,
+      //       include: [{ model: Product, attributes: ["product_name"] }],
       //     },
       //     {
       //       model: db.Courier,
@@ -284,58 +286,14 @@ const paymentController = {
       })
     }
   },
-  getCartItems: async (req, res) => {
-    try {
-      // Get user id
-      const { id: UserId } = req.user
 
-      if (!UserId) {
-        return res.status(401).json({
-          message: "Terjadi kesalahan, silakan login terlebih dahulu",
-        })
-      }
-
-      // Get items in the cart
-      let cartItems = await Cart.findAll({
-        where: {
-          [Op.and]: [{ UserId }, { is_checked: true }],
-        },
-        include: [{ model: Product }],
-      })
-
-      if (!cartItems.length) {
-        cartItems = await Cart.findAll({
-          where: {
-            UserId,
-          },
-          include: [{ model: Product }],
-        })
-      }
-
-      if (!cartItems.length) {
-        return res.status(400).json({
-          message: "Keranjang kamu kosong.",
-          description: "Yuk tambahkan barang favoritmu ke keranjang!",
-        })
-      }
-
-      // Return successful response
-      return res.status(200).json({
-        message: "Berhasil mengambil data keranjang",
-        data: cartItems,
-      })
-    } catch (err) {
-      return res.status(500).json({
-        message: "Server error",
-      })
-    }
-  },
   confirmPayment: async (req, res) => {
     try {
       const { id } = req.params
       const { WarehouseId, stock, ProductId } = req.body
 
       const findOrder = await Order.findOne({
+        include: [{ model: Warehouse }],
         where: {
           id: id,
         },
@@ -346,17 +304,6 @@ const paymentController = {
           message: "Order is not found",
         })
       }
-      // const findStatus = await db.Order.findOne({
-      //   where: {
-      //     StatusId: req.body.StatusId,
-      //   },
-      // })
-
-      // if (findStatus !== 2) {
-      //   return res.status(400).json({
-      //     message: "confirm failed",
-      //   })
-      // }
 
       // Get shipping address
       const shippingAddress = await Address.findOne({
@@ -417,6 +364,7 @@ const paymentController = {
       }
 
       // Check products availability in the nearest warehouse
+
       for (let item of orderItems) {
         const { ProductId, quantity } = item
 
@@ -435,6 +383,7 @@ const paymentController = {
 
         // Make a request to nearest branches if additional stock is needed
         const requestItemsForm = []
+        console.log(requestItemsForm, "form")
 
         if (stock < quantity) {
           // Calculate items needed
@@ -459,6 +408,7 @@ const paymentController = {
               Continue checking from subsequent nearest branches if stock not available
               from the current nearest branch
             */
+
             if (!nearestBranchStock) {
               continue
             }
@@ -467,6 +417,7 @@ const paymentController = {
               Create request draft consisting of available items if available stock is less than
               or equal to items needed
             */
+
             if (nearestBranchStock <= itemsNeeded) {
               requestItemsForm.push({
                 ProductId,
@@ -478,6 +429,38 @@ const paymentController = {
                   ToWarehouseId: branch.warehouseInfo.id,
                 },
               })
+
+              // if (quantity > stock) {
+              //   const update = await ProductStock.update(
+              //     {
+              //       stock: 0,
+              //     },
+              //     {
+              //       where: {
+              //         id: id,
+              //         ProductId: findOrder.ProductId,
+              //         WarehouseId: findOrder.WarehouseId,
+              //       },
+              //     }
+              //   )
+              // } else if (quantity <= stock) {
+              //   const update = await ProductStock.update(
+              //     {
+              //       stock: 0,
+              //     },
+              //     {
+              //       where: {
+              //         id: id,
+              //         ProductId: findOrder.ProductId,
+              //         WarehouseId: findOrder.WarehouseId,
+              //       },
+              //     }
+              //   )
+              //   console.log(update, "up")
+              // }
+
+              // update jumlah klo = 0, kalau < stock update 0
+              // stock >= update stock semula dikurangi item needed
 
               itemsNeeded -= nearestBranchStock
 
@@ -492,7 +475,10 @@ const paymentController = {
               Create request draft consisting of the number of items needed if available stock
               is greater than items needed
             */
+
             if (nearestBranchStock >= itemsNeeded) {
+              console.log(itemsNeeded, "need")
+              console.log(quantity, "quantity")
               requestItemsForm.push({
                 ProductId,
                 quantity: itemsNeeded,
@@ -503,12 +489,22 @@ const paymentController = {
                   ToWarehouseId: branch.warehouseInfo.id,
                 },
               })
-              console.log(itemsNeeded, "need")
-              console.log(quantity, "quantity")
 
               break
             }
           }
+          const updateStock = await ProductStock.update(
+            { stock: quantity[item] },
+            {
+              where: {
+                id: id,
+                ProductId: findOrderProductId,
+                WarehouseId: findOrder.WarehouseId,
+              },
+            }
+          )
+
+          console.log(updateStock, "update")
         }
       }
 
@@ -529,11 +525,6 @@ const paymentController = {
         }
       )
 
-      const updateStock = await ProductStock.update(
-        { stock: 0 },
-        { where: { id: id } }
-      )
-
       const findApproveTrasanction = await Order.findOne({
         where: {
           id: id,
@@ -545,7 +536,7 @@ const paymentController = {
       const paymentDate = moment(findApproveTrasanction.payment_date).format(
         "dddd, DD MMMM YYYY, HH:mm:ss"
       )
-      const transactionLink = `http://localhost:3000/transaction-list`
+      const transactionLink = `process.env.DOMAIN_NAME/transaction-list`
 
       const rawHTML = fs.readFileSync("templates/payment/approve.html", "utf-8")
 
@@ -564,7 +555,15 @@ const paymentController = {
         html: htmlResult,
         subject: "Payment Verified",
         text: "Thank You",
+        attachments: [
+          {
+            filename: "logo.png",
+            path: `${__dirname}/../templates/images/logo.png`,
+            cid: "logo",
+          },
+        ],
       })
+
       return res.status(200).json({
         message: "confirm payment success",
       })
@@ -579,7 +578,7 @@ const paymentController = {
     try {
       const { id } = req.params
 
-      const findOrder = await db.Order.findOne({
+      const findOrder = await Order.findOne({
         where: {
           id: id,
         },
@@ -591,13 +590,13 @@ const paymentController = {
         })
       }
 
-      const { id: statusId } = await db.Status.findOne({
+      const { id: statusId } = await Status.findOne({
         where: {
           status: "menunggu pembayaran",
         },
       })
 
-      await db.Order.update(
+      await Order.update(
         {
           StatusId: statusId,
         },
@@ -608,14 +607,14 @@ const paymentController = {
         }
       )
 
-      const findOrderId = await db.Order.findOne({
+      const findOrderId = await Order.findOne({
         where: {
           id: id,
         },
-        include: [{ model: db.User }],
+        include: [{ model: User }],
       })
 
-      const link = `http://localhost:3000/payment/wired/${findOrderId.id}`
+      const link = `process.env.DOMAIN_NAME/payment/wired/${findOrderId.id}`
 
       const template = fs.readFileSync(
         "./templates/payment/reject.html",
@@ -634,6 +633,13 @@ const paymentController = {
         subject: "Reject Payment",
         html: htmlResult,
         text: "Please reupload your payment proof",
+        attachments: [
+          {
+            filename: "logo.png",
+            path: `${__dirname}/../templates/images/logo.png`,
+            cid: "logo",
+          },
+        ],
       })
 
       return res.status(200).json({

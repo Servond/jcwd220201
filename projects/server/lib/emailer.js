@@ -1,6 +1,15 @@
 const nodemailer = require("nodemailer")
 
-const emailer = async ({ to, subject, text, html }) => {
+const emailer = async ({
+  to,
+  subject,
+  text,
+  html,
+  attachments,
+  filename,
+  path,
+  cid,
+}) => {
   if (!to) {
     throw new Error("`to` parameter missing.")
   }
@@ -18,6 +27,10 @@ const emailer = async ({ to, subject, text, html }) => {
     subject,
     text,
     html,
+    attachments,
+    filename,
+    path,
+    cid,
   })
 
   console.log("Message sent: %s", info.messageId)
