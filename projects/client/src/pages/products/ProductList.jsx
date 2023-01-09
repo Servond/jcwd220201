@@ -45,12 +45,6 @@ const MotionSimpleGrid = motion(SimpleGrid)
 const MotionBox = motion(Box)
 
 const ProductList = () => {
-  // const [products, setProducts] = useState([])
-  // const [page, setPage] = useState(0)
-  // const [limit, setLimit] = useState(3)
-  // const [pages, setPages] = useState(0)
-  // const [rows, setRows] = useState(0)
-  // ====================================================================
   const [products, setProducts] = useState([])
   const [categories, setCategories] = useState([])
   const [page, setPage] = useState(1)
@@ -96,39 +90,6 @@ const ProductList = () => {
   const changePage = ({ selected }) => {
     setMaxPage(selected)
   }
-
-  // TRIAL AND ERROR =========================================================================
-  // const fetchProducts = async () => {
-  //   try {
-  //     const response = await axiosInstance.get("/products", {
-  //       params: {
-  //         _page: page,
-  //         _limit: maxProductInPage,
-  //         _sortBy: sortBy,
-  //         _sortDir: sortDir,
-  //         CategoryId: filterProduct,
-  //         product_name: searchValue,
-  //       },
-  //     })
-
-  //     setProducts(response.data.data)
-  //     setTotalCount(response.data.dataCount)
-  //     setMaxPage(Math.ceil(response.data.dataCount / maxProductInPage))
-
-  //     if (page === 1) {
-  //       setProducts(response.data.data)
-  //     } else {
-  //       setProducts(response.data.data)
-  //     }
-  //     renderProducts()
-  //   } catch (err) {
-  //     console.log(err)
-  //   }
-  // }
-
-  // const categoryOptions = categoryData.map((val) => {
-  //   return { value: val.category, label: val.category }
-  // })
 
   const btnSearch = () => {
     setSearchValue(searchInput)
@@ -321,7 +282,6 @@ const ProductList = () => {
               </GridItem>
               <GridItem>
                 <FormLabel>.</FormLabel>
-
                 <Button
                   onClick={btnResetFilter}
                   p="3"
