@@ -170,7 +170,7 @@ const App = () => {
         />
         {/* Admin Manage Stock */}
         <Route
-          path={authSelector.RoleId === 1 ? "/admin/update-stock" : null}
+          path={authSelector.RoleId === 1 ? "/admin/manage-stock" : null}
           element={
             <ProtectedRoute>
               <Stock />
@@ -180,8 +180,8 @@ const App = () => {
         <Route
           path={
             authSelector.RoleId === 2
-              ? "/admin/update-stock"
-              : "/admin/update-stock/:id/"
+              ? "/admin/manage-stock"
+              : "/admin/manage-stock/:id"
           }
           element={
             <ProtectedRoute>
