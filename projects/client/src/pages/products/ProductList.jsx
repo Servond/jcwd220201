@@ -87,14 +87,10 @@ const ProductList = () => {
       console.log(err)
     }
   }
-  const changePage = ({ selected }) => {
-    setMaxPage(selected)
-  }
 
   const btnSearch = () => {
     setSearchValue(searchInput)
 
-    // watch this
     const queryParams = {}
     queryParams["search"] = searchInput
     setSearchParams(queryParams)
@@ -161,11 +157,6 @@ const ProductList = () => {
     return { value: val.id, label: val.category }
   })
 
-  // const filterCategory = (e) => {
-  //   const value = e.value
-
-  //   setFilterProduct(value)
-  // }
   const filterCategory = (e) => {
     const value = e.value
 
@@ -297,16 +288,8 @@ const ProductList = () => {
             </Grid>
           </Flex>
 
-          {/* <Grid
-            templateColumns={{ base: "repeat(1, 1fr)", md: "repeat(5, 1fr)" }}
-            mt="4"
-            minChildWidth="250px"
-            gap="1em"
-            minH="full"
-            align="center"
-          > */}
           <MotionGrid
-            templateColumns={{ base: "repeat(1, 1fr)", md: "repeat(5, 1fr)" }}
+            templateColumns={{ base: "repeat(2, 1fr)", md: "repeat(5, 1fr)" }}
             mt="4"
             minChildWidth="250px"
             gap="1em"
@@ -318,7 +301,6 @@ const ProductList = () => {
           >
             {renderProducts()}
           </MotionGrid>
-          {/* </Grid> */}
 
           {/* Next/Prev Page Product */}
           <Flex
@@ -365,25 +347,6 @@ const ProductList = () => {
               </Button>
             )}
           </Flex>
-          {/* <Flex
-            w="full"
-            justify="center"
-            gap="1em"
-            mt="1em"
-            borderRadius="none"
-            borderBottomRadius="5px solid"
-          >
-            <ReactPaginate
-              breakLabel="..."
-              containerClassName="address-pagination-buttons"
-              nextLabel="Berikutnya"
-              onPageChange={changePage}
-              pageRangeDisplayed={3}
-              pageClassName="address-pagination-pages"
-              pageCount={Math.min(10, setPage)}
-              previousLabel="Sebelumnya"
-            />
-          </Flex> */}
         </Box>
 
         <Box mt="15vh">
