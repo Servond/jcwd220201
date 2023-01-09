@@ -29,6 +29,7 @@ import {
   useNavigate,
   Link as LinkRouterDom,
   useLocation,
+  Link,
 } from "react-router-dom"
 import * as Yup from "yup"
 import { axiosInstance } from "../api"
@@ -52,10 +53,6 @@ const LoginPage = () => {
           email,
           password,
         })
-        console.log(
-          "res",
-          response.data.data.WarehousesUsers.map((val) => val.WarehouseId)[0]
-        )
 
         localStorage.setItem("auth_token", response.data.token)
         dispatch(
@@ -68,11 +65,13 @@ const LoginPage = () => {
             gender: response.data.data.gender,
             date_of_birth: response.data.data.date_of_birth,
             profile_picture: response.data.data.profile_picture,
-            WarehouseId: response.data.data.WarehousesUsers.map(
-              (val) => val.WarehouseId
-            )[0],
+            WarehouseId:
+              response.data.data.WarehousesUsers.length > 0
+                ? response.data.data.WarehousesUsers[0].WarehouseId
+                : "",
           })
         )
+
         toast({
           title: "Login success",
           description: response.data.message,
@@ -134,10 +133,11 @@ const LoginPage = () => {
                 mb="30px"
                 mt="-5"
               >
-                {/* WIRED! */}
-                <Center>
-                  <Image boxSize="30%" src="logo.png"></Image>
-                </Center>
+                <Link to="/">
+                  <Center>
+                    <Image boxSize="30%" src="logo.png"></Image>
+                  </Center>
+                </Link>
               </Heading>
               <Wrap spacing={{ base: 10, sm: 3, md: 5, lg: 20 }}>
                 <WrapItem>
@@ -179,62 +179,74 @@ const LoginPage = () => {
                         Untuk berbelanja semua produk kami ✌️
                       </Text>
                       <VStack spacing={5}>
-                        <FormControl isInvalid={formik.errors.email}>
-                          <FormLabel>Email</FormLabel>
-                          <Input
-                            value={formik.values.email}
-                            name="email"
-                            type="email"
-                            onChange={formChangeHandler}
-                          />
-                          <FormErrorMessage>
-                            {formik.errors.email}
-                          </FormErrorMessage>
-                        </FormControl>
-                        <FormControl isInvalid={formik.errors.password}>
-                          <FormLabel>Password</FormLabel>
-                          <InputGroup>
+                        <form onSubmit={formik.handleSubmit}>
+                          <FormControl isInvalid={formik.errors.email}>
+                            <FormLabel>Email</FormLabel>
                             <Input
-                              value={formik.values.password}
-                              name="password"
+                              width="32vh"
+                              value={formik.values.email}
+                              name="email"
+                              type="email"
                               onChange={formChangeHandler}
-                              type={showPassword ? "text" : "password"}
                             />
-                            <InputRightElement h={"full"}>
-                              <Button
-                                variant={"ghost"}
-                                onClick={() =>
-                                  setShowPassword(
-                                    (showPassword) => !showPassword
-                                  )
-                                }
+                            <FormErrorMessage>
+                              {formik.errors.email}
+                            </FormErrorMessage>
+                          </FormControl>
+                          <FormControl
+                            mt="4"
+                            isInvalid={formik.errors.password}
+                          >
+                            <FormLabel>Password</FormLabel>
+                            <InputGroup>
+                              <Input
+                                value={formik.values.password}
+                                name="password"
+                                onChange={formChangeHandler}
+                                type={showPassword ? "text" : "password"}
+                              />
+                              <InputRightElement h={"full"}>
+                                <Button
+                                  variant={"ghost"}
+                                  onClick={() =>
+                                    setShowPassword(
+                                      (showPassword) => !showPassword
+                                    )
+                                  }
+                                >
+                                  {showPassword ? (
+                                    <ViewIcon />
+                                  ) : (
+                                    <ViewOffIcon />
+                                  )}
+                                </Button>
+                              </InputRightElement>
+                            </InputGroup>
+                            <FormHelperText mt="5" mb="-2" textAlign="right">
+                              <LinkChakra
+                                onClick={() => {
+                                  navigate("/forgot-password")
+                                }}
                               >
-                                {showPassword ? <ViewIcon /> : <ViewOffIcon />}
-                              </Button>
-                            </InputRightElement>
-                          </InputGroup>
-                          <FormHelperText mt="5" mb="-2" textAlign="right">
-                            <LinkChakra
-                              onClick={() => {
-                                navigate("/forgot-password")
-                              }}
+                                Lupa Password?
+                              </LinkChakra>
+                            </FormHelperText>
+                            <FormErrorMessage>
+                              {formik.errors.password}
+                            </FormErrorMessage>
+                          </FormControl>
+                          <Center>
+                            <Button
+                              type={"submit"}
+                              isDisabled={!formik.values.password}
+                              bgColor="teal.500"
+                              color={"white"}
+                              mt="5"
                             >
-                              Lupa Password?
-                            </LinkChakra>
-                          </FormHelperText>
-                          <FormErrorMessage>
-                            {formik.errors.password}
-                          </FormErrorMessage>
-                        </FormControl>
-                        <Button
-                          onClick={formik.handleSubmit}
-                          isDisabled={!formik.values.email}
-                          type={"submit"}
-                          bgColor="teal.500"
-                          color={"white"}
-                        >
-                          Masuk
-                        </Button>
+                              Masuk
+                            </Button>
+                          </Center>
+                        </form>
                       </VStack>
                       <Stack>
                         <Text align={"center"} mt="20px" mr="2">
