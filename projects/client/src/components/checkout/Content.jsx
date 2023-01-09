@@ -12,8 +12,8 @@ const Content = () => {
       mx="auto"
       minHeight="82.08vh"
     >
-      <Flex mt="1.875rem">
-        <Box maxWidth="70.65%" mr="2.8125rem">
+      <Flex mt="1.875rem" border="1px">
+        <Box mr="2.8125rem">
           <Address />
           <CartItems />
         </Box>

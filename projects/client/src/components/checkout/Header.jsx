@@ -16,7 +16,7 @@ const Header = () => {
       <Image
         cursor="pointer"
         src="/assets/logo.png"
-        width={["68.103%", "68.103%", "82.512%", "100%"]}
+        width={["7.172rem", "9.172rem", "12rem", "12rem"]}
         height="3.6875rem"
         objectFit="contain"
         onClick={() => navigate("/")}
