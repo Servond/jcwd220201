@@ -157,6 +157,11 @@ const ProductList = () => {
     return { value: val.id, label: val.category }
   })
 
+  // const filterCategory = (e) => {
+  //   const value = e.value
+
+  //   setFilterProduct(value)
+  // }
   const filterCategory = (e) => {
     const value = e.value
 
