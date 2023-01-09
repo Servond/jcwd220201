@@ -32,8 +32,6 @@ const emailer = async ({
     path,
     cid,
   })
-
-  console.log("Message sent: %s", info.messageId)
 }
 
 module.exports = emailer

@@ -60,7 +60,7 @@ const UserOrder = () => {
         url += `?WarehouseId=${authSelector.WarehouseId}`
       }
       const response = await axiosInstance.get(url)
-
+      console.log(response)
       setData(response.data.data)
       setLoading(false)
     } catch (err) {
@@ -132,6 +132,7 @@ const UserOrder = () => {
                 {loading
                   ? null
                   : data.map((val) => {
+                      console.log(val)
                       return (
                         <Tr h="auto">
                           <Td cursor="pointer" _hover={{ color: "teal.400" }}>
@@ -165,8 +166,13 @@ const UserOrder = () => {
                             </Td>
                           ) : val.status === "diproses" ? (
                             <Td>
-                              <Button>ariel</Button>
-                              <Button>ariel</Button>
+                              <HStack>
+                                <SendButton id={val.id} />
+                                <CancelButton
+                                  id={val.id}
+                                  warehouseId={val.WarehouseId}
+                                />
+                              </HStack>
                             </Td>
                           ) : null}
                         </Tr>
