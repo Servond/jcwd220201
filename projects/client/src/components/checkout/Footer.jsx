@@ -13,7 +13,7 @@ const Footer = () => {
     >
       <Text
         color="rgba(49, 53, 59, 0.68)"
-        fontSize="0.8125rem"
+        fontSize={["0.553rem", "0.553rem", "0.67rem", "0.812rem"]}
         fontWeight="700"
         lineHeight="1.125rem"
       >

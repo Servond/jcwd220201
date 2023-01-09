@@ -6,6 +6,7 @@ const {
   OrderItem,
   Product,
   ProductStock,
+  ProductPicture,
   StockRequest,
   StockRequestItem,
   Status,
@@ -205,7 +206,12 @@ const checkoutController = {
         where: {
           [Op.and]: [{ UserId }, { is_checked: true }],
         },
-        include: [{ model: Product }],
+        include: {
+          model: Product,
+          include: {
+            model: ProductPicture,
+          },
+        },
       });
 
       if (!cartItems.length) {
