@@ -46,6 +46,7 @@ import PageButton from "./pageButton"
 import Select from "react-select"
 import { Carousel } from "react-responsive-carousel"
 import { Rupiah } from "../../lib/currency/Rupiah"
+import { useSearchParams } from "react-router-dom"
 
 const WarehouseProduct = () => {
   const [products, setproducts] = useState([])
@@ -622,6 +623,7 @@ const WarehouseProduct = () => {
                   placeholder="Search"
                   name="search"
                   bgColor={"white"}
+                  // onChange={(e) => setCurrentSearch(e.target.value)}
                   onChange={searchHandler}
                   borderRightRadius="0"
                   value={formikSearch.values.search}

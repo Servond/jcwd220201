@@ -31,7 +31,10 @@ import {
   Thead,
   Tr,
   VStack,
+  useToast,
 } from "@chakra-ui/react"
+import CancelButton from "../../../components/admin/CancelButton"
+import SendButton from "../../../components/admin/SendButton"
 import { BiEdit } from "react-icons/bi"
 import { RiDeleteBin5Fill } from "react-icons/ri"
 import ReactPaginate from "react-paginate"
@@ -48,6 +51,8 @@ const UserOrder = () => {
   // Render Warehouse
   const [data, setData] = useState([])
 
+  const toast = useToast()
+
   const fetchAllOrder = async () => {
     try {
       let url = `/order/all-user`
@@ -59,7 +64,41 @@ const UserOrder = () => {
       setData(response.data.data)
       setLoading(false)
     } catch (err) {
-      console.log(err.response)
+      console.log(err)
+    }
+  }
+
+  const confirmOrder = async (id) => {
+    try {
+      await axiosInstance.patch(`/payment/confirm/${id}`)
+
+      fetchAllOrder()
+      toast({
+        title: "email dikirim",
+      })
+    } catch (err) {
+      console.log(err)
+      toast({
+        title: "konfirmasi pembayaran gagal",
+        status: "error",
+      })
+    }
+  }
+
+  const rejectOrder = async (id) => {
+    try {
+      const response = await axiosInstance.patch(`/payment/reject/${id}`)
+
+      fetchAllOrder()
+      toast({
+        title: "email reject dikirim",
+      })
+    } catch (err) {
+      console.log(err)
+      toast({
+        title: "reject pembayaran gagal",
+        status: "error",
+      })
     }
   }
 
@@ -107,13 +146,32 @@ const UserOrder = () => {
                           <Td textTransform="capitalize">{val.status}</Td>
                           {val.status === "menunggu konfirmasi pembayaran" ? (
                             <Td>
-                              <Button>fraya</Button>
-                              <Button>fraya</Button>
+                              <Button
+                                alignContent={"left"}
+                                onClick={() => confirmOrder(val.id)}
+                                mx="3"
+                                colorScheme={"telegram"}
+                              >
+                                Konfirmasi
+                              </Button>
+                              <Button
+                                alignContent={"left"}
+                                onClick={() => rejectOrder(val.id)}
+                                mx="3"
+                                colorScheme={"red"}
+                              >
+                                Batalkan
+                              </Button>
                             </Td>
                           ) : val.status === "diproses" ? (
                             <Td>
-                              <Button>ariel</Button>
-                              <Button>ariel</Button>
+                              <HStack>
+                                <SendButton id={val.id} />
+                                <CancelButton
+                                  id={val.id}
+                                  warehouseId={val.WarehouseId}
+                                />
+                              </HStack>
                             </Td>
                           ) : null}
                         </Tr>
