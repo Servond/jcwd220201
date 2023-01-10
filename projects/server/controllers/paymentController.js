@@ -240,6 +240,13 @@ const paymentController = {
         html: htmlResult,
         subject: "Payment Verified",
         text: "Thank You",
+        attachments: [
+          {
+            filename: "logo.png",
+            path: `${__dirname}/../templates/images/logo.png`,
+            cid: "logo",
+          },
+        ],
       })
 
       return res.status(200).json({
@@ -292,7 +299,7 @@ const paymentController = {
         include: [{ model: User }],
       })
 
-      const link = `http://localhost:8000/payment/wired/${findOrderId.id}`
+      const link = `process.env.DOMAIN_NAME/payment/wired/${findOrderId.id}`
 
       const template = fs.readFileSync(
         "./templates/payment/reject.html",
