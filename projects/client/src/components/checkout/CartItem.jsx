@@ -1,5 +1,4 @@
 import { Box, HStack, Image, Text } from "@chakra-ui/react";
-import { useEffect } from "react";
 
 // Own library imports
 import { IDR } from "../../lib/currency/Rupiah";
