@@ -127,12 +127,7 @@ const MainContent = () => {
           maxW="auto"
         >
           {categories.map((val) => (
-            <Card
-              boxShadow="lg"
-              // onClick={() => {
-              //   navigate(`/product/${id}`)
-              // }}
-            >
+            <Card boxShadow="lg">
               <CardHeader>
                 <Heading key={val.id} size="16px" fontWeight="700">
                   {val.category}
