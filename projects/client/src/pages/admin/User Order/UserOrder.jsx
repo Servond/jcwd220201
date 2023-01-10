@@ -63,7 +63,9 @@ const UserOrder = () => {
 
       setData(response.data.data)
       setLoading(false)
-    } catch (err) {}
+    } catch (err) {
+      console.log(err)
+    }
   }
 
   const confirmOrder = async (id) => {
