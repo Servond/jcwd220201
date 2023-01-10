@@ -10,10 +10,6 @@ const CartItem = ({ details, index, solitary = false }) => {
     Product: { product_name: productName, description, price, ProductPictures },
   } = details;
 
-  useEffect(() => {
-    console.log(ProductPictures[0].product_picture);
-  }, [ProductPictures]);
-
   return (
     <Box
       borderBottom="6px solid rgb(243, 244, 245)"
