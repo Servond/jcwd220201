@@ -132,7 +132,6 @@ const UserOrder = () => {
                 {loading
                   ? null
                   : data.map((val) => {
-                      console.log(val);
                       return (
                         <Tr h="auto">
                           <Td cursor="pointer" _hover={{ color: "teal.400" }}>
