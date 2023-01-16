@@ -7,14 +7,11 @@ const {
   Product,
   ProductStock,
   ProductPicture,
-  StockRequest,
-  StockRequestItem,
   Status,
   sequelize,
 } = require("../models");
 const { Op } = require("sequelize");
 const axios = require("axios");
-const moment = require("moment");
 
 // Own library imports
 const getWarehousesInfo = require("../lib/checkout/getWarehousesInfo");
@@ -405,6 +402,15 @@ const checkoutController = {
       await sequelize.transaction(async (t) => {
         await OrderItem.bulkCreate(itemsToOrder, {
           transaction: t,
+        });
+      });
+
+      // Clear cart items
+      await sequelize.transaction(async (t) => {
+        await Cart.destroy({
+          where: {
+            UserId,
+          },
         });
       });
 
